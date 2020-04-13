@@ -1,0 +1,141 @@
+/*
+ * This is an adjustment of the original modena.css for a consistent dark theme.
+ * Original modena.css here: https://gist.github.com/maxd/63691840fc372f22f470.
+ */
+
+/* Redefine base colors */
+.root {
+    -fx-base: #201F1F;
+    -fx-background: #201F1F;
+}
+
+.menu-bar{
+    -fx-background-color: #1D1D1D;
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-text-fill: white;
+}
+
+.button:hover {
+    -fx-background-color: #545454;
+    -fx-border-style: none;
+    -fx-cursor: hand;
+    -fx-border-color: #545454;
+}
+
+.button:default:hover {
+    -fx-border-color: #4FC3F7;
+    -fx-background-color: #4FC3F7;
+    -fx-cursor: hand;
+    -fx-border-style: none;
+}
+
+.button:focused {
+    -fx-border-width: 0;
+}
+
+.progress-indicator:indeterminate {
+    -fx-border-color: #1D1D1D;
+}
+
+
+.text-field > .right-button{
+    -fx-cursor: default;
+
+    -fx-background-insets: -0.1666665em -0.45em -0.1666665em -0.45em; /* 4 7 4 7 -> this values are subtracted by 2px in em because of the border of the textfield */
+    -fx-background-color: #2D2C2C;  /* We must give it a color so that it reacts to the mouse */
+}
+
+.text-field {
+    -fx-background-color: #2D2C2C;
+    -fx-text-fill: #C8C6C4;
+    -fx-border-radius: 5px 5px 0 0;
+    -fx-border-color: #2D2C2C;
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
+    -fx-background-radius: 5px 5px 0 0;
+    -fx-padding: 12px;
+}
+
+.text-field:hover {
+    -fx-background-color: #2D2C2C;
+    -fx-text-fill: #C8C6C4;
+    -fx-border-color: #2D2C2C;
+    -fx-border-style: solid;
+}
+
+.text-field:focused {
+    -fx-text-fill: white !important;
+    -fx-border-color: #2D2C2C #2D2C2C #0066CC #2D2C2C;
+    -fx-background-color: #2D2C2C;
+}
+
+.combo-box-base  {
+    -fx-text-fill: #C8C6C4;
+    -fx-padding: 8px;
+    -fx-border-radius: 3px;
+    -fx-background-color: #2D2C2C;
+    -fx-background-radius: 3px;
+    -fx-font-family: "Segoe UI";
+    -fx-border-color: #2D2C2C;
+    -fx-border-style: solid;
+    -fx-border-width: 2px;
+}
+
+.combo-box-base > .list-cell {
+    -fx-text-fill: #C8C6C4;
+}
+
+.combo-box-base:hover {
+    -fx-background-color: #2D2C2C;
+}
+
+.combo-box-base:focused {
+    -fx-background-color: #2D2C2C;
+    -fx-background-insets: 0;
+    -fx-background-radius: 3px;
+    -fx-border-color: #2D2C2C #2D2C2C #0066CC #2D2C2C;
+
+}
+
+.combo-box-base:focused:hover {
+    -fx-background-color: #2D2C2C;
+}
+
+.combo-box-base:pressed,
+.combo-box-base:focused:pressed,
+.combo-box-base:showing,
+.combo-box-base:showing:hover,
+.combo-box-base:editable:showing {
+    -fx-background-color: #2D2C2C;
+}
+
+/* LIST (Popup)*/
+.combo-box-popup > .list-view {
+    -fx-translate-y: 2px;
+    -fx-border-style: none;
+    -fx-border-color: none;
+    -fx-padding: 2px 0 2px 0;
+    -fx-background-color: #2D2C2C;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-font-family: "Segoe UI";
+    -fx-padding: 12px;
+    -fx-background-color: #2D2C2C;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover{
+    -fx-background-color: list_cell_hover_color;
+    -fx-text-fill: text_color;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected{
+    -fx-background-color: #484644;
+    -fx-text-fill: #C8C6C4;
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected:hover{
+    -fx-background-color: #484644;
+}
