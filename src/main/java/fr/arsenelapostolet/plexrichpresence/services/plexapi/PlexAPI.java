@@ -1,6 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
-import fr.arsenelapostolet.plexrichpresence.model.MediaContainer;
+import fr.arsenelapostolet.plexrichpresence.model.MediaContainerServer;
 import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
 import retrofit2.Call;
 import retrofit2.http.GET;
@@ -18,6 +18,6 @@ public interface PlexAPI {
                           @Header("X-Plex-Client-Identifier") String client);
 
     @GET("/pms/servers.xml")
-    Call<MediaContainer> getServers();
+    Call<MediaContainerServer> getServers();
 
 }

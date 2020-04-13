@@ -14,7 +14,6 @@
                         <Insets topRightBottomLeft="16"/>
                     </padding>
 
-
                     <VBox prefWidth="200" spacing="8">
                         <Label prefWidth="Infinity" textAlignment="CENTER" fx:id="loginStatus" managed="false"/>
                         <ProgressIndicator fx:id="loader" managed="false" visible="false"/>
@@ -26,8 +25,6 @@
                         </VBox>
                     </VBox>
                     <TextArea GridPane.columnIndex="1" fx:id="eventLog" editable="false"/>
-
-
                 </GridPane>
             </ScrollPane>
         </center>

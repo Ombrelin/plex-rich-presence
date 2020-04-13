@@ -1,11 +1,11 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
-import fr.arsenelapostolet.plexrichpresence.model.MediaContainer;
-import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
-import fr.arsenelapostolet.plexrichpresence.model.Server;
-import fr.arsenelapostolet.plexrichpresence.model.User;
+import fr.arsenelapostolet.plexrichpresence.model.*;
+import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexServerService;
+import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexServerSessionsService;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexTokenService;
+import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,6 +16,12 @@ import org.springframework.stereotype.Component;
 @Component
 @FxmlView
 public class MainController {
+
+    private RichPresence richPresence;
+
+    public MainController(RichPresence richPresence) {
+        this.richPresence = richPresence;
+    }
 
     @FXML
     private Label loginStatus;
@@ -53,9 +59,9 @@ public class MainController {
         PlexServerService serverService = new PlexServerService(this.login.getText(), this.password.getText());
         serverService.setOnSucceeded(state -> {
             this.eventLog.appendText("Logged in as " + this.login.getText() + "\n");
-            MediaContainer mediaContainer = serverService.getValue();
-            this.eventLog.appendText("Detected server : " + mediaContainer.getServer().getName() + "\n");
-            this.server = mediaContainer.getServer();
+            MediaContainerServer mediaContainerServer = serverService.getValue();
+            this.eventLog.appendText("Detected server : " + mediaContainerServer.getServer().getName() + "\n");
+            this.server = mediaContainerServer.getServer();
             this.fetchToken();
         });
         serverService.setOnFailed(state -> {
@@ -75,15 +81,49 @@ public class MainController {
         PlexTokenService tokenService = new PlexTokenService(this.login.getText(), this.password.getText());
         tokenService.setOnSucceeded(state -> {
             PlexLogin login = tokenService.getValue();
-            this.eventLog.appendText("Successfully acquired user token");
+            this.eventLog.appendText("Successfully acquired user token\n");
             this.user = login.getUser();
             this.loader.setVisible(false);
             this.loader.setManaged(false);
+
+            this.fetchSession();
         });
         tokenService.start();
     }
 
     public void fetchSession() {
+        PlexServerSessionsService plexServerSessionsService = new PlexServerSessionsService(this.server.getAddress(), this.server.getPort(), this.user.getAuthToken());
+        plexServerSessionsService.setOnSucceeded(state -> {
+            PlexSessions plexSessions = plexServerSessionsService.getValue();
+            try {
+                Metadatum userMetaDatum = plexSessions.getMediaContainer().getMetadata().stream()
+                        .filter(session -> session.getUser().getTitle().equals(user.getUsername()))
+                        .findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+                this.eventLog.appendText("Found session for current user : " + userMetaDatum.getTitle()
+                        +"(" + userMetaDatum.getParentTitle() + ") from " + userMetaDatum.getGrandparentTitle() +"\n");
 
+                richPresence.updateMessage(userMetaDatum.getParentTitle(),userMetaDatum.getTitle());
+                waitBetweenCalls();
+            } catch (IllegalArgumentException exception) {
+                this.eventLog.appendText("Found no session for current user\n");
+            }
+        });
+        plexServerSessionsService.setOnFailed(state -> {
+            this.eventLog.appendText("Fetching sessions failed : " + plexServerSessionsService.getException().getMessage() + "\n");
+        });
+
+        plexServerSessionsService.start();
+    }
+
+    void waitBetweenCalls(){
+        WorkerService workerService = new WorkerService();
+        this.loader.setManaged(true);
+        this.loader.setVisible(true);
+        this.loader.progressProperty().bind(workerService.progressProperty());
+        workerService.setOnSucceeded(state -> {
+            fetchSession();
+        });
+        workerService.start();
     }
 }
