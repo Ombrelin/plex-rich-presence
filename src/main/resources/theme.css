@@ -9,7 +9,7 @@
     -fx-background: #201F1F;
 }
 
-.menu-bar{
+.menu-bar {
     -fx-background-color: #1D1D1D;
 }
 
@@ -36,20 +36,27 @@
 }
 
 .progress-indicator:indeterminate {
-    -fx-border-color: #1D1D1D;
+    -fx-border-style: none !important;
 }
 
 
-.text-field > .right-button{
-    -fx-cursor: default;
-
+.text-field > .right-button, .password-field > .right-button {
+    -fx-cursor: hand;
     -fx-background-insets: -0.1666665em -0.45em -0.1666665em -0.45em; /* 4 7 4 7 -> this values are subtracted by 2px in em because of the border of the textfield */
-    -fx-background-color: #2D2C2C;  /* We must give it a color so that it reacts to the mouse */
+    -fx-background-color: #2D2C2C; /* We must give it a color so that it reacts to the mouse */
+}
+
+.password-field > .right-button > .right-button-graphic {
+    -fx-background-color: graphic_color;
+}
+
+.text-input, .text-input:focused, .text-input:hover,.text-field:focused,.text-field:hover {
+    -fx-text-fill: #ffffff !important;
+
 }
 
 .text-field {
     -fx-background-color: #2D2C2C;
-    -fx-text-fill: #C8C6C4;
     -fx-border-radius: 5px 5px 0 0;
     -fx-border-color: #2D2C2C;
     -fx-border-style: solid;
@@ -58,20 +65,29 @@
     -fx-padding: 12px;
 }
 
-.text-field:hover {
+.text-area {
+    -fx-background-radius: 5px 5px 5px 5px !important;
+    -fx-border-radius: 5px 5px 5px 5px !important;
+
+}
+
+.text-area .content {
+    -fx-background-color: #2D2C2C !important;
+    -fx-border-color: #2D2C2C !important;
+}
+
+.text-field:hover, .text-area:hover {
     -fx-background-color: #2D2C2C;
-    -fx-text-fill: #C8C6C4;
     -fx-border-color: #2D2C2C;
     -fx-border-style: solid;
 }
 
 .text-field:focused {
-    -fx-text-fill: white !important;
     -fx-border-color: #2D2C2C #2D2C2C #0066CC #2D2C2C;
     -fx-background-color: #2D2C2C;
 }
 
-.combo-box-base  {
+.combo-box-base {
     -fx-text-fill: #C8C6C4;
     -fx-padding: 8px;
     -fx-border-radius: 3px;
@@ -126,16 +142,16 @@
     -fx-background-color: #2D2C2C;
 }
 
-.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover{
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
     -fx-background-color: list_cell_hover_color;
     -fx-text-fill: text_color;
 }
 
-.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected{
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected {
     -fx-background-color: #484644;
     -fx-text-fill: #C8C6C4;
 }
 
-.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected:hover{
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:filled:selected:hover {
     -fx-background-color: #484644;
 }

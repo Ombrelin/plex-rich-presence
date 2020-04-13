@@ -1,4 +1,4 @@
-package fr.arsenelapostolet.plexrichpresence.services.plexapi;
+package fr.arsenelapostolet.plexrichpresence.services.plexapi.server;
 
 import fr.arsenelapostolet.plexrichpresence.model.PlexSessions;
 import okhttp3.ResponseBody;

@@ -1,40 +1,20 @@
-package fr.arsenelapostolet.plexrichpresence.services.plexapi;
+package fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import lombok.AllArgsConstructor;
 import retrofit2.Call;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.IOException;
 
-public class PlexTokenService extends Service<PlexLogin> {
+@AllArgsConstructor
+public class PlexTokenAjax extends Service<PlexLogin> {
 
-    private static String API_URL = "https://plex.tv";
-
-    private Retrofit http;
+    private PlexTvAPI plexTvAPI;
     private String login;
     private String password;
-
-    public PlexTokenService(String login, String password) {
-        this.login = login;
-        this.password = password;
-
-        Gson gson = new GsonBuilder()
-                .setLenient()
-                .create();
-
-        this.http = new Retrofit.Builder()
-                .baseUrl(API_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .build();
-
-
-    }
 
     @Override
     protected Task<PlexLogin> createTask() {
@@ -42,9 +22,7 @@ public class PlexTokenService extends Service<PlexLogin> {
             @Override
             protected PlexLogin call() {
 
-                PlexAPI plexAPI = http.create(PlexAPI.class);
-
-                Call<PlexLogin> ajax = plexAPI.login(login,password,
+                Call<PlexLogin> ajax = plexTvAPI.login(login,password,
                         "Windows",
                         "10.0",
                         "Plex Rich Presence"
@@ -63,4 +41,5 @@ public class PlexTokenService extends Service<PlexLogin> {
             }
         };
     }
+
 }

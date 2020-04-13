@@ -1,4 +1,4 @@
-package fr.arsenelapostolet.plexrichpresence.services.plexapi;
+package fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv;
 
 import okhttp3.Credentials;
 import okhttp3.Interceptor;

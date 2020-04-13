@@ -18,6 +18,8 @@ public class Server {
     @Attribute private String updatedAt;
     @Attribute private String owned;
     @Attribute private String synced;
-
-
+    @Attribute(required = false) private String sourceTitle;
+    @Attribute(required = false) private String accessToken;
+    @Attribute(required = false) private String ownerId;
+    @Attribute(required = false) private String home;
 }

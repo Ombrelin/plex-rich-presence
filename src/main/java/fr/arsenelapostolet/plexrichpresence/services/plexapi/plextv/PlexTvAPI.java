@@ -1,4 +1,4 @@
-package fr.arsenelapostolet.plexrichpresence.services.plexapi;
+package fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv;
 
 import fr.arsenelapostolet.plexrichpresence.model.MediaContainerServer;
 import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
@@ -8,7 +8,7 @@ import retrofit2.http.Header;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-public interface PlexAPI {
+public interface PlexTvAPI {
 
     @POST("/users/sign_in.json")
     Call<PlexLogin> login(@Query("user[login]") String login,
