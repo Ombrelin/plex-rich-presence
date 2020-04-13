@@ -42,25 +42,19 @@ public class PlexServerService extends Service<MediaContainer> {
     protected Task<MediaContainer> createTask() {
         return new Task<MediaContainer>() {
             @Override
-            protected MediaContainer call() {
-                try {
-
-
+            protected MediaContainer call() throws IOException {
                 PlexAPI plexAPI = http.create(PlexAPI.class);
                 Call<MediaContainer> ajax = plexAPI.getServers();
-                Response<MediaContainer> response = null;
+                Response<MediaContainer> response = ajax.execute();
 
-                    response = ajax.execute();
 
-                //if(response.errorBody() != null){
-                //    System.out.println(response.errorBody().string());
-                //}
-                System.out.println(response.code());
-                return response.body();
-                } catch (Exception e){
-                    System.out.println(e.getMessage());
+                if (response.errorBody() != null) {
+                    throw new IllegalArgumentException(response.errorBody().string());
                 }
-                return null;
+                if (response.code() == 401) {
+                    throw new IllegalArgumentException("Wrong credentials");
+                }
+                return response.body();
             }
         };
     }

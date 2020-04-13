@@ -18,7 +18,6 @@ public class BasicAuthInterceptor implements Interceptor {
     @Override
     public Response intercept(Chain chain) throws IOException {
         Request request = chain.request();
-        System.out.println(credentials);
         Request authenticatedRequest = request.newBuilder()
                 .header("Authorization", credentials).build();
         return chain.proceed(authenticatedRequest);
