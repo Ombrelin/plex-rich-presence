@@ -46,6 +46,11 @@ public class MainController {
     private TextArea eventLog;
 
     @FXML
+    public void initialize(){
+        this.login.applyCss();
+    }
+
+    @FXML
     public void login(ActionEvent event) {
         this.credentialsPrompt.setManaged(false);
         this.credentialsPrompt.setVisible(false);

@@ -1,0 +1,24 @@
+
+
+Version:	3.12
+CmdLine:	C:\Users\arsen\git\plex-rich-presence\windows\Plex Rich Presence.exe --l4j-debug
+WOW64:		yes
+Working dir:	C:\Users\arsen\git\plex-rich-presence\windows\.
+Java min ver:	1.008.000
+Java max ver:	1.010.000
+64-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+32-bit search:	SOFTWARE\JavaSoft\Java Runtime Environment...
+64-bit search:	SOFTWARE\JavaSoft\Java Development Kit...
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.8
+Check launcher:	C:\Program Files\Java\jdk1.8.0_221\bin\javaw.exe (OK)
+Match:		1.008.000
+Check:		SOFTWARE\JavaSoft\Java Development Kit\1.8.0_221
+Check launcher:	C:\Program Files\Java\jdk1.8.0_221\bin\javaw.exe (OK)
+Match:		1.008.000_221
+64-bit search:	SOFTWARE\JavaSoft\JRE...
+64-bit search:	SOFTWARE\JavaSoft\JDK...
+Runtime used:	1.008.000_221 (64-bit)
+Launcher:	C:\Program Files\Java\jdk1.8.0_221\bin\javaw.exe
+Launcher args:	-jar "C:\Users\arsen\git\plex-rich-presence\windows\Plex Rich Presence.exe"
+Args length:	75/32768 chars
+Exit code:	0
