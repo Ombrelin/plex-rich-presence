@@ -37,9 +37,3 @@ java -jar ./target/plex-rich-presence-0.0.1-SNAPSHOT.jar
 ## Special Thanks
 
 Thanks to [Discord](https://discord.com/) and [PLEX Media Server](https://plex.tv)
-
-## Licence 
-
-This work is under Creartive Commons license
-
-![License](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)
