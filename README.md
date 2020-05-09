@@ -5,6 +5,9 @@ Plex Rich Presence works with Java 8.
 
 ## Release Version
 
+- [Portable and Executable JAR](https://github.com/Ombrelin/plex-rich-presence/releases/download/v1.0/plex-rich-presence-portable-jar.jar)
+- [Windows Installer](https://github.com/Ombrelin/plex-rich-presence/releases/download/v1.0/plex-rich-presence-setup-windows.exe)
+
 ## Build
 
 Just run :
