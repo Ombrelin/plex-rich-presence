@@ -85,6 +85,16 @@ public class MainController {
 
     public void fetchSession(Metadatum userMetaDatum) {
 
+        if (userMetaDatum == null) {
+            this.eventLog.appendText("Nothing is playing.\n");
+            richPresence.updateMessage(
+                    "Nothing is playing",
+                    ""
+            );
+            waitBetweenCalls();
+            return;
+        };
+
         this.eventLog.appendText(
                 "Found session for current user : "
                         + userMetaDatum.getTitle()
@@ -93,7 +103,7 @@ public class MainController {
         );
 
         richPresence.updateMessage(
-                userMetaDatum.getParentTitle(),
+                userMetaDatum.getGrandparentTitle() + " - " + userMetaDatum.getParentTitle(),
                 userMetaDatum.getTitle()
         );
 
