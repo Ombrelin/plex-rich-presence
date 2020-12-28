@@ -29,6 +29,7 @@ public class PlexRefresherFX extends Application {
 
     @Override
     public void start(Stage stage) {
+        ConfigManager.initConfig();
         FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
         Parent root = fxWeaver.loadView(MainController.class);
         Scene scene = new Scene(root);
@@ -46,6 +47,7 @@ public class PlexRefresherFX extends Application {
 
     @Override
     public void stop() {
+        ConfigManager.saveConfig();
         this.applicationContext.close();
         Platform.exit();
     }

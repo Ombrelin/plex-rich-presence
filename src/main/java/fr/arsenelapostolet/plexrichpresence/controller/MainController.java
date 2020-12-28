@@ -1,5 +1,7 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
+import com.sun.tools.javac.comp.Check;
+import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
 import fr.arsenelapostolet.plexrichpresence.model.User;
 import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
@@ -8,9 +10,22 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.CheckBox;
 import javafx.scene.layout.Pane;
 import net.rgielen.fxweaver.core.FxmlView;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
+
 
 @Component
 @FxmlView
@@ -18,6 +33,9 @@ public class MainController {
 
     private RichPresence richPresence;
     private PlexApi plexApi;
+
+    @Autowired
+    private Environment env;
 
     public MainController(RichPresence richPresence, PlexApi plexApi) {
         this.richPresence = richPresence;
@@ -46,12 +64,27 @@ public class MainController {
     private TextArea eventLog;
 
     @FXML
+    private CheckBox rememberMe;
+
+    @FXML
     public void initialize(){
         this.login.applyCss();
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.username")) && (!StringUtils.isEmpty(ConfigManager.getConfig("plex.password")))) {
+            this.login.setText(ConfigManager.getConfig("plex.username"));
+            this.password.setText(ConfigManager.getConfig("plex.password"));
+            submitLogin.fire();
+        }
+
     }
 
     @FXML
     public void login(ActionEvent event) {
+
+        if (this.rememberMe.isSelected()) {
+            ConfigManager.setConfig("plex.username", this.login.getText());
+            ConfigManager.setConfig("plex.password", this.password.getText());
+        }
+
         this.credentialsPrompt.setManaged(false);
         this.credentialsPrompt.setVisible(false);
         this.loader.setVisible(true);
@@ -85,12 +118,15 @@ public class MainController {
 
     public void fetchSession(Metadatum userMetaDatum) {
 
+        long currentTime = System.currentTimeMillis() / 1000;
+
         if (userMetaDatum == null) {
             this.eventLog.appendText("Nothing is playing.\n");
             richPresence.updateMessage(
                     "Nothing is playing",
                     ""
             );
+            richPresence.setEndTimestamp(currentTime);
             waitBetweenCalls();
             return;
         };
@@ -102,10 +138,24 @@ public class MainController {
                         + userMetaDatum.getGrandparentTitle() + "\n"
         );
 
-        richPresence.updateMessage(
-                userMetaDatum.getGrandparentTitle() + " - " + userMetaDatum.getParentTitle(),
-                userMetaDatum.getTitle()
-        );
+
+
+        richPresence.setEndTimestamp(currentTime + ((Long.parseLong(userMetaDatum.getDuration()) - Long.parseLong(userMetaDatum.getViewOffset())) / 1000));
+
+        switch (userMetaDatum.getType()) {
+            case "movie":
+                richPresence.updateMessage(userMetaDatum.getTitle(), "");
+                break;
+            case "episode":
+                richPresence.updateMessage("Watching " + userMetaDatum.getGrandparentTitle(), userMetaDatum.getTitle() + " - " + userMetaDatum.getParentTitle());
+            default:
+                richPresence.updateMessage(
+                        userMetaDatum.getGrandparentTitle() + " - " + userMetaDatum.getParentTitle(),
+                        userMetaDatum.getTitle()
+                );
+                break;
+        }
+
 
         waitBetweenCalls();
 

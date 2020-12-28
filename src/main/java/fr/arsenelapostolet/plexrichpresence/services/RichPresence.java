@@ -24,9 +24,19 @@ public class RichPresence {
         lib.Discord_UpdatePresence(presence);
     }
 
-    public void updateMessage(String activity, String media){
-        presence.details = media;
-        presence.state = activity;
+    public void updateMessage(String state, String media){
+        presence.details = state;
+        presence.state = media;
+        lib.Discord_UpdatePresence(presence);
+    }
+
+    public void setEndTimestamp(long end) {
+         presence.endTimestamp = end;
+        lib.Discord_UpdatePresence(presence);
+    }
+
+    public void setStartTimestamp(long start) {
+        presence.startTimestamp = start;
         lib.Discord_UpdatePresence(presence);
     }
 

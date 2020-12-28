@@ -13,7 +13,7 @@ public class WorkerService extends Service {
                 for(int i=0; i<100; i++){
                     updateProgress(i, 100);
                     try {
-                        Thread.sleep(300);
+                        Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

@@ -22,6 +22,7 @@
                             <PasswordField fx:id="password" promptText="Password..."/>
                             <Button onAction="#login" fx:id="submitLogin" defaultButton="true" prefWidth="Infinity"
                                     text="Login"/>
+                            <CheckBox fx:id="rememberMe" selected="true" text="Remember Me/Auto login"/>
                         </VBox>
                     </VBox>
                     <TextArea GridPane.columnIndex="1" fx:id="eventLog" editable="false"/>
