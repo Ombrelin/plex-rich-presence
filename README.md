@@ -1,4 +1,4 @@
-# Plex Rich Prsence
+# Plex Rich Presence
 
 Plex Rich Presence is a multiplatform Java GUI App that allows you to display your current PLEX session in your Discord Rich presence status.
 Plex Rich Presence works with Java 8.
