@@ -24,16 +24,10 @@ public class MainController {
     private RichPresence richPresence;
     private PlexApi plexApi;
 
-    @Autowired
-    private Environment env;
-
     public MainController(RichPresence richPresence, PlexApi plexApi) {
         this.richPresence = richPresence;
         this.plexApi = plexApi;
     }
-
-    @FXML
-    private Label loginStatus;
 
     @FXML
     private Pane credentialsPrompt;
