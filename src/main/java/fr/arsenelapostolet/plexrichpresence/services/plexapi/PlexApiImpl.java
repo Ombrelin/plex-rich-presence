@@ -7,12 +7,10 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.*;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexServerAPI;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexSessionAjax;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexSessionHttpClient;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;

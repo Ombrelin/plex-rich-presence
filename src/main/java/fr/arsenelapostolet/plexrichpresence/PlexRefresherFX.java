@@ -1,7 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence;
 
 import fr.arsenelapostolet.plexrichpresence.controller.MainController;
-import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;

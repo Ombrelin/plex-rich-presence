@@ -1,7 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv;
 
 import fr.arsenelapostolet.plexrichpresence.model.MediaContainerServer;
-import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTvAPI;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import lombok.AllArgsConstructor;

@@ -1,6 +1,5 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
-import com.sun.tools.javac.comp.Check;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
 import fr.arsenelapostolet.plexrichpresence.model.User;
@@ -10,21 +9,12 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.CheckBox;
 import javafx.scene.layout.Pane;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
-
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
 
 
 @Component
