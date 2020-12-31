@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Plex Rich Presence"
-#define MyAppVersion "1.0"
+#define MyAppVersion "1.1"
 #define MyAppPublisher "Arsène Lapostolet"
 #define MyAppURL "https://github.com/Ombrelin/plex-rich-presence"
 #define MyAppExeName "Plex Rich Presence.exe"
@@ -22,12 +22,12 @@ DefaultDirName={autopf}\{#MyAppName}
 DisableProgramGroupPage=yes
 ; The [Icons] "quicklaunchicon" entry uses {userappdata} but its [Tasks] entry has a proper IsAdminInstallMode Check.
 UsedUserAreasWarning=no
-LicenseFile=C:\Users\arsen\git\plex-rich-presence\LICENSE.md
+LicenseFile=C:\Users\Arsène\git\plex-rich-presence\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
-OutputDir=C:\Users\arsen\git\plex-rich-presence\windows
+OutputDir=C:\Users\Arsène\git\plex-rich-presence\windows
 OutputBaseFilename=plex-rich-presence-setup
-SetupIconFile=C:\Users\arsen\git\plex-rich-presence\windows\icon.ico
+SetupIconFile=C:\Users\Arsène\git\plex-rich-presence\windows\icon.ico
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
@@ -40,7 +40,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "C:\Users\arsen\git\plex-rich-presence\windows\Plex Rich Presence.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\Arsène\git\plex-rich-presence\windows\Plex Rich Presence.exe"; DestDir: "{app}"; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
