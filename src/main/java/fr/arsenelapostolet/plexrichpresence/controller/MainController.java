@@ -12,15 +12,19 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.io.OutputStream;
 
 
 @Component
 @FxmlView
 public class MainController {
 
+    private Logger LOG = LoggerFactory.getLogger(MainController.class);
     private RichPresence richPresence;
     private PlexApi plexApi;
 
@@ -50,9 +54,13 @@ public class MainController {
     @FXML
     private CheckBox rememberMe;
 
+    OutputStream os;
+
     @FXML
     public void initialize(){
         this.login.applyCss();
+        os = new TextAreaOutputStream(eventLog);
+        MyStaticOutputStreamAppender.setStaticOutputStream(os);
         if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.username")) && (!StringUtils.isEmpty(ConfigManager.getConfig("plex.password")))) {
             this.login.setText(ConfigManager.getConfig("plex.username"));
             this.password.setText(ConfigManager.getConfig("plex.password"));
@@ -75,15 +83,15 @@ public class MainController {
         this.loader.setManaged(true);
 
 
-        this.eventLog.appendText("Logging in as " + this.login.getText() + "...\n");
+        LOG.info("Logging in as " + this.login.getText() + "...");
 
         plexApi.setCredentials(this.login.getText(), this.password.getText());
         plexApi.getServer(server -> {
-            this.eventLog.appendText("Logged in as " + this.login.getText() + "\n");
-            this.eventLog.appendText("Detected server : " + server.getName() + "\n");
+            LOG.info("Logged in as " + this.login.getText());
+            LOG.info("Detected server : " + server.getName());
             this.plexApi.getToken(this::fetchToken);
         }, exception -> {
-            this.eventLog.appendText("Authentication failed : " + exception.getMessage() + "\n");
+            LOG.info("Authentication failed : " + exception.getMessage());
             this.credentialsPrompt.setManaged(true);
             this.credentialsPrompt.setVisible(true);
             this.loader.setVisible(false);
@@ -94,7 +102,7 @@ public class MainController {
     }
 
     public void fetchToken(User user) {
-        this.eventLog.appendText("Successfully acquired user token for : " + user.getUsername() + "\n");
+        LOG.info("Successfully acquired user token for : " + user.getUsername());
         this.loader.setVisible(false);
         this.loader.setManaged(false);
         this.plexApi.getSessions(this::fetchSession);
@@ -105,7 +113,7 @@ public class MainController {
         long currentTime = System.currentTimeMillis() / 1000;
 
         if (userMetaDatum == null) {
-            this.eventLog.appendText("Nothing is playing.\n");
+            LOG.info("No active sessions found for current user.");
             richPresence.updateMessage(
                     "Nothing is playing",
                     ""
@@ -115,11 +123,11 @@ public class MainController {
             return;
         };
 
-        this.eventLog.appendText(
+        LOG.info(
                 "Found session for current user : "
                         + userMetaDatum.getTitle()
                         + "(" + userMetaDatum.getParentTitle() + ") from "
-                        + userMetaDatum.getGrandparentTitle() + "\n"
+                        + userMetaDatum.getGrandparentTitle() 
         );
 
 
@@ -155,4 +163,19 @@ public class MainController {
         });
         workerService.start();
     }
+
+    private static class TextAreaOutputStream extends OutputStream {
+        private TextArea textArea;
+
+        public TextAreaOutputStream(TextArea textArea) {
+            this.textArea = textArea;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            textArea.appendText(String.valueOf((char) b));
+        }
+    }
 }
+
+
