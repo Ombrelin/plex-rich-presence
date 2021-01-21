@@ -3,6 +3,9 @@ package fr.arsenelapostolet.plexrichpresence.model;
 import lombok.Data;
 import org.simpleframework.xml.Attribute;
 
+import java.net.InetSocketAddress;
+import java.net.Socket;
+
 @Data
 public class Server {
 
@@ -22,4 +25,5 @@ public class Server {
     @Attribute(required = false) private String accessToken;
     @Attribute(required = false) private String ownerId;
     @Attribute(required = false) private String home;
+    private String finalAddress;
 }
