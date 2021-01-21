@@ -2,7 +2,8 @@ package fr.arsenelapostolet.plexrichpresence.controller;
 
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
-import fr.arsenelapostolet.plexrichpresence.model.User;
+import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
+import fr.arsenelapostolet.plexrichpresence.model.Server;
 import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApi;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
@@ -18,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -56,8 +59,11 @@ public class MainController {
 
     OutputStream os;
 
+    private List<Server> servers;
+    private String loggedUsername;
+
     @FXML
-    public void initialize(){
+    public void initialize() {
         this.login.applyCss();
         os = new TextAreaOutputStream(eventLog);
         MyStaticOutputStreamAppender.setStaticOutputStream(os);
@@ -85,34 +91,61 @@ public class MainController {
 
         LOG.info("Logging in as " + this.login.getText() + "...");
 
-        plexApi.setCredentials(this.login.getText(), this.password.getText());
-        plexApi.getServer(server -> {
-            LOG.info("Logged in as " + this.login.getText());
-            LOG.info("Detected server : " + server.getName());
-            this.plexApi.getToken(this::fetchToken);
-        }, exception -> {
-            LOG.info("Authentication failed : " + exception.getMessage());
-            this.credentialsPrompt.setManaged(true);
-            this.credentialsPrompt.setVisible(true);
-            this.loader.setVisible(false);
-            this.loader.setManaged(false);
-            this.login.clear();
-            this.password.clear();
-        });
+        List<Server> servers = plexApi
+                .getServers(this.login.getText(), this.password.getText())
+                .doOnError(throwable -> {
+                    handleError("Fetch Servers", throwable.getMessage());
+                }).toBlocking()
+                .first()
+                .stream()
+                .filter(server -> server.getOwned().equals("1"))
+                .collect(Collectors.toList());
+
+        for (Server s : servers) {
+            LOG.info("Fetched Server : " + s.getName());
+        }
+
+        PlexLogin user = plexApi
+                .getToken(this.login.getText(), this.password.getText())
+                .doOnError(throwable -> {
+                    handleError("Get Token", throwable.getMessage());
+                }).toBlocking().first();
+        LOG.info("Successfully logged as : " + user.getUser().getUsername());
+
+        for (Server s : servers) {
+            s.setAccessToken(user.getUser().getAuthToken());
+        }
+        this.servers = servers;
+        this.loggedUsername = user.getUser().getUsername();
+        this.fetchSession();
     }
 
-    public void fetchToken(User user) {
-        LOG.info("Successfully acquired user token for : " + user.getUsername());
+    private void fetchSession() {
+        List<Metadatum> metadata = plexApi.getSessions(servers, this.loggedUsername)
+                .doOnError(throwable -> {
+                    handleError("Get session", throwable.getMessage());
+                })
+                .toBlocking()
+                .first();
+        this.processSessions(metadata);
+    }
+
+    private void handleError(String name, String message) {
+        LOG.info(name + "failed : " + message);
+        this.credentialsPrompt.setManaged(true);
+        this.credentialsPrompt.setVisible(true);
         this.loader.setVisible(false);
         this.loader.setManaged(false);
-        this.plexApi.getSessions(this::fetchSession);
+        this.login.clear();
+        this.password.clear();
     }
 
-    public void fetchSession(Metadatum userMetaDatum) {
+
+    public void processSessions(List<Metadatum> userMetaDatum) {
 
         long currentTime = System.currentTimeMillis() / 1000;
 
-        if (userMetaDatum == null) {
+        if (userMetaDatum.size() == 0) {
             LOG.info("No active sessions found for current user.");
             richPresence.updateMessage(
                     "Nothing is playing",
@@ -121,29 +154,30 @@ public class MainController {
             richPresence.setEndTimestamp(currentTime);
             waitBetweenCalls();
             return;
-        };
+        }
+
+        Metadatum session = userMetaDatum.get(0);
 
         LOG.info(
                 "Found session for current user : "
-                        + userMetaDatum.getTitle()
-                        + "(" + userMetaDatum.getParentTitle() + ") from "
-                        + userMetaDatum.getGrandparentTitle() 
+                        + session.getTitle()
+                        + "(" + session.getParentTitle() + ") from "
+                        + session.getGrandparentTitle()
         );
 
 
+        richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
 
-        richPresence.setEndTimestamp(currentTime + ((Long.parseLong(userMetaDatum.getDuration()) - Long.parseLong(userMetaDatum.getViewOffset())) / 1000));
-
-        switch (userMetaDatum.getType()) {
+        switch (session.getType()) {
             case "movie":
-                richPresence.updateMessage(userMetaDatum.getTitle(), "");
+                richPresence.updateMessage(session.getTitle(), "");
                 break;
             case "episode":
-                richPresence.updateMessage("Watching " + userMetaDatum.getGrandparentTitle(), userMetaDatum.getTitle() + " - " + userMetaDatum.getParentTitle());
+                richPresence.updateMessage("Watching " + session.getGrandparentTitle(), session.getTitle() + " - " + session.getParentTitle());
             default:
                 richPresence.updateMessage(
-                        userMetaDatum.getGrandparentTitle() + " - " + userMetaDatum.getParentTitle(),
-                        userMetaDatum.getTitle()
+                        session.getGrandparentTitle() + " - " + session.getParentTitle(),
+                        session.getTitle()
                 );
                 break;
         }
@@ -159,10 +193,11 @@ public class MainController {
         this.loader.setVisible(true);
         this.loader.progressProperty().bind(workerService.progressProperty());
         workerService.setOnSucceeded(state -> {
-            this.plexApi.getSessions(this::fetchSession);
+            this.fetchSession();
         });
         workerService.start();
     }
+
 
     private static class TextAreaOutputStream extends OutputStream {
         private TextArea textArea;
@@ -176,6 +211,7 @@ public class MainController {
             textArea.appendText(String.valueOf((char) b));
         }
     }
+
 }
 
 
