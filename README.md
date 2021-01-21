@@ -27,6 +27,7 @@ java -jar ./target/plex-rich-presence-1.2.jar
 ## Libraries used
 
 - JavaFX
+- [RxJava](https://github.com/ReactiveX/RxJava)  
 - [Spring Boot](https://github.com/spring-projects/spring-boot)
 - [FxWeaver](https://github.com/rgielen/javafx-weaver)
 - [JMetro](https://github.com/JFXtras/jfxtras-styles)
