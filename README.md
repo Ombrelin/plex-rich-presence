@@ -21,7 +21,7 @@ mvn clean package
 Once build, you can run the app by running :
 
 ```
-java -jar ./target/plex-rich-presence-1.1.jar
+java -jar ./target/plex-rich-presence-1.2.jar
 ```
 
 ## Libraries used
