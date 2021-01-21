@@ -11,13 +11,13 @@ public class PlexApiHttpClient extends PlexTvHttpClient{
 
     private final OkHttpClient.Builder httpClientFactory;
 
-    public PlexApiHttpClient(String login, String password) {
+    public PlexApiHttpClient() {
         this.httpClientFactory = new OkHttpClient.Builder();
 
 
-        BasicAuthInterceptor interceptor =
-                new BasicAuthInterceptor(login, password);
-        httpClientFactory.addInterceptor(interceptor);
+        //BasicAuthInterceptor interceptor =
+        //        new BasicAuthInterceptor(login, password);
+        //httpClientFactory.addInterceptor(interceptor);
 
         this.setHttp(new Retrofit.Builder()
                 .client(this.httpClientFactory.build())

@@ -1,9 +1,7 @@
 package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
-import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
-import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
-import fr.arsenelapostolet.plexrichpresence.model.Server;
+import fr.arsenelapostolet.plexrichpresence.model.*;
 import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApi;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
@@ -54,8 +52,33 @@ public class MainViewModel {
 
         LOG.info("Logging in as " + this.login.get() + "...");
 
+        PlexAuth authPinResponse = plexApi.getPlexAuthPin(true, "plex_rich_presese", "9v7kmozk6a")
+                .doOnError(throwable -> {
+                    handleError("Get auth pin", throwable.getMessage());
+                }).toBlocking().first();
+
+        String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
+                "9v7kmozk6a",
+                authPinResponse.code,
+                "plex_rich_presese");
+
+        LOG.info(String.valueOf(authPinResponse.code));
+        LOG.info(String.valueOf(authPinResponse.id));
+        LOG.info(authURL);
+
+        PlexAuth authToken = plexApi.validatePlexAuthPin(authPinResponse.id,authPinResponse.code, "9v7kmozk6a")
+                .doOnError(throwable -> {
+                    handleError("failed to get plex token", throwable.getMessage());
+                }).toBlocking().first();
+
+
+
+
+
+
+
         List<Server> servers = plexApi
-                .getServers(this.login.get(), this.password.get())
+                .getServers(authToken.authToken)
                 .doOnError(throwable -> {
                     handleError("Fetch Servers", throwable.getMessage());
                 }).toBlocking()
@@ -68,18 +91,18 @@ public class MainViewModel {
             LOG.info("Fetched Server : " + s.getName());
         }
 
-        PlexLogin user = plexApi
-                .getToken(this.login.get(), this.password.get())
+        User user = plexApi
+                .getUser(authToken.authToken)
                 .doOnError(throwable -> {
                     handleError("Get Token", throwable.getMessage());
                 }).toBlocking().first();
-        LOG.info("Successfully logged as : " + user.getUser().getUsername());
+        LOG.info("Successfully logged as : " + user.getUsername());
 
         for (Server s : servers) {
-            s.setAccessToken(user.getUser().getAuthToken());
+            s.setAccessToken(authToken.authToken);
         }
         this.servers = servers;
-        this.loggedUsername = user.getUser().getUsername();
+        this.loggedUsername = user.getUsername();
         this.fetchSession();
     }
 

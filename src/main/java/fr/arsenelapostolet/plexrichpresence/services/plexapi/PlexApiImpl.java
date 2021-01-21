@@ -7,15 +7,20 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTvAPI;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexSessionHttpClient;
 import org.springframework.stereotype.Service;
 import rx.Observable;
+import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.sql.Time;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class PlexApiImpl implements PlexApi {
+
+    PlexTvAPI api;
 
     public PlexApiImpl() {
     }
@@ -23,12 +28,12 @@ public class PlexApiImpl implements PlexApi {
 
 
     @Override
-    public Observable<List<Server>> getServers(String username, String password) {
+    public Observable<List<Server>> getServers(String authToken) {
 
 
-        return new PlexApiHttpClient(username, password)
+        return new PlexApiHttpClient()
                 .getAPI()
-                .getServers()
+                .getServers(authToken)
                 .map(MediaContainerServer::getServer)
                 .map(servers -> servers.stream().filter(server -> {
                     String[] result = checkServer(server);
@@ -43,14 +48,11 @@ public class PlexApiImpl implements PlexApi {
     }
 
     @Override
-    public Observable<PlexLogin> getToken(String username, String password) {
-        PlexTvAPI api = new PlexTokenHttpClient(username, password).getAPI();
-        return api.login(username,password,
-                        "Windows",
-                        "10.0",
-                        "Plex Rich Presence"
-                );
+    public Observable<User> getUser(String authToken) {
+        return api.getUser(authToken, "9v7kmozk6a", "plex_rich_presese");
     }
+
+
 
     @Override
     public Observable<List<Metadatum>> getSessions(List<Server> servers, String username) {
@@ -70,6 +72,28 @@ public class PlexApiImpl implements PlexApi {
                 .flatMap(session -> session.getMediaContainer().getMetadata().stream())
                 .filter(session -> session.getUser().getTitle().equals(username))
                 .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Observable<PlexAuth> getPlexAuthPin(boolean strong, String plexProduct, String plexClientId) {
+        api = new PlexTokenHttpClient().getAPI();
+        return api.generatePlexAuthPin(true, plexProduct, plexClientId);
+    }
+
+    @Override
+    public Observable<PlexAuth> validatePlexAuthPin(int id, String code, String plexProduct) {
+        Observable<PlexAuth> response;
+        while (true) {
+            response = api.validatePlexAuthPin(id, plexProduct, code);
+            if (response.toBlocking().first().authToken != null) {
+                return response;
+            }
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ignored){
+            }
+
+        }
     }
 
     private String[] checkServer(Server server) {
