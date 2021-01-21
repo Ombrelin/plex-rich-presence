@@ -40,13 +40,13 @@ public class PlexApiImpl implements PlexApi {
         PlexTvAPI api = client.getAPI();
         PlexServerAjax ajax = new PlexServerAjax(api);
         ajax.setOnSucceeded(state -> {
-            this.server = ajax.getValue().getServer();
+            this.server = ajax.getValue().getServer().get(0);
             Task<String[]> task = new checkServers(this.server);
             task.setOnSucceeded(e -> {
                 String[] result = task.getValue();
                 if (result[0].equals("success")) {
                     this.finalAddress = result[1];
-                    callback.accept(ajax.getValue().getServer());
+                    callback.accept(ajax.getValue().getServer().get(0));
                 } else {
                     failCallback.accept(new Exception("Unable to connect to plex server."));
                 }
