@@ -28,12 +28,6 @@ public class MainController {
     private Pane credentialsPrompt;
 
     @FXML
-    private TextField login;
-
-    @FXML
-    private PasswordField password;
-
-    @FXML
     private Button submitLogin;
 
     @FXML
@@ -45,32 +39,32 @@ public class MainController {
     @FXML
     private CheckBox rememberMe;
 
+    @FXML
+    private Button logoutBtn;
+
     private OutputStream os;
 
 
     @FXML
     public void initialize() {
-        this.login.applyCss();
         os = new TextAreaOutputStream(eventLog);
         MyStaticOutputStreamAppender.setStaticOutputStream(os);
-        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.username")) && (!StringUtils.isEmpty(ConfigManager.getConfig("plex.password")))) {
-            this.login.setText(ConfigManager.getConfig("plex.username"));
-            this.password.setText(ConfigManager.getConfig("plex.password"));
-            submitLogin.fire();
-        }
-
-
         // Databinding
-        this.login.textProperty().bindBidirectional(this.viewModel.loginProperty());
-        this.password.textProperty().bindBidirectional(this.viewModel.passwordProperty());
         this.rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
         this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
             this.credentialsPrompt.setManaged(!newValue);
             this.credentialsPrompt.setVisible(!newValue);
+            this.logoutBtn.setManaged(newValue);
+            this.logoutBtn.setVisible(newValue);
             this.loader.setVisible(newValue);
             this.loader.setManaged(newValue);
         });
         this.loader.progressProperty().bind(this.viewModel.progressProperty());
+
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
+            viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
+            submitLogin.fire();
+        }
 
 
     }
@@ -79,6 +73,11 @@ public class MainController {
     @FXML
     public void login(ActionEvent event) {
          this.viewModel.login();
+    }
+
+    @FXML
+    public void logout(ActionEvent event) {
+        this.viewModel.logout();
     }
 
 

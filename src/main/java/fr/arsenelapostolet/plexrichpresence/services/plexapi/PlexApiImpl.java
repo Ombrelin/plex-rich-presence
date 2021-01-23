@@ -1,5 +1,7 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
+import com.sun.org.apache.bcel.internal.Const;
+import fr.arsenelapostolet.plexrichpresence.Constants;
 import fr.arsenelapostolet.plexrichpresence.model.*;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexApiHttpClient;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTokenHttpClient;
@@ -14,13 +16,14 @@ import java.net.Socket;
 import java.sql.Time;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class PlexApiImpl implements PlexApi {
 
-    PlexTvAPI api;
+    PlexTvAPI api = new PlexTokenHttpClient().getAPI();
 
     public PlexApiImpl() {
     }
@@ -49,7 +52,7 @@ public class PlexApiImpl implements PlexApi {
 
     @Override
     public Observable<User> getUser(String authToken) {
-        return api.getUser(authToken, "9v7kmozk6a", "plex_rich_presese");
+        return api.getUser(authToken, Constants.plexClientIdentifer, Constants.plexProduct);
     }
 
 
@@ -76,7 +79,6 @@ public class PlexApiImpl implements PlexApi {
 
     @Override
     public Observable<PlexAuth> getPlexAuthPin(boolean strong, String plexProduct, String plexClientId) {
-        api = new PlexTokenHttpClient().getAPI();
         return api.generatePlexAuthPin(true, plexProduct, plexClientId);
     }
 

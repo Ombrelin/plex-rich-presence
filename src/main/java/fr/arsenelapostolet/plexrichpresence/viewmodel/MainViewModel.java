@@ -1,5 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.Constants;
 import fr.arsenelapostolet.plexrichpresence.model.*;
@@ -44,74 +45,68 @@ public class MainViewModel {
         this.plexApi = plexApi;
     }
 
-    private int plexAuthId;
-    private String plexResponseCode;
-    private String plexToken;
     public void login() {
+        this.loading.set(true);
+        LOG.info("Logging in");
 
-        if (this.rememberMe.get()) {
-            ConfigManager.setConfig("plex.username", this.login.get());
-            ConfigManager.setConfig("plex.password", this.password.get());
+        if (authToken == null) {
+            plexApi.getPlexAuthPin(true, Constants.plexProduct, Constants.plexClientIdentifer)
+                    .subscribeOn(Schedulers.io())
+                    .flatMap(response -> {
+                        String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
+                                Constants.plexClientIdentifer,
+                                response.code,
+                                Constants.plexProduct);
+                        LOG.info("Please sign in using this url: " + authURL);
+                        return plexApi.validatePlexAuthPin(response.id, response.code, Constants.plexClientIdentifer)
+                                .doOnError(throwable -> {
+                                    handleError("Failed to login to plex ", throwable.getMessage());
+                                });
+                    })
+                    .flatMap(response -> {
+                        this.authToken = response.authToken;
+                        return plexApi.getServers(response.authToken).doOnError(throwable -> {
+                            handleError("Failed to obtain plex servers ", throwable.getMessage());
+                        });
+                    })
+                    .flatMap(response -> {
+                        this.servers = response;
+                        return plexApi.getUser(authToken).doOnError(throwable -> {
+                            handleError("Failed to obtain user info ", throwable.getMessage());
+                        });
+                    })
+                    .subscribe(this::postLogin, throwable -> {
+                        handleError("error", throwable.getMessage());
+                    });
+        } else {
+            plexApi.getServers(authToken)
+                    .flatMap(response -> {
+                        this.servers = response;
+                        return plexApi.getUser(authToken).doOnError(throwable -> {
+                            handleError("Failed to obtain user info ", throwable.getMessage());
+                        });
+                    })
+                    .subscribe(this::postLogin, throwable -> {
+                        handleError("error", throwable.getMessage());
+                    });
         }
 
-        this.loading.set(true);
+    }
 
-        LOG.info("Logging in as " + this.login.get() + "...");
+    private void postLogin(User response) {
+        LOG.info("Successfully logged as : " + response.getUsername());
+        if (this.rememberMe.get()){
+            ConfigManager.setConfig("plex.token", authToken);
+        }
+        this.loggedUsername = response.getUsername();
+        this.fetchSession();
+    }
 
-
-        plexApi.getPlexAuthPin(true, Constants.plexProduct, Constants.plexClientIdentifer)
-                .subscribeOn(Schedulers.io())
-                .flatMap(response -> {
-                    String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
-                            Constants.plexClientIdentifer,
-                            response.code,
-                            Constants.plexProduct);
-                    LOG.info("Please sign in using this url: " + authURL);
-                    plexAuthId = response.id;
-                    plexResponseCode = response.code;
-                    return plexApi.validatePlexAuthPin(plexAuthId, plexResponseCode, Constants.plexClientIdentifer)
-                            .doOnError(throwable -> {
-                                handleError("Failed to login to plex ", throwable.getMessage());
-                            });
-                })
-                .flatMap(response -> {
-                    this.authToken = response.authToken;
-                    return plexApi.getServers(response.authToken).doOnError(throwable -> {
-                        handleError("Failed to obtain plex servers ", throwable.getMessage());
-                    });
-                })
-                .flatMap(response -> {
-                    this.servers = response;
-                    return plexApi.getUser(authToken).doOnError(throwable -> {
-                        handleError("Failed to obtain user info ", throwable.getMessage());
-                    });
-                })
-                .subscribe(response -> {
-                    LOG.info("Successfully logged as : " + response.getUsername());
-                    this.loggedUsername = response.getUsername();
-                    this.fetchSession();
-                }, throwable -> {
-                    handleError("error", throwable.getMessage());
-                });
-/***
-        List<Server> servers = plexApi
-                .getServers(plexToken)
-                .doOnError(throwable -> {
-                    handleError("Fetch Servers", throwable.getMessage());
-                }).toBlocking()
-                .first()
-                .stream()
-                .filter(server -> server.getOwned().equals("1"))
-                .collect(Collectors.toList());
- User user = plexApi
- .getUser(plexToken)
- .doOnError(throwable -> {
- handleError("Get Token", throwable.getMessage());
- }).toBlocking().first();
- ***/
-
-
-
+    public void logout(){
+        this.loading.set(false);
+        workerService.cancel();
+        authToken = null;
+        LOG.info("Logged out");
     }
 
     private void handleError(String name, String message) {
@@ -122,13 +117,15 @@ public class MainViewModel {
     }
 
     private void fetchSession() {
-        List<Metadatum> metadata = plexApi.getSessions(servers, this.loggedUsername)
+        plexApi.getSessions(servers, this.loggedUsername)
                 .doOnError(throwable -> {
-                    handleError("Get session", throwable.getMessage());
+                    if (throwable instanceof NullPointerException) {
+                        processSessions(null);
+                    } else {
+                        handleError("Error getting sessions ", throwable.getMessage());
+                    }
                 })
-                .toBlocking()
-                .first();
-        this.processSessions(metadata);
+                .subscribe(this::processSessions);
     }
 
 
@@ -137,7 +134,7 @@ public class MainViewModel {
 
         long currentTime = System.currentTimeMillis() / 1000;
 
-        if (userMetaDatum.size() == 0) {
+        if (userMetaDatum == null) {
             LOG.info("No active sessions found for current user.");
             richPresence.updateMessage(
                     "Nothing is playing",
@@ -166,6 +163,7 @@ public class MainViewModel {
                 break;
             case "episode":
                 richPresence.updateMessage("Watching " + session.getGrandparentTitle(), session.getTitle() + " - " + session.getParentTitle());
+                break;
             default:
                 richPresence.updateMessage(
                         session.getGrandparentTitle() + " - " + session.getParentTitle(),
@@ -196,6 +194,10 @@ public class MainViewModel {
         return progress.get();
     }
 
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
+    }
+
     public DoubleProperty progressProperty() {
         return progress;
     }
@@ -219,6 +221,7 @@ public class MainViewModel {
     public String getPassword() {
         return password.get();
     }
+
 
     public StringProperty passwordProperty() {
         return password;
