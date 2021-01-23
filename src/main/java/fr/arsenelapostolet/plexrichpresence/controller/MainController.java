@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Objects;
 
 
 @Component
@@ -53,11 +54,14 @@ public class MainController {
 
     private TextArea eventLog;
 
+    Stage logWindow;
+
     OutputStream os;
 
     @FXML
     public void initialize() {
         eventLog = new TextArea();
+        eventLog.setEditable(false);
         os = new TextAreaOutputStream(eventLog);
         MyStaticOutputStreamAppender.setStaticOutputStream(os);
         // Databinding
@@ -92,13 +96,17 @@ public class MainController {
 
     @FXML
     public void openLog(ActionEvent event) {
+        if (!Objects.isNull(logWindow)) {
+            logWindow.show();
+            logWindow.toFront();
+            return;
+        }
         StackPane layout = new StackPane();
         layout.getChildren().add(eventLog);
-        Scene logScene = new Scene(layout, 200,200);
-        Stage logWindow = new Stage();
+        Scene logScene = new Scene(layout, 400,200);
+        logWindow = new Stage();
         logWindow.setTitle("Log");
         logWindow.setScene(logScene);
-
         logWindow.show();
     }
 
