@@ -1,6 +1,5 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
-import com.sun.org.apache.bcel.internal.Const;
 import fr.arsenelapostolet.plexrichpresence.Constants;
 import fr.arsenelapostolet.plexrichpresence.model.*;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexApiHttpClient;
@@ -9,14 +8,11 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTvAPI;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexSessionHttpClient;
 import org.springframework.stereotype.Service;
 import rx.Observable;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.sql.Time;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
