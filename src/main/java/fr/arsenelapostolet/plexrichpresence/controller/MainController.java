@@ -5,7 +5,7 @@ import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -18,52 +18,54 @@ import java.io.OutputStream;
 @FxmlView
 public class MainController {
 
-    private MainViewModel viewModel;
+    public MainViewModel viewModel;
 
     public MainController(MainViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
     @FXML
-    private Pane credentialsPrompt;
+    private VBox vbox_login;
 
     @FXML
-    private Button submitLogin;
+    private VBox vbox_status;
 
     @FXML
-    private ProgressIndicator loader;
+    private Button btn_login;
 
     @FXML
-    private TextArea eventLog;
+    private Button btn_logout;
 
     @FXML
-    private CheckBox rememberMe;
+    private Button btn_showLog;
 
     @FXML
-    private Button logoutBtn;
+    private Label lbl_plexStatus;
 
-    private OutputStream os;
+    @FXML
+    private Label lbl_discordStatus;
 
+    @FXML
+    private CheckBox chk_rememberMe;
 
     @FXML
     public void initialize() {
-        os = new TextAreaOutputStream(eventLog);
-        MyStaticOutputStreamAppender.setStaticOutputStream(os);
+        //os = new TextAreaOutputStream(eventLog);
+        //MyStaticOutputStreamAppender.setStaticOutputStream(os);
         // Databinding
-        this.rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
+        this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
+        this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
+        this.lbl_discordStatus.textProperty().bindBidirectional(this.viewModel.discordStatusLabel());
         this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
-            this.credentialsPrompt.setManaged(!newValue);
-            this.credentialsPrompt.setVisible(!newValue);
-            this.logoutBtn.setManaged(newValue);
-            this.logoutBtn.setVisible(newValue);
-            this.loader.setVisible(newValue);
-            this.loader.setManaged(newValue);
+            this.vbox_login.setManaged(!newValue);
+            this.vbox_login.setVisible(!newValue);
+            this.vbox_status.setManaged(newValue);
+            this.vbox_status.setVisible(newValue);
         });
-        this.loader.progressProperty().bind(this.viewModel.progressProperty());
 
         if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
             viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
-            submitLogin.fire();
+            this.viewModel.login();
         }
 
 

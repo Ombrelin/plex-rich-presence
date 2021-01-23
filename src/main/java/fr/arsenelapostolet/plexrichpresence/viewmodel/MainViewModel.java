@@ -1,23 +1,23 @@
 package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.Constants;
-import fr.arsenelapostolet.plexrichpresence.model.*;
+import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
+import fr.arsenelapostolet.plexrichpresence.model.Server;
+import fr.arsenelapostolet.plexrichpresence.model.User;
 import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApi;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
+import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.event.ActionEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-import rx.Observable;
 import rx.schedulers.Schedulers;
-import sun.java2d.pipe.SpanShapeRenderer;
 
+import java.awt.*;
+import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class MainViewModel {
@@ -30,11 +30,12 @@ public class MainViewModel {
     private WorkerService workerService;
 
     // Properties
-    private final StringProperty login = new SimpleStringProperty("");
-    private final StringProperty password= new SimpleStringProperty("");
     private final BooleanProperty rememberMe = new SimpleBooleanProperty(true);
     private final BooleanProperty loading = new SimpleBooleanProperty(false);
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
+
+    private final StringProperty plexStatusLabel = new SimpleStringProperty("...");
+    private final StringProperty discordStatusLabel = new SimpleStringProperty("...");
 
     private List<Server> servers;
     private String loggedUsername;
@@ -47,10 +48,12 @@ public class MainViewModel {
 
     public void login() {
         this.loading.set(true);
+        this.plexStatusLabel.set("Logging in...");
         LOG.info("Logging in");
 
         if (authToken == null) {
             plexApi.getPlexAuthPin(true, Constants.plexProduct, Constants.plexClientIdentifer)
+                    .doOnError(throwable -> handleError("Get plex auth pin ", throwable.getMessage()))
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
                         String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
@@ -58,43 +61,43 @@ public class MainViewModel {
                                 response.code,
                                 Constants.plexProduct);
                         LOG.info("Please sign in using this url: " + authURL);
+                        Desktop desktop = java.awt.Desktop.getDesktop();
+                        try {
+                            desktop.browse(new URI(authURL));
+                        } catch (Exception e) {
+                            handleError("Open login page ", e.getMessage());
+                        }
+                        Platform.runLater(() -> plexStatusLabel.set("Waiting for user to login..."));
                         return plexApi.validatePlexAuthPin(response.id, response.code, Constants.plexClientIdentifer)
-                                .doOnError(throwable -> {
-                                    handleError("Failed to login to plex ", throwable.getMessage());
-                                });
+                                .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
+                        Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
-                        return plexApi.getServers(response.authToken).doOnError(throwable -> {
-                            handleError("Failed to obtain plex servers ", throwable.getMessage());
-                        });
+                        return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
+                        Platform.runLater(() -> plexStatusLabel.set("Obtaining user info..."));
                         this.servers = response;
-                        return plexApi.getUser(authToken).doOnError(throwable -> {
-                            handleError("Failed to obtain user info ", throwable.getMessage());
-                        });
+                        return plexApi.getUser(authToken).doOnError(throwable -> handleError("Obtain user info ", throwable.getMessage()));
                     })
-                    .subscribe(this::postLogin, throwable -> {
-                        handleError("error", throwable.getMessage());
-                    });
+                    .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         } else {
             plexApi.getServers(authToken)
+                    .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
+                        Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.servers = response;
-                        return plexApi.getUser(authToken).doOnError(throwable -> {
-                            handleError("Failed to obtain user info ", throwable.getMessage());
-                        });
+                        return plexApi.getUser(authToken).doOnError(throwable -> handleError("Obtain user info ", throwable.getMessage()));
                     })
-                    .subscribe(this::postLogin, throwable -> {
-                        handleError("error", throwable.getMessage());
-                    });
+                    .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         }
 
     }
 
     private void postLogin(User response) {
-        LOG.info("Successfully logged as : " + response.getUsername());
+        LOG.info("Successfully logged in as: " + response.getUsername());
+        Platform.runLater(() -> plexStatusLabel.set("Logged in"));
         if (this.rememberMe.get()){
             ConfigManager.setConfig("plex.token", authToken);
         }
@@ -112,8 +115,6 @@ public class MainViewModel {
     private void handleError(String name, String message) {
         LOG.info(name + "failed : " + message);
         this.loading.set(false);
-        this.login.set("");
-        this.password.set("");
     }
 
     private void fetchSession() {
@@ -131,13 +132,14 @@ public class MainViewModel {
 
 
     public void processSessions(List<Metadatum> userMetaDatum) {
-
         long currentTime = System.currentTimeMillis() / 1000;
+
 
         if (userMetaDatum == null) {
             LOG.info("No active sessions found for current user.");
+            Platform.runLater(() -> plexStatusLabel.set("Idling/No Streams"));
             richPresence.updateMessage(
-                    "Nothing is playing",
+                    "Idling",
                     ""
             );
             richPresence.setEndTimestamp(currentTime);
@@ -148,21 +150,36 @@ public class MainViewModel {
         Metadatum session = userMetaDatum.get(0);
 
         LOG.info(
-                "Found session for current user : "
+                "Session acquired for user : "
                         + session.getTitle()
                         + "(" + session.getParentTitle() + ") from "
                         + session.getGrandparentTitle()
         );
+        Platform.runLater(() -> plexStatusLabel.set("Stream detected!"));
 
 
-        richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
+        String currentPlayerState;
+        switch (session.getPlayer().getState()) {
+            case "buffering":
+                currentPlayerState = "Buffering";
+                richPresence.setEndTimestamp(currentTime);
+                break;
+            case "paused":
+                currentPlayerState = "Paused";
+                richPresence.setEndTimestamp(currentTime);
+                break;
+            default:
+                currentPlayerState = "Playing";
+                richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
+                break;
+        }
 
         switch (session.getType()) {
             case "movie":
-                richPresence.updateMessage(session.getTitle(), "");
+                richPresence.updateMessage(currentPlayerState, session.getTitle());
                 break;
             case "episode":
-                richPresence.updateMessage("Watching " + session.getGrandparentTitle(), session.getTitle() + " - " + session.getParentTitle());
+                richPresence.updateMessage(String.format("(%s) %s", currentPlayerState, session.getGrandparentTitle()), String.format("S%02dE%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
                 break;
             default:
                 richPresence.updateMessage(
@@ -175,6 +192,15 @@ public class MainViewModel {
 
         waitBetweenCalls();
 
+
+    }
+
+    public StringProperty plexStatusLabel() {
+        return plexStatusLabel;
+    }
+
+    public StringProperty discordStatusLabel() {
+        return discordStatusLabel;
     }
 
     public WorkerService getWorkerService() {
@@ -184,9 +210,7 @@ public class MainViewModel {
     void waitBetweenCalls() {
         workerService = new WorkerService();
         this.progress.bind(this.workerService.progressProperty());
-        workerService.setOnSucceeded(state -> {
-            this.fetchSession();
-        });
+        workerService.setOnSucceeded(state -> this.fetchSession());
         workerService.start();
     }
 
@@ -204,31 +228,6 @@ public class MainViewModel {
 
     public void setProgress(double progress) {
         this.progress.set(progress);
-    }
-
-    public String getLogin() {
-        return login.get();
-    }
-
-    public StringProperty loginProperty() {
-        return login;
-    }
-
-    public void setLogin(String login) {
-        this.login.set(login);
-    }
-
-    public String getPassword() {
-        return password.get();
-    }
-
-
-    public StringProperty passwordProperty() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password.set(password);
     }
 
     public boolean isRememberMe() {

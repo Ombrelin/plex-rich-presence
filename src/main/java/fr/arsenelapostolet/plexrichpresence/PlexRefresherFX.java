@@ -3,10 +3,12 @@ package fr.arsenelapostolet.plexrichpresence;
 import fr.arsenelapostolet.plexrichpresence.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxWeaver;
@@ -23,6 +25,7 @@ public class PlexRefresherFX extends Application {
 
         this.applicationContext = new SpringApplicationBuilder()
                 .sources(PlexRichPresenceApplication.class)
+                .headless(false)
                 .run(args);
     }
 
@@ -36,12 +39,13 @@ public class PlexRefresherFX extends Application {
         jMetro.setScene(scene);
         scene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
         scene.getStylesheets().add(getClass().getClassLoader().getResource("theme.css").toExternalForm());
-        stage.setMinWidth(720);
-        stage.setMinHeight(300);
+        stage.setMinWidth(300);
+        stage.setMinHeight(200);
         stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
         stage.setTitle("Plex Rich Presence");
         stage.setScene(scene);
         stage.show();
+
     }
 
     @Override
