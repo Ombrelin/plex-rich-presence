@@ -53,6 +53,7 @@ public class PlexRefresherFX extends Application {
         ConfigManager.saveConfig();
         this.applicationContext.close();
         Platform.exit();
+        System.exit(0);
     }
 
 }

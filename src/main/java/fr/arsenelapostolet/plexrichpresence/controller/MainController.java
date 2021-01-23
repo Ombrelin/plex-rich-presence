@@ -4,8 +4,11 @@ import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -48,10 +51,15 @@ public class MainController {
     @FXML
     private CheckBox chk_rememberMe;
 
+    private TextArea eventLog;
+
+    OutputStream os;
+
     @FXML
     public void initialize() {
-        //os = new TextAreaOutputStream(eventLog);
-        //MyStaticOutputStreamAppender.setStaticOutputStream(os);
+        eventLog = new TextArea();
+        os = new TextAreaOutputStream(eventLog);
+        MyStaticOutputStreamAppender.setStaticOutputStream(os);
         // Databinding
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
         this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
@@ -82,6 +90,17 @@ public class MainController {
         this.viewModel.logout();
     }
 
+    @FXML
+    public void openLog(ActionEvent event) {
+        StackPane layout = new StackPane();
+        layout.getChildren().add(eventLog);
+        Scene logScene = new Scene(layout, 200,200);
+        Stage logWindow = new Stage();
+        logWindow.setTitle("Log");
+        logWindow.setScene(logScene);
+
+        logWindow.show();
+    }
 
     private static class TextAreaOutputStream extends OutputStream {
         private TextArea textArea;

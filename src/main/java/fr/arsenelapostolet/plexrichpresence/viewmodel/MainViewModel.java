@@ -43,10 +43,14 @@ public class MainViewModel {
 
     public MainViewModel(RichPresence richPresence, PlexApi plexApi) {
         this.richPresence = richPresence;
+        richPresence.viewModel = this;
         this.plexApi = plexApi;
     }
 
     public void login() {
+        if (!rememberMe.get()) {
+            ConfigManager.setConfig("plex.token", "");
+        }
         this.loading.set(true);
         this.plexStatusLabel.set("Logging in...");
         LOG.info("Logging in");
@@ -72,11 +76,13 @@ public class MainViewModel {
                                 .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
+                        LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
                         return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
+                        LOG.info("Obtaining user info...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining user info..."));
                         this.servers = response;
                         return plexApi.getUser(authToken).doOnError(throwable -> handleError("Obtain user info ", throwable.getMessage()));
@@ -86,6 +92,7 @@ public class MainViewModel {
             plexApi.getServers(authToken)
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
+                        LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.servers = response;
                         return plexApi.getUser(authToken).doOnError(throwable -> handleError("Obtain user info ", throwable.getMessage()));
@@ -135,7 +142,7 @@ public class MainViewModel {
         long currentTime = System.currentTimeMillis() / 1000;
 
 
-        if (userMetaDatum == null) {
+        if ((userMetaDatum == null) || (userMetaDatum.size() == 0)) {
             LOG.info("No active sessions found for current user.");
             Platform.runLater(() -> plexStatusLabel.set("Idling/No Streams"));
             richPresence.updateMessage(
@@ -252,5 +259,9 @@ public class MainViewModel {
 
     public void setLoading(boolean loading) {
         this.loading.set(loading);
+    }
+
+    public void openLog() {
+
     }
 }
