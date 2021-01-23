@@ -1,33 +1,65 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<StackPane maxHeight="-Infinity" maxWidth="-Infinity" xmlns="http://javafx.com/javafx/10.0.2-internal"
-           xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="fr.arsenelapostolet.plexrichpresence.controller.MainController">
-    <BorderPane>
-        <center>
-            <ScrollPane fitToWidth="true">
-                <GridPane hgap="24" vgap="24">
-                    <padding>
-                        <Insets topRightBottomLeft="16"/>
-                    </padding>
 
-                    <VBox prefWidth="200" spacing="8">
-                        <Label prefWidth="Infinity" textAlignment="CENTER" fx:id="loginStatus" managed="false"/>
-                        <ProgressIndicator fx:id="loader" managed="false" visible="false"/>
-                        <VBox spacing="8" fx:id="credentialsPrompt">
-                            <TextField styleClass="test" fx:id="login" promptText="Login..."/>
-                            <PasswordField fx:id="password" promptText="Password..."/>
-                            <Button onAction="#login" fx:id="submitLogin" defaultButton="true" prefWidth="Infinity"
-                                    text="Login"/>
-                            <CheckBox fx:id="rememberMe" selected="true" text="Remember Me/Auto login"/>
-                        </VBox>
-                    </VBox>
-                    <TextArea GridPane.columnIndex="1" fx:id="eventLog" editable="false"/>
-                </GridPane>
-            </ScrollPane>
-        </center>
-    </BorderPane>
+<StackPane maxHeight="-Infinity" maxWidth="-Infinity" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.arsenelapostolet.plexrichpresence.controller.MainController">
+    <VBox fx:id="vbox_login" alignment="CENTER" prefWidth="100.0" spacing="8.0">
+        <Button fx:id="btn_login" alignment="CENTER" mnemonicParsing="false" onAction="#login" prefWidth="Infinity" text="Login" />
+        <CheckBox fx:id="chk_rememberMe" mnemonicParsing="false" text="Auto Login" />
+        <padding>
+          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        </padding>
+        <opaqueInsets>
+          <Insets />
+        </opaqueInsets>
+
+    </VBox>
+    <VBox fx:id="vbox_status" alignment="CENTER" visible="false">
+        <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+        </padding>
+        <GridPane>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            </rowConstraints>
+            <Label text="Plex Status:" GridPane.halignment="RIGHT">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </GridPane.margin>
+            </Label>
+            <Label fx:id="lbl_plexStatus" text="Label" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </GridPane.margin>
+            </Label>
+            <Label text="Discord Status:" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </GridPane.margin>
+            </Label>
+            <Label fx:id="lbl_discordStatus" text="Label" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                <GridPane.margin>
+                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                </GridPane.margin>
+            </Label>
+            <Button fx:id="btn_logout" defaultButton="true" mnemonicParsing="false" onAction="#logout" prefWidth="Infinity" text="Logout" GridPane.rowIndex="2">
+                <GridPane.margin>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                </GridPane.margin>
+            </Button>
+            <Button fx:id="btn_showLog" mnemonicParsing="false" onAction="#openLog" prefWidth="Infinity" text="Show Log" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <GridPane.margin>
+                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                </GridPane.margin>
+            </Button>
+        </GridPane>
+    </VBox>
 </StackPane>
