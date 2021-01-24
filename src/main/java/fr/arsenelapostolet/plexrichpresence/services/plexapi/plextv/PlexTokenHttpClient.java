@@ -11,7 +11,7 @@ public class PlexTokenHttpClient extends PlexTvHttpClient {
     private static String API_URL = "https://plex.tv";
 
 
-    public PlexTokenHttpClient() {
+    public PlexTokenHttpClient(String login, String password) {
 
         Gson gson = new GsonBuilder()
                 .setLenient()

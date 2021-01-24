@@ -1,18 +1,16 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
-import fr.arsenelapostolet.plexrichpresence.model.*;
+import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
+import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
+import fr.arsenelapostolet.plexrichpresence.model.Server;
 import rx.Observable;
 
 import java.util.List;
 
 public interface PlexApi {
-    Observable<List<Server>> getServers(String authToken);
+    Observable<List<Server>> getServers(String username, String password);
 
-    Observable<User> getUser(String authToken);
+    Observable<PlexLogin> getToken(String username, String password);
 
     Observable<List<Metadatum>> getSessions(List<Server> servers, String username);
-
-    Observable<PlexAuth> getPlexAuthPin(boolean strong, String plexProduct, String plexClientId);
-
-    Observable<PlexAuth> validatePlexAuthPin(int id, String code, String plexProduct);
 }

@@ -42,5 +42,5 @@ public class Metadatum {
     public String viewOffset;
     public List<Medium> media = null;
     public User User;
-    public Player Player;
+    public Player player;
 }

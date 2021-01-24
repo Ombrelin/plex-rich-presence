@@ -1,6 +1,5 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
-import fr.arsenelapostolet.plexrichpresence.Constants;
 import fr.arsenelapostolet.plexrichpresence.model.*;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexApiHttpClient;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTokenHttpClient;
@@ -13,13 +12,10 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Arrays;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
 public class PlexApiImpl implements PlexApi {
-
-    PlexTvAPI api = new PlexTokenHttpClient().getAPI();
 
     public PlexApiImpl() {
     }
@@ -27,42 +23,34 @@ public class PlexApiImpl implements PlexApi {
 
 
     @Override
-    public Observable<List<Server>> getServers(String authToken) {
+    public Observable<List<Server>> getServers(String username, String password) {
 
 
-        return new PlexApiHttpClient()
+        return new PlexApiHttpClient(username, password)
                 .getAPI()
-                .getServers(authToken)
+                .getServers()
                 .map(MediaContainerServer::getServer)
-                .map(servers -> servers.stream().filter(this::isValid)
-                .collect(Collectors.toList()));
+                .map(servers -> servers.stream().filter(server -> {
+                    String[] result = checkServer(server);
+                    if (result[0].equals("success")) {
+                        server.setFinalAddress(result[1]);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }).collect(Collectors.toList()));
 
-    }
-
-    private boolean isValid(Server server){
-        return this.isWorking(server) && this.isOwned(server);
-    }
-
-    private boolean isWorking(Server server){
-        String[] result = checkServer(server);
-        if (result[0].equals("success")) {
-            server.setFinalAddress(result[1]);
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    private boolean isOwned(Server server){
-        return server.getOwned().equals("1");
     }
 
     @Override
-    public Observable<User> getUser(String authToken) {
-        return api.getUser(authToken, Constants.plexClientIdentifer, Constants.plexProduct);
+    public Observable<PlexLogin> getToken(String username, String password) {
+        PlexTvAPI api = new PlexTokenHttpClient(username, password).getAPI();
+        return api.login(username,password,
+                        "Windows",
+                        "10.0",
+                        "Plex Rich Presence"
+                );
     }
-
-
 
     @Override
     public Observable<List<Metadatum>> getSessions(List<Server> servers, String username) {
@@ -82,27 +70,6 @@ public class PlexApiImpl implements PlexApi {
                 .flatMap(session -> session.getMediaContainer().getMetadata().stream())
                 .filter(session -> session.getUser().getTitle().equals(username))
                 .collect(Collectors.toList()));
-    }
-
-    @Override
-    public Observable<PlexAuth> getPlexAuthPin(boolean strong, String plexProduct, String plexClientId) {
-        return api.generatePlexAuthPin(true, plexProduct, plexClientId);
-    }
-
-    @Override
-    public Observable<PlexAuth> validatePlexAuthPin(int id, String code, String plexProduct) {
-        Observable<PlexAuth> response;
-        while (true) {
-            response = api.validatePlexAuthPin(id, plexProduct, code);
-            if (response.toBlocking().first().authToken != null) {
-                return response;
-            }
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored){
-            }
-
-        }
     }
 
     private String[] checkServer(Server server) {

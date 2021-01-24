@@ -1,6 +1,0 @@
-package fr.arsenelapostolet.plexrichpresence;
-
-public final class Constants {
-    public static final String plexProduct = "Discord_Plex_Rich_Presence";
-    public static final String plexClientIdentifer = "nDwkFkJCCJQEjq44TDaLJwKW54";
-}

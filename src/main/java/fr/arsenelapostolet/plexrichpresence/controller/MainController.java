@@ -4,18 +4,14 @@ import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
+import javafx.scene.layout.Pane;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Objects;
 
 
 @Component
@@ -29,56 +25,52 @@ public class MainController {
     }
 
     @FXML
-    private VBox vbox_login;
+    private Pane credentialsPrompt;
 
     @FXML
-    private VBox vbox_status;
+    private TextField login;
 
     @FXML
-    private Button btn_login;
+    private PasswordField password;
 
     @FXML
-    private Button btn_logout;
+    private Button submitLogin;
 
     @FXML
-    private Button btn_showLog;
+    private ProgressIndicator loader;
 
     @FXML
-    private Label lbl_plexStatus;
-
-    @FXML
-    private Label lbl_discordStatus;
-
-    @FXML
-    private CheckBox chk_rememberMe;
-
     private TextArea eventLog;
 
-    Stage logWindow;
+    @FXML
+    private CheckBox rememberMe;
 
-    OutputStream os;
+    private OutputStream os;
+
 
     @FXML
     public void initialize() {
-        eventLog = new TextArea();
-        eventLog.setEditable(false);
+        this.login.applyCss();
         os = new TextAreaOutputStream(eventLog);
         MyStaticOutputStreamAppender.setStaticOutputStream(os);
-        // Databinding
-        this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
-        this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
-        this.lbl_discordStatus.textProperty().bindBidirectional(this.viewModel.discordStatusLabel());
-        this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
-            this.vbox_login.setManaged(!newValue);
-            this.vbox_login.setVisible(!newValue);
-            this.vbox_status.setManaged(newValue);
-            this.vbox_status.setVisible(newValue);
-        });
-
-        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
-            viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
-            this.viewModel.login();
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.username")) && (!StringUtils.isEmpty(ConfigManager.getConfig("plex.password")))) {
+            this.login.setText(ConfigManager.getConfig("plex.username"));
+            this.password.setText(ConfigManager.getConfig("plex.password"));
+            submitLogin.fire();
         }
+
+
+        // Databinding
+        this.login.textProperty().bindBidirectional(this.viewModel.loginProperty());
+        this.password.textProperty().bindBidirectional(this.viewModel.passwordProperty());
+        this.rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
+        this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
+            this.credentialsPrompt.setManaged(!newValue);
+            this.credentialsPrompt.setVisible(!newValue);
+            this.loader.setVisible(newValue);
+            this.loader.setManaged(newValue);
+        });
+        this.loader.progressProperty().bind(this.viewModel.progressProperty());
 
 
     }
@@ -86,29 +78,9 @@ public class MainController {
 
     @FXML
     public void login(ActionEvent event) {
-         this.viewModel.login();
+        this.viewModel.login();
     }
 
-    @FXML
-    public void logout(ActionEvent event) {
-        this.viewModel.logout();
-    }
-
-    @FXML
-    public void openLog(ActionEvent event) {
-        if (!Objects.isNull(logWindow)) {
-            logWindow.show();
-            logWindow.toFront();
-            return;
-        }
-        StackPane layout = new StackPane();
-        layout.getChildren().add(eventLog);
-        Scene logScene = new Scene(layout, 400,200);
-        logWindow = new Stage();
-        logWindow.setTitle("Log");
-        logWindow.setScene(logScene);
-        logWindow.show();
-    }
 
     private static class TextAreaOutputStream extends OutputStream {
         private TextArea textArea;

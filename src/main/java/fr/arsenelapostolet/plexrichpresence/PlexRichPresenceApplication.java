@@ -1,7 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
