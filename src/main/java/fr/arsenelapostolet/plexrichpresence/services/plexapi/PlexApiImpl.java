@@ -59,7 +59,7 @@ public class PlexApiImpl implements PlexApi {
 
     @Override
     public Observable<User> getUser(String authToken) {
-        return api.getUser(authToken, Constants.plexClientIdentifer, Constants.plexProduct);
+        return api.getUser(authToken, Constants.plexClientIdentifier, Constants.plexProduct);
     }
 
 

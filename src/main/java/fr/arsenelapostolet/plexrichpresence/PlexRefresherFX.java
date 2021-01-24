@@ -83,7 +83,13 @@ public class PlexRefresherFX extends Application {
 
     private void hideStage() {
         stage.hide();
-        trayIcon.displayMessage("Plex Discord Rich Presence", "The application was minimised to tray. To open, double click the tray icon. To exit, right click the tray icon and press exit.", java.awt.TrayIcon.MessageType.INFO);
+        new Thread(() -> {
+            try {
+                showSystemNotification("Plex Discord Rich Presence", "The application was minimized to tray. Open or exit the application via the tray icon.");
+            } catch (IOException e) {
+                LOG.error("Error showing system notification " + e.getMessage());
+            }
+        }).start();
     }
 
     @Override
@@ -124,6 +130,26 @@ public class PlexRefresherFX extends Application {
         } catch (java.awt.AWTException | IOException e) {
             System.out.println("Unable to init system tray");
             e.printStackTrace();
+        }
+    }
+
+    private void showSystemNotification(String title, String message) throws IOException{
+        String os = System.getProperty("os.name");
+        if (os.contains("Linux")) {
+            ProcessBuilder builder = new ProcessBuilder(
+                    "zenity",
+                    "--notification",
+                    "--title=" + title,
+                    "--text=" + message);
+            builder.inheritIO().start();
+        } else if (os.contains("Mac")) {
+            ProcessBuilder builder = new ProcessBuilder(
+                    "osascript", "-e",
+                    "display notification \"" + message + "\""
+                            + " with title \"" + title + "\"");
+            builder.inheritIO().start();
+        } else if (SystemTray.isSupported()) {
+            trayIcon.displayMessage(title, message, TrayIcon.MessageType.INFO);
         }
     }
 

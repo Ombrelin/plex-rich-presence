@@ -10,6 +10,7 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApi;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.scene.control.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,6 +34,7 @@ public class MainViewModel {
     private final BooleanProperty rememberMe = new SimpleBooleanProperty(true);
     private final BooleanProperty loading = new SimpleBooleanProperty(false);
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
+    private final BooleanProperty logoutButtonDisabled = new SimpleBooleanProperty(false);
 
     private final StringProperty plexStatusLabel = new SimpleStringProperty("...");
     private final StringProperty discordStatusLabel = new SimpleStringProperty("...");
@@ -51,17 +53,18 @@ public class MainViewModel {
         if (!rememberMe.get()) {
             ConfigManager.setConfig("plex.token", "");
         }
+        this.logoutButtonDisabled.set(true);
         this.loading.set(true);
         this.plexStatusLabel.set("Logging in...");
         LOG.info("Logging in");
 
         if (authToken == null) {
-            plexApi.getPlexAuthPin(true, Constants.plexProduct, Constants.plexClientIdentifer)
+            plexApi.getPlexAuthPin(true, Constants.plexProduct, Constants.plexClientIdentifier)
                     .doOnError(throwable -> handleError("Get plex auth pin ", throwable.getMessage()))
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
                         String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
-                                Constants.plexClientIdentifer,
+                                Constants.plexClientIdentifier,
                                 response.code,
                                 Constants.plexProduct);
                         LOG.info("Please sign in using this url: " + authURL);
@@ -72,7 +75,7 @@ public class MainViewModel {
                             handleError("Open login page ", e.getMessage());
                         }
                         Platform.runLater(() -> plexStatusLabel.set("Waiting for user to login..."));
-                        return plexApi.validatePlexAuthPin(response.id, response.code, Constants.plexClientIdentifer)
+                        return plexApi.validatePlexAuthPin(response.id, response.code, Constants.plexClientIdentifier)
                                 .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
@@ -104,7 +107,10 @@ public class MainViewModel {
 
     private void postLogin(User response) {
         LOG.info("Successfully logged in as: " + response.getUsername());
-        Platform.runLater(() -> plexStatusLabel.set("Logged in"));
+        Platform.runLater(() -> {
+            plexStatusLabel.set("Logged in");
+            logoutButtonDisabled.set(false);
+        });
         if (this.rememberMe.get()){
             ConfigManager.setConfig("plex.token", authToken);
         }
@@ -120,12 +126,20 @@ public class MainViewModel {
     }
 
     private void handleError(String name, String message) {
-        LOG.info(name + "failed : " + message);
+        LOG.error(name + "failed : " + message);
         this.loading.set(false);
+        Platform.runLater(() -> {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText(name);
+            alert.setContentText(message);
+            alert.showAndWait();
+        });
     }
 
     private void fetchSession() {
         plexApi.getSessions(servers, this.loggedUsername)
+                .subscribeOn(Schedulers.io())
                 .doOnError(throwable -> {
                     if (throwable instanceof NullPointerException) {
                         processSessions(null);
@@ -243,6 +257,10 @@ public class MainViewModel {
 
     public BooleanProperty rememberMeProperty() {
         return rememberMe;
+    }
+
+    public BooleanProperty logoutButtonEnabled() {
+        return logoutButtonDisabled;
     }
 
     public void setRememberMe(boolean rememberMe) {

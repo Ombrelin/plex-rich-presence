@@ -68,6 +68,7 @@ public class MainController {
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
         this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
         this.lbl_discordStatus.textProperty().bindBidirectional(this.viewModel.discordStatusLabel());
+        this.btn_logout.disableProperty().bindBidirectional(this.viewModel.logoutButtonEnabled());
         this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
             this.vbox_login.setManaged(!newValue);
             this.vbox_login.setVisible(!newValue);
