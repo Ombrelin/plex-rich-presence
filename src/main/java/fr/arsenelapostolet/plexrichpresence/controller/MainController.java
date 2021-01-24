@@ -22,7 +22,7 @@ import java.util.Objects;
 @FxmlView
 public class MainController {
 
-    public MainViewModel viewModel;
+    private MainViewModel viewModel;
 
     public MainController(MainViewModel viewModel) {
         this.viewModel = viewModel;
