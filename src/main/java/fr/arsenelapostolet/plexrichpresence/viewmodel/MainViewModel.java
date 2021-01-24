@@ -65,7 +65,7 @@ public class MainViewModel {
                                 response.code,
                                 Constants.plexProduct);
                         LOG.info("Please sign in using this url: " + authURL);
-                        Desktop desktop = java.awt.Desktop.getDesktop();
+                        Desktop desktop = Desktop.getDesktop();
                         try {
                             desktop.browse(new URI(authURL));
                         } catch (Exception e) {
