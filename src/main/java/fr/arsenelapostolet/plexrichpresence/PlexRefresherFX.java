@@ -1,17 +1,12 @@
 package fr.arsenelapostolet.plexrichpresence;
 
 import fr.arsenelapostolet.plexrichpresence.controller.MainController;
-import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxWeaver;
@@ -21,16 +16,16 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Objects;
 
 public class PlexRefresherFX extends Application {
 
     private ConfigurableApplicationContext applicationContext;
     private final Logger LOG = LoggerFactory.getLogger(PlexRefresherFX.class);
     private Stage stage;
-    java.awt.TrayIcon trayIcon;
+    private TrayIcon trayIcon;
 
     @Override
     public void init() {
@@ -53,7 +48,7 @@ public class PlexRefresherFX extends Application {
         jMetro.setScene(scene);
         scene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
         scene.getStylesheets().add(getClass().getClassLoader().getResource("theme.css").toExternalForm());
-        javax.swing.SwingUtilities.invokeLater(this::addAppToTray);
+        SwingUtilities.invokeLater(this::addAppToTray);
         this.stage.setMinWidth(350);
         this.stage.setMinHeight(150);
         stage.setResizable(false);

@@ -45,8 +45,21 @@ public class MainViewModel {
 
     public MainViewModel(RichPresence richPresence, PlexApi plexApi) {
         this.richPresence = richPresence;
-        richPresence.viewModel = this;
         this.plexApi = plexApi;
+
+        this.richPresence.getHandlers().ready = (user) -> {
+            LOG.info("Connected to Discord RPC");
+            Platform.runLater(() -> discordStatusLabel().set("Connected"));
+        };
+        this.richPresence.getHandlers().disconnected = (err, err1) -> {
+            LOG.warn("Disconnected from Discord RPC");
+            Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
+        };
+        this.richPresence.getHandlers().errored = (err1, err2) -> {
+            LOG.error("Error occurred when connecting to discord RPC");
+            Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
+        };
+        this.richPresence.initHandlers();
     }
 
     public void login() {
@@ -168,7 +181,7 @@ public class MainViewModel {
             return;
         }
 
-        Metadatum session = userMetaDatum.get(0);
+        final Metadatum session = userMetaDatum.get(0);
 
         LOG.info(
                 "Session acquired for user : "
@@ -179,7 +192,7 @@ public class MainViewModel {
         Platform.runLater(() -> plexStatusLabel.set("Stream detected!"));
 
 
-        String currentPlayerState;
+        final String currentPlayerState;
         switch (session.getPlayer().getState()) {
             case "buffering":
                 currentPlayerState = "Buffering";
@@ -277,9 +290,5 @@ public class MainViewModel {
 
     public void setLoading(boolean loading) {
         this.loading.set(loading);
-    }
-
-    public void openLog() {
-
     }
 }

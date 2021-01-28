@@ -19,17 +19,13 @@ import java.util.stream.Collectors;
 @Service
 public class PlexApiImpl implements PlexApi {
 
-    PlexTvAPI api = new PlexTokenHttpClient().getAPI();
+    private final PlexTvAPI api = new PlexTokenHttpClient().getAPI();
 
     public PlexApiImpl() {
     }
 
-
-
     @Override
     public Observable<List<Server>> getServers(String authToken) {
-
-
         return new PlexApiHttpClient()
                 .getAPI()
                 .getServers(authToken)
@@ -61,8 +57,6 @@ public class PlexApiImpl implements PlexApi {
     public Observable<User> getUser(String authToken) {
         return api.getUser(authToken, Constants.plexClientIdentifier, Constants.plexProduct);
     }
-
-
 
     @Override
     public Observable<List<Metadatum>> getSessions(List<Server> servers, String username) {
@@ -106,14 +100,13 @@ public class PlexApiImpl implements PlexApi {
     }
 
     private String[] checkServer(Server server) {
-        String result[] = new String[2];
+        String[] result = new String[2];
         String localAddr = server.getLocalAddresses();
-        List<String> LocalServerAddresses = Arrays.asList(localAddr.split("\\s*,\\s*"));
-        ;
+        String[] LocalServerAddresses = localAddr.split("\\s*,\\s*");
+
         if (serverListening(server.getAddress(), Integer.parseInt(server.getPort()))) {
             result[0] = "success";
             result[1] = server.getAddress();
-            return result;
         } else {
             for (String address : LocalServerAddresses) {
                 if (serverListening(address, Integer.parseInt(server.getPort()))) {
@@ -124,8 +117,8 @@ public class PlexApiImpl implements PlexApi {
             }
             result[0] = "fail";
             result[1] = null;
-            return result;
         }
+        return result;
     }
 
     private Boolean serverListening(String host, int port) {

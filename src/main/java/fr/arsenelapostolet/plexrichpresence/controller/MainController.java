@@ -6,9 +6,12 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import jfxtras.styles.jmetro.JMetro;
+import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -22,7 +25,7 @@ import java.util.Objects;
 @FxmlView
 public class MainController {
 
-    private MainViewModel viewModel;
+    private final MainViewModel viewModel;
 
     public MainController(MainViewModel viewModel) {
         this.viewModel = viewModel;
@@ -54,15 +57,13 @@ public class MainController {
 
     private TextArea eventLog;
 
-    Stage logWindow;
-
-    OutputStream os;
+    private Stage logWindow;
 
     @FXML
     public void initialize() {
         eventLog = new TextArea();
         eventLog.setEditable(false);
-        os = new TextAreaOutputStream(eventLog);
+        final OutputStream os = new TextAreaOutputStream(eventLog);
         MyStaticOutputStreamAppender.setStaticOutputStream(os);
         // Databinding
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
@@ -81,9 +82,7 @@ public class MainController {
             this.viewModel.login();
         }
 
-
     }
-
 
     @FXML
     public void login(ActionEvent event) {
@@ -102,17 +101,26 @@ public class MainController {
             logWindow.toFront();
             return;
         }
-        StackPane layout = new StackPane();
+        final StackPane layout = new StackPane();
         layout.getChildren().add(eventLog);
-        Scene logScene = new Scene(layout, 400,200);
+
+        final Scene logScene = new Scene(layout, 400,200);
+
+        final JMetro jMetro = new JMetro(Style.DARK);
+        jMetro.setScene(logScene);
+        logScene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+        logScene.getStylesheets().add(getClass().getClassLoader().getResource("theme.css").toExternalForm());
+
         logWindow = new Stage();
         logWindow.setTitle("Log");
         logWindow.setScene(logScene);
+        logWindow.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
+        logWindow.setTitle("Plex Rich Presence Logs");
         logWindow.show();
     }
 
     private static class TextAreaOutputStream extends OutputStream {
-        private TextArea textArea;
+        private final TextArea textArea;
 
         public TextAreaOutputStream(TextArea textArea) {
             this.textArea = textArea;

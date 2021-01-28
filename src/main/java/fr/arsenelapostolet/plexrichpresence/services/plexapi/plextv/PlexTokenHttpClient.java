@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PlexTokenHttpClient extends PlexTvHttpClient {
 
-    private static String API_URL = "https://plex.tv";
+    private static final String API_URL = "https://plex.tv";
 
 
     public PlexTokenHttpClient() {

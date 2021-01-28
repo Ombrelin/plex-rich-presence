@@ -12,7 +12,7 @@ public class PlexSessionHttpClient {
 
     public PlexSessionHttpClient(String serverIp, String serverPort) {
 
-        Gson gson = new GsonBuilder()
+        final Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
 
