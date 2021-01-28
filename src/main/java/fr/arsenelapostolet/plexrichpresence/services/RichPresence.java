@@ -3,25 +3,45 @@ package fr.arsenelapostolet.plexrichpresence.services;
 import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
+import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
+import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
 public class RichPresence {
-
     private static final String token = "698954724019273770";
-    private DiscordRichPresence presence = new DiscordRichPresence();
-    private DiscordRPC lib = DiscordRPC.INSTANCE;
+    private final DiscordRichPresence presence = new DiscordRichPresence();
+    private final DiscordRPC lib = DiscordRPC.INSTANCE;
+    private final DiscordEventHandlers handlers = new DiscordEventHandlers();
+    private final String steamId = "";
 
     public RichPresence() {
-        String steamId = "";
-        DiscordEventHandlers handlers = new DiscordEventHandlers();
-        handlers.ready = (user) -> System.out.println("Ready!");
-        lib.Discord_Initialize(token, handlers, true, steamId);
+
+        new Thread(() -> {
+            while (!Thread.currentThread().isInterrupted()) {
+                lib.Discord_RunCallbacks();
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException ignored) {
+                }
+            }
+        }, "RPC-Callback-Handler").start();
 
         presence.startTimestamp = System.currentTimeMillis() / 1000; // epoch second
         presence.details = "Idling";
         presence.largeImageKey = "icon";
         lib.Discord_UpdatePresence(presence);
+    }
+
+    public void initHandlers() {
+        lib.Discord_Initialize(token, handlers, true, steamId);
+    }
+
+    public DiscordEventHandlers getHandlers() {
+        return handlers;
     }
 
     public void updateMessage(String state, String media){
