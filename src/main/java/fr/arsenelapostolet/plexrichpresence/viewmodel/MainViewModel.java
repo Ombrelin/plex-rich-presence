@@ -190,15 +190,15 @@ public class MainViewModel {
         final String currentPlayerState;
         switch (session.getPlayer().getState()) {
             case "buffering":
-                currentPlayerState = "Buffering";
+                currentPlayerState = "⟲";
                 richPresence.setEndTimestamp(currentTime);
                 break;
             case "paused":
-                currentPlayerState = "Paused";
+                currentPlayerState = "⏸";
                 richPresence.setEndTimestamp(currentTime);
                 break;
             default:
-                currentPlayerState = "Playing";
+                currentPlayerState = "▶";
                 richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
                 break;
         }
@@ -208,7 +208,7 @@ public class MainViewModel {
                 richPresence.updateMessage(currentPlayerState, session.getTitle());
                 break;
             case "episode":
-                richPresence.updateMessage(String.format("(%s) %s", currentPlayerState, session.getGrandparentTitle()), String.format("S%02dE%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
+                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
                 break;
             default:
                 richPresence.updateMessage(
