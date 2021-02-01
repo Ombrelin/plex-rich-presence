@@ -17,8 +17,6 @@ Plex Rich Presence works with Java 8.
 
 ![screenshots](screenshots/ui-logs.png)
 
-![screenshots](screenshots/discord.png)
-
 ## Build
 
 Just run :
