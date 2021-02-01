@@ -171,12 +171,7 @@ public class MainViewModel {
 
         if ((userMetaDatum == null) || (userMetaDatum.size() == 0)) {
             LOG.info("No active sessions found for current user.");
-            Platform.runLater(() -> plexStatusLabel.set("Idling/No Streams"));
-            richPresence.updateMessage(
-                    "Idling",
-                    ""
-            );
-            richPresence.setEndTimestamp(currentTime);
+            richPresence.stopPresence();
             waitBetweenCalls();
             return;
         }
