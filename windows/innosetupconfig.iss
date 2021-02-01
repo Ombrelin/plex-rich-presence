@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Plex Rich Presence"
-#define MyAppVersion "1.2"
+#define MyAppVersion "1.3"
 #define MyAppPublisher "Arsene Lapostolet"
 #define MyAppURL "https://github.com/Ombrelin/plex-rich-presence"
 #define MyAppExeName "Plex Rich Presence.exe"
