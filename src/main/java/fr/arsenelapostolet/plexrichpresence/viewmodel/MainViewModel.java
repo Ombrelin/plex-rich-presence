@@ -203,7 +203,7 @@ public class MainViewModel {
                 richPresence.setEndTimestamp(currentTime);
                 break;
             default:
-                currentPlayerState = "⏵";
+                currentPlayerState = "▶";
                 richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
                 break;
         }
