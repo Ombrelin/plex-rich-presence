@@ -57,6 +57,8 @@ public class MainViewModel {
         };
         this.richPresence.getHandlers().errored = (err1, err2) -> {
             LOG.error("Error occurred when connecting to discord RPC");
+            LOG.error("Error Code: " + String.valueOf(err1));
+            LOG.error("Message: " + err2);
             Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
         };
         this.richPresence.initHandlers();
@@ -205,7 +207,7 @@ public class MainViewModel {
 
         switch (session.getType()) {
             case "movie":
-                richPresence.updateMessage(currentPlayerState, session.getTitle());
+                richPresence.updateMessage(currentPlayerState + " ", session.getTitle());
                 break;
             case "episode":
                 richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
