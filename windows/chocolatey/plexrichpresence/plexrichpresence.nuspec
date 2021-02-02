@@ -6,15 +6,15 @@
     <packageSourceUrl>https://github.com/Ombrelin/plex-rich-presence</packageSourceUrl>
     <owners>Arsène Lapostolet</owners>
     <title>plexrichpresence (Install)</title>
-    <authors>Arsène Lapostolet,McClarence,Soitora</authors>
+    <authors>Ombrelin,McClarence,Soitora</authors>
     <projectUrl>https://github.com/Ombrelin/plex-rich-presence</projectUrl>
     <iconUrl>https://github.com/Ombrelin/plex-rich-presence/raw/master/src/main/resources/images/icon.png</iconUrl>
     <licenseUrl>https://raw.githubusercontent.com/Ombrelin/plex-rich-presence/master/LICENSE</licenseUrl>
     <projectSourceUrl>https://github.com/Ombrelin/plex-rich-presence</projectSourceUrl>
     <bugTrackerUrl>https://github.com/Ombrelin/plex-rich-presence/issues</bugTrackerUrl>
-    <tags>plexrichpresence SPACE_SEPARATED</tags>
+    <tags>plex,discord,java</tags>
     <summary>Discord Rich Presence Provider for PLEX Media Server</summary>
-    <description>Lightweight GUI app to authenticate to your PLEX account and enable your PLEX active session to be dispayed as Discord Rich Presence activity</description>
+    <description>Lightweight GUI app to authenticate to your PLEX account and enable your PLEX active session to be displayed as Discord Rich Presence activity</description>
     <dependencies>
       <dependency id="jdk8" version="8.0.191" />
       <dependency id="chocolatey-core.extension" version="1.1.0" />
