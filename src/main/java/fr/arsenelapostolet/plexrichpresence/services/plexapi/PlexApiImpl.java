@@ -6,6 +6,8 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexApiHttpC
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTokenHttpClient;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTvAPI;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexSessionHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import rx.Observable;
 
@@ -20,6 +22,8 @@ import java.util.stream.Collectors;
 public class PlexApiImpl implements PlexApi {
 
     private final PlexTvAPI api = new PlexTokenHttpClient().getAPI();
+
+    private final Logger LOG = LoggerFactory.getLogger(PlexApiImpl.class);
 
     public PlexApiImpl() {
     }
@@ -104,19 +108,24 @@ public class PlexApiImpl implements PlexApi {
         String localAddr = server.getLocalAddresses();
         String[] LocalServerAddresses = localAddr.split("\\s*,\\s*");
 
+        LOG.debug("Trying server " + server.getAddress());
         if (serverListening(server.getAddress(), Integer.parseInt(server.getPort()))) {
             result[0] = "success";
             result[1] = server.getAddress();
+            LOG.debug("Connected to server " + server.getAddress());
         } else {
             for (String address : LocalServerAddresses) {
+                LOG.debug("Trying server " + address);
                 if (serverListening(address, Integer.parseInt(server.getPort()))) {
                     result[0] = "success";
                     result[1] = address;
+                    LOG.debug("Connected to server " + server.getAddress());
                     return result;
                 }
             }
             result[0] = "fail";
             result[1] = null;
+            LOG.debug("Failed to find any servers");
         }
         return result;
     }
