@@ -79,7 +79,7 @@ public class MainViewModel {
                     .doOnError(throwable -> handleError("Get plex auth pin ", throwable.getMessage()))
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
-                        LOG.debug(new Gson().toJson(response).replace(Constants.authToken, "**REDACTED**"));
+                        LOG.debug(new Gson().toJson(response));
                         String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
                                 Constants.plexClientIdentifier,
                                 response.code,
@@ -96,7 +96,7 @@ public class MainViewModel {
                                 .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
-                        LOG.debug(new Gson().toJson(response).replace(Constants.authToken, "**REDACTED**"));
+                        LOG.debug(new Gson().toJson(response));
                         LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
@@ -104,7 +104,7 @@ public class MainViewModel {
                         return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
-                        LOG.debug(new Gson().toJson(response).replace(Constants.authToken, "**REDACTED**"));
+                        LOG.debug(new Gson().toJson(response));
                         LOG.info("Obtaining user info...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining user info..."));
                         this.servers = response;
@@ -116,7 +116,7 @@ public class MainViewModel {
             plexApi.getServers(authToken)
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
-                        LOG.debug(new Gson().toJson(response).replace(Constants.authToken, "**REDACTED**"));
+                        LOG.debug(new Gson().toJson(response));
                         LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.servers = response;
@@ -128,7 +128,7 @@ public class MainViewModel {
     }
 
     private void postLogin(User response) {
-        LOG.debug(new Gson().toJson(response).replace(Constants.authToken, "**REDACTED**"));
+        LOG.debug(new Gson().toJson(response));
         LOG.info("Successfully logged in as: " + response.getUsername());
         Platform.runLater(() -> {
             plexStatusLabel.set("Logged in");
@@ -171,7 +171,7 @@ public class MainViewModel {
                     }
                 })
                 .subscribe(response -> {
-                    LOG.debug(new Gson().toJson(response).replace(Constants.authToken, "**REDACTED**"));
+                    LOG.debug(new Gson().toJson(response));
                     processSessions(response);
                 });
     }

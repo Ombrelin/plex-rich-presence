@@ -119,7 +119,7 @@ public class PlexApiImpl implements PlexApi {
                 if (serverListening(address, Integer.parseInt(server.getPort()))) {
                     result[0] = "success";
                     result[1] = address;
-                    LOG.debug("Connected to server " + server.getAddress());
+                    LOG.debug("Connected to server " + address);
                     return result;
                 }
             }

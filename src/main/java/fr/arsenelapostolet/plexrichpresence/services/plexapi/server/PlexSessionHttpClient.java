@@ -27,7 +27,7 @@ public class PlexSessionHttpClient {
         {
             @Override public void log(String message)
             {
-                LOG.debug(message.replace(Constants.authToken, "**REDACTED**"));
+                LOG.debug(message);
             }
         });
 
