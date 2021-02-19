@@ -55,7 +55,13 @@ public class PlexRefresherFX extends Application {
         this.stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
         this.stage.setTitle("Plex Rich Presence");
         this.stage.setScene(scene);
-        this.stage.show();
+        try {
+            this.stage.show();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+
 
         // On window close, minimise to tray.
         stage.setOnCloseRequest(event -> {
