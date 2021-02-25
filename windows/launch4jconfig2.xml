@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>E:\DATA\Developer\plex-rich-presence\target\plex-rich-presence-1.4.jar</jar>
+  <outfile>E:\DATA\Developer\plex-rich-presence\windows\plex-rich-presence-1.4.exe</outfile>
+  <errTitle></errTitle>
+  <cmdLine></cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>http://java.com/download</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>true</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>E:\DATA\Developer\plex-rich-presence\windows\icon.ico</icon>
+  <singleInstance>
+    <mutexName>Plex Rich Presence</mutexName>
+    <windowTitle>Plex Rich Presence</windowTitle>
+  </singleInstance>
+  <jre>
+    <path>jre</path>
+    <bundledJre64Bit>true</bundledJre64Bit>
+    <bundledJreAsFallback>false</bundledJreAsFallback>
+    <minVersion>8</minVersion>
+    <maxVersion>10</maxVersion>
+    <jdkPreference>preferJre</jdkPreference>
+    <runtimeBits>64/32</runtimeBits>
+  </jre>
+</launch4jConfig>
