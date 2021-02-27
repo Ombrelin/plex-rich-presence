@@ -16,14 +16,8 @@ public class PlexApiHttpClient extends PlexTvHttpClient{
 
 
 
-
     public PlexApiHttpClient() {
 
-
-
-        BasicAuthInterceptor interceptor =
-                new BasicAuthInterceptor(login, password);
-        httpClientFactory.addInterceptor(interceptor);
 
         this.setHttp(new Retrofit.Builder()
                 .client(httpClientFactory.build())
