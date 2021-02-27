@@ -6,6 +6,8 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexApiHttpC
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTokenHttpClient;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTvAPI;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.server.PlexSessionHttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import rx.Observable;
 
@@ -21,6 +23,8 @@ public class PlexApiImpl implements PlexApi {
 
     private final PlexTvAPI api = new PlexTokenHttpClient().getAPI();
 
+    private final Logger LOG = LoggerFactory.getLogger(PlexApiImpl.class);
+
     public PlexApiImpl() {
     }
 
@@ -31,15 +35,15 @@ public class PlexApiImpl implements PlexApi {
                 .getServers(authToken)
                 .map(MediaContainerServer::getServer)
                 .map(servers -> servers.stream().filter(this::isValid)
-                .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
 
     }
 
-    private boolean isValid(Server server){
+    private boolean isValid(Server server) {
         return this.isWorking(server) && this.isOwned(server);
     }
 
-    private boolean isWorking(Server server){
+    private boolean isWorking(Server server) {
         String[] result = checkServer(server);
         if (result[0].equals("success")) {
             server.setFinalAddress(result[1]);
@@ -49,7 +53,7 @@ public class PlexApiImpl implements PlexApi {
         }
     }
 
-    private boolean isOwned(Server server){
+    private boolean isOwned(Server server) {
         return server.getOwned().equals("1");
     }
 
@@ -63,12 +67,12 @@ public class PlexApiImpl implements PlexApi {
 
         List<Observable<PlexSessions>> sessionsObs =
                 servers
-                .stream()
-                .map(server ->
-                        new PlexSessionHttpClient(server.getFinalAddress(), server.getPort())
-                                .getAPI()
-                                .getSessions(server.getAccessToken(), "application/json"))
-                .collect(Collectors.toList());
+                        .stream()
+                        .map(server ->
+                                new PlexSessionHttpClient(server.getFinalAddress(), server.getPort())
+                                        .getAPI()
+                                        .getSessions(server.getAccessToken(), "application/json"))
+                        .collect(Collectors.toList());
 
         return Observable.zip(sessionsObs, sessions -> Arrays.stream(sessions)
                 .filter(obj -> obj instanceof PlexSessions)
@@ -93,7 +97,7 @@ public class PlexApiImpl implements PlexApi {
             }
             try {
                 TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored){
+            } catch (InterruptedException ignored) {
             }
 
         }
@@ -104,19 +108,24 @@ public class PlexApiImpl implements PlexApi {
         String localAddr = server.getLocalAddresses();
         String[] LocalServerAddresses = localAddr.split("\\s*,\\s*");
 
+        LOG.debug("Trying server " + server.getAddress());
         if (serverListening(server.getAddress(), Integer.parseInt(server.getPort()))) {
             result[0] = "success";
             result[1] = server.getAddress();
+            LOG.debug("Connected to server " + server.getAddress());
         } else {
             for (String address : LocalServerAddresses) {
+                LOG.debug("Trying server " + address);
                 if (serverListening(address, Integer.parseInt(server.getPort()))) {
                     result[0] = "success";
                     result[1] = address;
+                    LOG.debug("Connected to server " + address);
                     return result;
                 }
             }
             result[0] = "fail";
             result[1] = null;
+            LOG.debug("Failed to find any servers");
         }
         return result;
     }

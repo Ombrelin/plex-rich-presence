@@ -12,12 +12,12 @@ public class PlexTokenHttpClient extends PlexTvHttpClient {
 
 
     public PlexTokenHttpClient() {
-
         Gson gson = new GsonBuilder()
                 .setLenient()
                 .create();
 
         this.setHttp(new Retrofit.Builder()
+                .client(httpClientFactory.build())
                 .baseUrl(API_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())

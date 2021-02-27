@@ -1,5 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
+import com.google.gson.Gson;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.Constants;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
@@ -57,6 +58,8 @@ public class MainViewModel {
         };
         this.richPresence.getHandlers().errored = (err1, err2) -> {
             LOG.error("Error occurred when connecting to discord RPC");
+            LOG.error("Error Code: " + String.valueOf(err1));
+            LOG.error("Message: " + err2);
             Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
         };
         this.richPresence.initHandlers();
@@ -76,6 +79,7 @@ public class MainViewModel {
                     .doOnError(throwable -> handleError("Get plex auth pin ", throwable.getMessage()))
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
+                        LOG.debug(new Gson().toJson(response));
                         String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
                                 Constants.plexClientIdentifier,
                                 response.code,
@@ -92,12 +96,15 @@ public class MainViewModel {
                                 .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
+                        LOG.debug(new Gson().toJson(response));
                         LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
+                        Constants.authToken = response.authToken;
                         return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
+                        LOG.debug(new Gson().toJson(response));
                         LOG.info("Obtaining user info...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining user info..."));
                         this.servers = response;
@@ -105,9 +112,11 @@ public class MainViewModel {
                     })
                     .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         } else {
+            Constants.authToken = authToken;
             plexApi.getServers(authToken)
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
+                        LOG.debug(new Gson().toJson(response));
                         LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.servers = response;
@@ -119,19 +128,20 @@ public class MainViewModel {
     }
 
     private void postLogin(User response) {
+        LOG.debug(new Gson().toJson(response));
         LOG.info("Successfully logged in as: " + response.getUsername());
         Platform.runLater(() -> {
             plexStatusLabel.set("Logged in");
             logoutButtonDisabled.set(false);
         });
-        if (this.rememberMe.get()){
+        if (this.rememberMe.get()) {
             ConfigManager.setConfig("plex.token", authToken);
         }
         this.loggedUsername = response.getUsername();
         this.fetchSession();
     }
 
-    public void logout(){
+    public void logout() {
         this.loading.set(false);
         workerService.cancel();
         authToken = null;
@@ -160,9 +170,11 @@ public class MainViewModel {
                         handleError("Error getting sessions ", throwable.getMessage());
                     }
                 })
-                .subscribe(this::processSessions);
+                .subscribe(response -> {
+                    LOG.debug(new Gson().toJson(response));
+                    processSessions(response);
+                });
     }
-
 
 
     public void processSessions(List<Metadatum> userMetaDatum) {
@@ -205,10 +217,10 @@ public class MainViewModel {
 
         switch (session.getType()) {
             case "movie":
-                richPresence.updateMessage(currentPlayerState, session.getTitle());
+                richPresence.updateMessage(currentPlayerState + " ", session.getTitle());
                 break;
             case "episode":
-                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
+                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
                 break;
             default:
                 richPresence.updateMessage(

@@ -27,10 +27,11 @@ public class MyStaticOutputStreamAppender<E> extends OutputStreamAppender<E> {
         /**
          * Creates a delegating outputstream with a NO-OP delegate
          */
-        public DelegatingOutputStream(OutputStream out){
+        public DelegatingOutputStream(OutputStream out) {
             super(new OutputStream() {
                 @Override
-                public void write(int b) throws IOException {}
+                public void write(int b) throws IOException {
+                }
             });
         }
 
