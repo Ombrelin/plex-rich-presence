@@ -57,6 +57,8 @@ public class MainViewModel {
         };
         this.richPresence.getHandlers().errored = (err1, err2) -> {
             LOG.error("Error occurred when connecting to discord RPC");
+            LOG.error("Error Code: " + String.valueOf(err1));
+            LOG.error("Message: " + err2);
             Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
         };
         this.richPresence.initHandlers();
@@ -171,12 +173,7 @@ public class MainViewModel {
 
         if ((userMetaDatum == null) || (userMetaDatum.size() == 0)) {
             LOG.info("No active sessions found for current user.");
-            Platform.runLater(() -> plexStatusLabel.set("Idling/No Streams"));
-            richPresence.updateMessage(
-                    "Idling",
-                    ""
-            );
-            richPresence.setEndTimestamp(currentTime);
+            richPresence.stopPresence();
             waitBetweenCalls();
             return;
         }
@@ -195,25 +192,25 @@ public class MainViewModel {
         final String currentPlayerState;
         switch (session.getPlayer().getState()) {
             case "buffering":
-                currentPlayerState = "Buffering";
+                currentPlayerState = "⟲";
                 richPresence.setEndTimestamp(currentTime);
                 break;
             case "paused":
-                currentPlayerState = "Paused";
+                currentPlayerState = "⏸";
                 richPresence.setEndTimestamp(currentTime);
                 break;
             default:
-                currentPlayerState = "Playing";
+                currentPlayerState = "▶";
                 richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
                 break;
         }
 
         switch (session.getType()) {
             case "movie":
-                richPresence.updateMessage(currentPlayerState, session.getTitle());
+                richPresence.updateMessage(currentPlayerState + " ", session.getTitle());
                 break;
             case "episode":
-                richPresence.updateMessage(String.format("(%s) %s", currentPlayerState, session.getGrandparentTitle()), String.format("S%02dE%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
+                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
                 break;
             default:
                 richPresence.updateMessage(

@@ -3,12 +3,12 @@
 Plex Rich Presence is a multiplatform Java GUI App that allows you to display your current PLEX session in your Discord Rich presence status.
 Plex Rich Presence works with Java 8.
 
-<img src="https://github.com/Ombrelin/plex-rich-presence/blob/master/src/main/resources/images/icon.png?raw=true" width="250" height="250">
+<img src="src/main/resources/images/icon.png?raw=true" width="250" height="250">
 
 ## Release Version
 
-- [Portable and Executable JAR](https://github.com/Ombrelin/plex-rich-presence/releases/download/v1.3/plex-rich-presence-1.3.jar)
-- [Windows Installer](https://github.com/Ombrelin/plex-rich-presence/releases/download/v1.3/plex-rich-presence-setup.exe)
+- [Portable and Executable JAR](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-1.4.jar)
+- [Windows Installer](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-setup.exe)
 
 ## Screenshots
 
@@ -16,6 +16,8 @@ Plex Rich Presence works with Java 8.
 
 
 ![screenshots](screenshots/ui-logs.png)
+
+![screenshots](screenshots/discord-presence.png)
 
 ## Build
 
@@ -30,7 +32,7 @@ mvn clean package
 Once build, you can run the app by running :
 
 ```
-java -jar ./target/plex-rich-presence-1.3.jar
+java -jar ./target/plex-rich-presence-1.4.jar
 ```
 
 ## Libraries used

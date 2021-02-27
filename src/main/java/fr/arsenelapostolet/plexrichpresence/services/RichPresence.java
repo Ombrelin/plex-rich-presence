@@ -30,10 +30,8 @@ public class RichPresence {
             }
         }, "RPC-Callback-Handler").start();
 
-        presence.startTimestamp = System.currentTimeMillis() / 1000; // epoch second
-        presence.details = "Idling";
         presence.largeImageKey = "icon";
-        lib.Discord_UpdatePresence(presence);
+
     }
 
     public void initHandlers() {
@@ -48,6 +46,10 @@ public class RichPresence {
         presence.details = state;
         presence.state = media;
         lib.Discord_UpdatePresence(presence);
+    }
+
+    public void stopPresence() {
+        lib.Discord_ClearPresence();
     }
 
     public void setEndTimestamp(long end) {
