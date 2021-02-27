@@ -5,7 +5,10 @@ import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -38,13 +41,7 @@ public class MainController {
     private VBox vbox_status;
 
     @FXML
-    private Button btn_login;
-
-    @FXML
     private Button btn_logout;
-
-    @FXML
-    private Button btn_showLog;
 
     @FXML
     private Label lbl_plexStatus;
@@ -86,7 +83,7 @@ public class MainController {
 
     @FXML
     public void login(ActionEvent event) {
-         this.viewModel.login();
+        this.viewModel.login();
     }
 
     @FXML
@@ -104,7 +101,7 @@ public class MainController {
         final StackPane layout = new StackPane();
         layout.getChildren().add(eventLog);
 
-        final Scene logScene = new Scene(layout, 400,200);
+        final Scene logScene = new Scene(layout, 400, 200);
 
         final JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(logScene);

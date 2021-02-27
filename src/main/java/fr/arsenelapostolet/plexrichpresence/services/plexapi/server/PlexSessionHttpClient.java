@@ -2,8 +2,6 @@ package fr.arsenelapostolet.plexrichpresence.services.plexapi.server;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import fr.arsenelapostolet.plexrichpresence.Constants;
-import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApiImpl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;
@@ -23,10 +21,9 @@ public class PlexSessionHttpClient {
                 .setLenient()
                 .create();
 
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger()
-        {
-            @Override public void log(String message)
-            {
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor(new HttpLoggingInterceptor.Logger() {
+            @Override
+            public void log(String message) {
                 LOG.debug(message);
             }
         });
@@ -44,7 +41,7 @@ public class PlexSessionHttpClient {
                 .build();
     }
 
-    public PlexServerAPI getAPI(){
+    public PlexServerAPI getAPI() {
         return this.http.create(PlexServerAPI.class);
     }
 }

@@ -1,12 +1,13 @@
 package fr.arsenelapostolet.plexrichpresence.services;
 
+import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import ch.qos.logback.classic.PatternLayout;
-import ch.qos.logback.classic.spi.ILoggingEvent;
 
 public class MaskingPatternLayout extends PatternLayout {
 

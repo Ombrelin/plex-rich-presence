@@ -31,3 +31,4 @@ build/
 .vscode/
 *.exe
 .mvn
+windows/jre

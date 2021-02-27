@@ -19,6 +19,7 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Properties;
 
 public class PlexRefresherFX extends Application {
 
@@ -53,7 +54,7 @@ public class PlexRefresherFX extends Application {
         this.stage.setMinHeight(150);
         stage.setResizable(false);
         this.stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
-        this.stage.setTitle("Plex Rich Presence");
+        this.stage.setTitle(String.format("Plex Rich Presence v%s", getVersion()));
         this.stage.setScene(scene);
         try {
             this.stage.show();
@@ -62,17 +63,26 @@ public class PlexRefresherFX extends Application {
         }
 
 
-
         // On window close, minimise to tray.
         stage.setOnCloseRequest(event -> {
-         hideStage();
+            hideStage();
         });
 
         // On window minimise, minimise to tray.
         stage.iconifiedProperty().addListener((ov, t, t1) -> {
-         hideStage();
+            hideStage();
         });
 
+    }
+
+    private String getVersion() {
+        final Properties properties = new Properties();
+        try {
+            properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return properties.getProperty("version");
     }
 
     private void showStage() {
@@ -134,7 +144,7 @@ public class PlexRefresherFX extends Application {
         }
     }
 
-    private void showSystemNotification(String title, String message) throws IOException{
+    private void showSystemNotification(String title, String message) throws IOException {
         String os = System.getProperty("os.name");
         if (os.contains("Linux")) {
             ProcessBuilder builder = new ProcessBuilder(

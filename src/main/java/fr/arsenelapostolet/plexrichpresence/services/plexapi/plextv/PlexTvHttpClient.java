@@ -1,6 +1,5 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv;
 
-import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApiImpl;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import org.slf4j.Logger;

@@ -2,10 +2,10 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Plex Rich Presence"
-#define MyAppVersion "1.4"
+#define MyAppVersion "1.5"
 #define MyAppPublisher "Arsene Lapostolet"
 #define MyAppURL "https://github.com/Ombrelin/plex-rich-presence"
-#define MyAppExeName "Plex Rich Presence.exe"
+#define MyAppExeName "plex-rich-presence-1.5.exe"
 
 [Setup]
 ; NOTE: The value of AppId uniquely identifies this application. Do not use the same AppId value in installers for other applications.
@@ -26,7 +26,7 @@ LicenseFile=C:\Users\arsen\git\plex-rich-presence\LICENSE
 ; Uncomment the following line to run in non administrative install mode (install for current user only.)
 ;PrivilegesRequired=lowest
 OutputDir=C:\Users\arsen\git\plex-rich-presence\windows
-OutputBaseFilename=plex-rich-presence-setup
+OutputBaseFilename=plex-rich-presence-setup-1.5
 SetupIconFile=C:\Users\arsen\git\plex-rich-presence\windows\icon.ico
 Compression=lzma
 SolidCompression=yes
@@ -40,7 +40,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "quicklaunchicon"; Description: "{cm:CreateQuickLaunchIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked; OnlyBelowVersion: 6.1; Check: not IsAdminInstallMode
 
 [Files]
-Source: "C:\Users\arsen\git\plex-rich-presence\windows\Plex Rich Presence.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\arsen\git\plex-rich-presence\windows\plex-rich-presence-1.5.exe"; DestDir: "{app}"; Flags: ignoreversion
+Source: "C:\Users\arsen\git\plex-rich-presence\windows\jre\*"; DestDir: "{app}\jre"; Flags: ignoreversion recursesubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]

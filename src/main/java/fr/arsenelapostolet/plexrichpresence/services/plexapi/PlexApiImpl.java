@@ -35,15 +35,15 @@ public class PlexApiImpl implements PlexApi {
                 .getServers(authToken)
                 .map(MediaContainerServer::getServer)
                 .map(servers -> servers.stream().filter(this::isValid)
-                .collect(Collectors.toList()));
+                        .collect(Collectors.toList()));
 
     }
 
-    private boolean isValid(Server server){
+    private boolean isValid(Server server) {
         return this.isWorking(server) && this.isOwned(server);
     }
 
-    private boolean isWorking(Server server){
+    private boolean isWorking(Server server) {
         String[] result = checkServer(server);
         if (result[0].equals("success")) {
             server.setFinalAddress(result[1]);
@@ -53,7 +53,7 @@ public class PlexApiImpl implements PlexApi {
         }
     }
 
-    private boolean isOwned(Server server){
+    private boolean isOwned(Server server) {
         return server.getOwned().equals("1");
     }
 
@@ -67,12 +67,12 @@ public class PlexApiImpl implements PlexApi {
 
         List<Observable<PlexSessions>> sessionsObs =
                 servers
-                .stream()
-                .map(server ->
-                        new PlexSessionHttpClient(server.getFinalAddress(), server.getPort())
-                                .getAPI()
-                                .getSessions(server.getAccessToken(), "application/json"))
-                .collect(Collectors.toList());
+                        .stream()
+                        .map(server ->
+                                new PlexSessionHttpClient(server.getFinalAddress(), server.getPort())
+                                        .getAPI()
+                                        .getSessions(server.getAccessToken(), "application/json"))
+                        .collect(Collectors.toList());
 
         return Observable.zip(sessionsObs, sessions -> Arrays.stream(sessions)
                 .filter(obj -> obj instanceof PlexSessions)
@@ -97,7 +97,7 @@ public class PlexApiImpl implements PlexApi {
             }
             try {
                 TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException ignored){
+            } catch (InterruptedException ignored) {
             }
 
         }

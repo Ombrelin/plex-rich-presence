@@ -1,4 +1,3 @@
-
 package fr.arsenelapostolet.plexrichpresence.model;
 
 import lombok.Data;

@@ -134,14 +134,14 @@ public class MainViewModel {
             plexStatusLabel.set("Logged in");
             logoutButtonDisabled.set(false);
         });
-        if (this.rememberMe.get()){
+        if (this.rememberMe.get()) {
             ConfigManager.setConfig("plex.token", authToken);
         }
         this.loggedUsername = response.getUsername();
         this.fetchSession();
     }
 
-    public void logout(){
+    public void logout() {
         this.loading.set(false);
         workerService.cancel();
         authToken = null;
@@ -175,7 +175,6 @@ public class MainViewModel {
                     processSessions(response);
                 });
     }
-
 
 
     public void processSessions(List<Metadatum> userMetaDatum) {
@@ -221,7 +220,7 @@ public class MainViewModel {
                 richPresence.updateMessage(currentPlayerState + " ", session.getTitle());
                 break;
             case "episode":
-                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()) );
+                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
                 break;
             default:
                 richPresence.updateMessage(
