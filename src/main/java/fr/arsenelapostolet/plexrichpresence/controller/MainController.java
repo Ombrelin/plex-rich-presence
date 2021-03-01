@@ -1,14 +1,12 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
+import fr.arsenelapostolet.plexrichpresence.Constants;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -17,6 +15,8 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -52,16 +52,15 @@ public class MainController {
     @FXML
     private CheckBox chk_rememberMe;
 
-    private TextArea eventLog;
+    private ListView<String> eventLog;
 
     private Stage logWindow;
 
     @FXML
     public void initialize() {
-        eventLog = new TextArea();
-        eventLog.setEditable(false);
-        final OutputStream os = new TextAreaOutputStream(eventLog);
-        MyStaticOutputStreamAppender.setStaticOutputStream(os);
+        eventLog = new ListView<>();
+        eventLog.setItems(Constants.logList);
+
         // Databinding
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
         this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
@@ -114,20 +113,6 @@ public class MainController {
         logWindow.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
         logWindow.setTitle("Plex Rich Presence Logs");
         logWindow.show();
-    }
-
-    private static class TextAreaOutputStream extends OutputStream {
-        private final TextArea textArea;
-
-        public TextAreaOutputStream(TextArea textArea) {
-            this.textArea = textArea;
-        }
-
-        @Override
-        public void write(int b) throws IOException {
-            textArea.appendText(String.valueOf((char) b));
-        }
-
     }
 
 }

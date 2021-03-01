@@ -4,26 +4,19 @@
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="fr.arsenelapostolet.plexrichpresence.services.MaskingPatternLayout">
                 <patternsProperty>
-                    (accessToken)|(X-Plex-Token:)|(X-Plex-Token)|(authToken)|(id)|(code)|(email)|(token)|(Token)
+                    (accessToken)<!--|(X-Plex-Token:)|(X-Plex-Token)|(authToken)|(id)|(code)|(email)|(token)|(Token) -->
                 </patternsProperty>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class - %msg%n</pattern>
             </layout>
         </encoder>
     </appender>
 
-    <appender name="MyCustomAppender"
-              class="fr.arsenelapostolet.plexrichpresence.controller.MyStaticOutputStreamAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <encoder>
-            <pattern>%-5level - %msg%n</pattern>
-        </encoder>
-    </appender>
+    <appender name="ListAppender" class="fr.arsenelapostolet.plexrichpresence.controller.ListAppender" />
 
-    <root>
-        <appender-ref ref="STDOUT" level="info"/>
-        <appender-ref ref="MyCustomAppender"/>
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ListAppender"/>
     </root>
+
 
 </configuration>
