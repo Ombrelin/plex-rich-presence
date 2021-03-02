@@ -6,17 +6,17 @@
                 <patternsProperty>
                     (accessToken)<!--|(X-Plex-Token:)|(X-Plex-Token)|(authToken)|(id)|(code)|(email)|(token)|(Token) -->
                 </patternsProperty>
-                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %class - %msg%n</pattern>
+                <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
             </layout>
         </encoder>
     </appender>
 
     <appender name="ListAppender" class="fr.arsenelapostolet.plexrichpresence.controller.ListAppender" />
 
-    <root level="INFO">
+    <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="ListAppender"/>
     </root>
-
-
+    <logger name="sun.util.logging.internal.LoggingProviderImpl$JULWrapper" level="ERROR"/>
+    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="ERROR"/>
 </configuration>

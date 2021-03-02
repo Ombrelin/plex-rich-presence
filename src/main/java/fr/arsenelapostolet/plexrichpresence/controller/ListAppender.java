@@ -4,7 +4,7 @@ import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.AppenderBase;
 import javafx.application.Platform;
 
-import static fr.arsenelapostolet.plexrichpresence.Constants.logList;
+import static fr.arsenelapostolet.plexrichpresence.SharedVariables.logList;
 
 public class ListAppender extends AppenderBase<ILoggingEvent> {
 

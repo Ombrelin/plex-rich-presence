@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.arsenelapostolet.plexrichpresence.controller.LogViewController">
+   <children>
+       <ToolBar prefHeight="40.0" prefWidth="200.0">
+           <Button mnemonicParsing="false" text="Export" fx:id="btn_export" onAction="#exportOnClick"/>
+       </ToolBar>
+      <ListView prefWidth="200.0" fx:id="list_logs"/>
+   </children>
+</VBox>

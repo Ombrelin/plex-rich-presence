@@ -1,7 +1,7 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
-import fr.arsenelapostolet.plexrichpresence.Constants;
+import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,12 +15,8 @@ import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Objects;
 
 
@@ -29,6 +25,8 @@ import java.util.Objects;
 public class MainController {
 
     private final MainViewModel viewModel;
+
+    private Stage logViewWindow;
 
     public MainController(MainViewModel viewModel) {
         this.viewModel = viewModel;
@@ -59,7 +57,7 @@ public class MainController {
     @FXML
     public void initialize() {
         eventLog = new ListView<>();
-        eventLog.setItems(Constants.logList);
+        eventLog.setItems(SharedVariables.logList);
 
         // Databinding
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
@@ -92,27 +90,11 @@ public class MainController {
 
     @FXML
     public void openLog(ActionEvent event) {
-        if (!Objects.isNull(logWindow)) {
-            logWindow.show();
-            logWindow.toFront();
-            return;
-        }
-        final StackPane layout = new StackPane();
-        layout.getChildren().add(eventLog);
+        logViewWindow.show();
+    }
 
-        final Scene logScene = new Scene(layout, 400, 200);
-
-        final JMetro jMetro = new JMetro(Style.DARK);
-        jMetro.setScene(logScene);
-        logScene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
-        logScene.getStylesheets().add(getClass().getClassLoader().getResource("theme.css").toExternalForm());
-
-        logWindow = new Stage();
-        logWindow.setTitle("Log");
-        logWindow.setScene(logScene);
-        logWindow.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
-        logWindow.setTitle("Plex Rich Presence Logs");
-        logWindow.show();
+    public void setLogViewStage(Stage logViewStage) {
+        this.logViewWindow = logViewStage;
     }
 
 }

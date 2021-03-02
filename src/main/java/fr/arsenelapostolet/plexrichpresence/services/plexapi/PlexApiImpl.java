@@ -1,6 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
-import fr.arsenelapostolet.plexrichpresence.Constants;
+import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.model.*;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexApiHttpClient;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.plextv.PlexTokenHttpClient;
@@ -59,7 +59,7 @@ public class PlexApiImpl implements PlexApi {
 
     @Override
     public Observable<User> getUser(String authToken) {
-        return api.getUser(authToken, Constants.plexClientIdentifier, Constants.plexProduct);
+        return api.getUser(authToken, SharedVariables.plexClientIdentifier, SharedVariables.plexProduct);
     }
 
     @Override

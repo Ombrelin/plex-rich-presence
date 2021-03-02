@@ -1,14 +1,19 @@
 package fr.arsenelapostolet.plexrichpresence;
 
+import com.sun.tools.javac.Main;
+import fr.arsenelapostolet.plexrichpresence.controller.LogViewController;
 import fr.arsenelapostolet.plexrichpresence.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
+import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +31,7 @@ public class PlexRefresherFX extends Application {
     private ConfigurableApplicationContext applicationContext;
     private final Logger LOG = LoggerFactory.getLogger(PlexRefresherFX.class);
     private Stage stage;
+    private Stage logViewStage;
     private TrayIcon trayIcon;
 
     @Override
@@ -43,7 +49,10 @@ public class PlexRefresherFX extends Application {
         this.stage = stage;
         ConfigManager.initConfig();
         FxWeaver fxWeaver = applicationContext.getBean(FxWeaver.class);
-        Parent root = fxWeaver.loadView(MainController.class);
+
+        //Init main window
+        FxControllerAndView mainController = fxWeaver.load(MainController.class);
+        Parent root = (StackPane) mainController.getView().orElseThrow();
         Scene scene = new Scene(root);
         JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(scene);
@@ -72,6 +81,26 @@ public class PlexRefresherFX extends Application {
         stage.iconifiedProperty().addListener((ov, t, t1) -> {
             hideStage();
         });
+
+        //Init log window
+        try {
+            logViewStage = new Stage();
+            FxControllerAndView logViewController = fxWeaver.load(LogViewController.class);
+            Parent logViewRoot = (VBox) logViewController.getView().orElseThrow();
+            Scene logViewScene = new Scene(logViewRoot);
+            JMetro jMetro2 = new JMetro(Style.DARK);
+            jMetro2.setScene(logViewScene);
+            logViewScene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
+            logViewScene.getStylesheets().add(getClass().getClassLoader().getResource("theme.css").toExternalForm());
+            logViewStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
+            logViewStage.setTitle("Logs");
+            logViewStage.setScene(logViewScene);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
+
+
+        ((MainController)mainController.getController()).setLogViewStage(logViewStage);
 
     }
 

@@ -6,7 +6,7 @@ import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
 
-public final class Constants {
+public final class SharedVariables {
     public static final String plexProduct = "Discord_Plex_Rich_Presence";
     public static final String plexClientIdentifier = "nDwkFkJCCJQEjq44TDaLJwKW54";
     public static String authToken = "";
