@@ -4,14 +4,14 @@
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="fr.arsenelapostolet.plexrichpresence.services.MaskingPatternLayout">
                 <patternsProperty>
-                    (accessToken)<!--|(X-Plex-Token:)|(X-Plex-Token)|(authToken)|(id)|(code)|(email)|(token)|(Token) -->
+                    (accessToken)|(X-Plex-Token:)|(X-Plex-Token)|(authToken)|(id)|(code)|(email)|(token)|(Token)
                 </patternsProperty>
                 <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{5} - %msg%n</pattern>
             </layout>
         </encoder>
     </appender>
 
-    <appender name="ListAppender" class="fr.arsenelapostolet.plexrichpresence.controller.ListAppender" />
+    <appender name="ListAppender" class="fr.arsenelapostolet.plexrichpresence.services.ListAppender"/>
 
     <root level="${LOG_LEVEL:-INFO}">
         <appender-ref ref="STDOUT"/>

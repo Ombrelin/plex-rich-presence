@@ -1,6 +1,5 @@
 package fr.arsenelapostolet.plexrichpresence;
 
-import com.sun.tools.javac.Main;
 import fr.arsenelapostolet.plexrichpresence.controller.LogViewController;
 import fr.arsenelapostolet.plexrichpresence.controller.MainController;
 import javafx.application.Application;

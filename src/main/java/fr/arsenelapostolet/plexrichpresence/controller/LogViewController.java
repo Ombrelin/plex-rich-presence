@@ -9,8 +9,6 @@ import javafx.scene.control.ListView;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
-
 @Component
 @FxmlView
 public class LogViewController {
@@ -32,8 +30,11 @@ public class LogViewController {
     }
 
     public void exportOnClick(ActionEvent e) {
-        viewModel.exportLog();
+        this.viewModel.exportLog();
     }
 
 
+    public void clearLog(ActionEvent actionEvent) {
+        SharedVariables.logList.clear();
+    }
 }

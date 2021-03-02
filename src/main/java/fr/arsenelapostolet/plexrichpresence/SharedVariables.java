@@ -1,10 +1,7 @@
 package fr.arsenelapostolet.plexrichpresence;
 
-import com.sun.javafx.collections.ObservableListWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import java.util.ArrayList;
 
 public final class SharedVariables {
     public static final String plexProduct = "Discord_Plex_Rich_Presence";

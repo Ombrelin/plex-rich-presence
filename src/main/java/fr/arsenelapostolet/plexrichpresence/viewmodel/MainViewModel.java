@@ -58,7 +58,7 @@ public class MainViewModel {
         };
         this.richPresence.getHandlers().errored = (err1, err2) -> {
             LOG.error("Error occurred when connecting to discord RPC");
-            LOG.error("Error Code: " + String.valueOf(err1));
+            LOG.error("Error Code: " + err1);
             LOG.error("Message: " + err2);
             Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
         };
@@ -183,6 +183,7 @@ public class MainViewModel {
 
         if ((userMetaDatum == null) || (userMetaDatum.size() == 0)) {
             LOG.info("No active sessions found for current user.");
+            Platform.runLater(() -> plexStatusLabel.set("No Stream Detected"));
             richPresence.stopPresence();
             waitBetweenCalls();
             return;
@@ -196,7 +197,7 @@ public class MainViewModel {
                         + "(" + session.getParentTitle() + ") from "
                         + session.getGrandparentTitle()
         );
-        Platform.runLater(() -> plexStatusLabel.set("Stream detected!"));
+        Platform.runLater(() -> plexStatusLabel.set("Stream Detected"));
 
 
         final String currentPlayerState;

@@ -30,6 +30,7 @@ public class LogViewModel {
                 writer.write(str + System.lineSeparator());
             }
             writer.close();
+            LOG.info("Log exported to " + file.getAbsolutePath());
         } catch (Exception e) {
             LOG.error("Failed to export log.");
         }

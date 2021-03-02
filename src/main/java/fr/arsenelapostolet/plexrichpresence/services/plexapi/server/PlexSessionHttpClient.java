@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class PlexSessionHttpClient {
 
-    private Retrofit http;
+    private final Retrofit http;
     private final Logger LOG = LoggerFactory.getLogger(PlexSessionHttpClient.class);
 
     public PlexSessionHttpClient(String serverIp, String serverPort) {
