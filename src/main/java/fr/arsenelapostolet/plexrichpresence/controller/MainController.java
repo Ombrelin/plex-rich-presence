@@ -5,10 +5,8 @@ import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
@@ -35,6 +33,9 @@ public class MainController {
     private VBox vbox_status;
 
     @FXML
+    private VBox vbox_settings;
+
+    @FXML
     private Button btn_logout;
 
     @FXML
@@ -45,6 +46,19 @@ public class MainController {
 
     @FXML
     private CheckBox chk_rememberMe;
+
+    @FXML
+    private CheckBox chk_manualServer;
+
+    @FXML
+    private HBox hbox_manualServerInput;
+
+    @FXML
+    private TextField txt_plexAddress;
+
+    @FXML
+    private TextField txt_plexPort;
+
 
     private ListView<String> eventLog;
 
@@ -60,6 +74,8 @@ public class MainController {
         this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
         this.lbl_discordStatus.textProperty().bindBidirectional(this.viewModel.discordStatusLabel());
         this.btn_logout.disableProperty().bindBidirectional(this.viewModel.logoutButtonEnabled());
+        this.txt_plexAddress.textProperty().bindBidirectional(this.viewModel.plexAddressProperty());
+        this.txt_plexPort.textProperty().bindBidirectional(this.viewModel.plexPortProperty());
         this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
             this.vbox_login.setManaged(!newValue);
             this.vbox_login.setVisible(!newValue);
@@ -93,6 +109,19 @@ public class MainController {
         this.logViewWindow = logViewStage;
     }
 
+    public void showSettings(ActionEvent actionEvent) {
+        this.vbox_settings.setVisible(true);
+        this.vbox_login.setVisible(false);
+    }
+
+    public void closeSettings(ActionEvent actionEvent) {
+        this.vbox_settings.setVisible(false);
+        this.vbox_login.setVisible(true);
+    }
+
+    public void chk_manualServer_onAction(ActionEvent actionEvent) {
+        hbox_manualServerInput.setDisable(!chk_manualServer.isSelected());
+    }
 }
 
 

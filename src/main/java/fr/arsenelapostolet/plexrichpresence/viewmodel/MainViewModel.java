@@ -40,6 +40,9 @@ public class MainViewModel {
     private final StringProperty plexStatusLabel = new SimpleStringProperty("...");
     private final StringProperty discordStatusLabel = new SimpleStringProperty("...");
 
+    private final StringProperty plexAddress = new SimpleStringProperty();
+    private final StringProperty plexPort = new SimpleStringProperty();
+
     private List<Server> servers;
     private String loggedUsername;
     private String authToken;
@@ -128,6 +131,12 @@ public class MainViewModel {
     }
 
     private void postLogin(User response) {
+        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
+            LOG.info(String.format("Manual plex server specified. Address: %s Port: %s", plexAddress.get(), plexPort.get()));
+            servers.get(0).setFinalAddress(plexAddress.get());
+            servers.get(0).setPort(plexPort.get());
+        }
+
         LOG.debug(new Gson().toJson(response));
         LOG.info("Successfully logged in as: " + response.getUsername());
         Platform.runLater(() -> {
@@ -282,6 +291,14 @@ public class MainViewModel {
 
     public BooleanProperty logoutButtonEnabled() {
         return logoutButtonDisabled;
+    }
+
+    public StringProperty plexAddressProperty() {
+        return plexAddress;
+    }
+
+    public StringProperty plexPortProperty() {
+        return plexPort;
     }
 
     public void setRememberMe(boolean rememberMe) {
