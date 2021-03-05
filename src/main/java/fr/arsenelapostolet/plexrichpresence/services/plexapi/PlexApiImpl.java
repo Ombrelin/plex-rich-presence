@@ -13,7 +13,9 @@ import rx.Observable;
 
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -30,12 +32,32 @@ public class PlexApiImpl implements PlexApi {
 
     @Override
     public Observable<List<Server>> getServers(String authToken) {
-        return new PlexApiHttpClient()
+      return new PlexApiHttpClient()
                 .getAPI()
                 .getServers(authToken)
                 .map(MediaContainerServer::getServer)
                 .map(servers -> servers.stream().filter(this::isValid)
                         .collect(Collectors.toList()));
+    }
+
+    @Override
+    public Observable<List<Server>> getServers(String authToken, String plexAddress, String plexPort) {
+
+        Server server = new Server() {{
+            setAddress(plexAddress);
+            setLocalAddresses(plexAddress);
+            setFinalAddress(plexAddress);
+            setPort(plexPort);
+            setAccessToken(authToken);
+        }};
+
+        if (isWorking(server)) {
+            return Observable.just(new ArrayList<>() {{
+                add(server);
+            }});
+        } else {
+            return Observable.just(Collections.emptyList());
+        }
 
     }
 
