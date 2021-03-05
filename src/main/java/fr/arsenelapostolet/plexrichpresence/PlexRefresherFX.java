@@ -7,13 +7,13 @@ import javafx.application.Platform;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import jfxtras.styles.jmetro.JMetro;
 import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxControllerAndView;
 import net.rgielen.fxweaver.core.FxWeaver;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -51,7 +51,8 @@ public class PlexRefresherFX extends Application {
 
         //Init main window
         FxControllerAndView mainController = fxWeaver.load(MainController.class);
-        Parent root = (StackPane) mainController.getView().orElseThrow();
+        MainController mainController1 = ((MainController)mainController.getController());
+        Parent root = (VBox) mainController.getView().orElseThrow();
         Scene scene = new Scene(root);
         JMetro jMetro = new JMetro(Style.DARK);
         jMetro.setScene(scene);
@@ -64,6 +65,21 @@ public class PlexRefresherFX extends Application {
         this.stage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
         this.stage.setTitle(String.format("Plex Rich Presence v%s", getVersion()));
         this.stage.setScene(scene);
+
+        this.stage.setOnShown(windowEvent -> {
+            if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.address")) && !StringUtils.isEmpty(ConfigManager.getConfig("plex.port")) ) {
+                mainController1.getViewModel().plexAddressProperty().set(ConfigManager.getConfig("plex.address"));
+                mainController1.getViewModel().plexPortProperty().set(ConfigManager.getConfig("plex.port"));
+                mainController1.getViewModel().manualServerProperty().set(true);
+            }
+
+            if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
+                mainController1.getViewModel().setAuthToken(ConfigManager.getConfig("plex.token"));
+                mainController1.getViewModel().rememberMeProperty().set(true);
+                mainController1.getViewModel().login();
+            }
+        });
+
         try {
             this.stage.show();
         } catch (Throwable e) {

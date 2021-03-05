@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
+import fr.arsenelapostolet.plexrichpresence.model.PlexAuth;
 import fr.arsenelapostolet.plexrichpresence.model.Server;
 import fr.arsenelapostolet.plexrichpresence.model.User;
 import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
@@ -33,7 +34,8 @@ public class MainViewModel {
     private WorkerService workerService;
 
     // Properties
-    private final BooleanProperty rememberMe = new SimpleBooleanProperty(true);
+    private final BooleanProperty rememberMe = new SimpleBooleanProperty(false);
+    private final BooleanProperty manualServer = new SimpleBooleanProperty(false);
     private final BooleanProperty loading = new SimpleBooleanProperty(false);
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
     private final BooleanProperty logoutButtonDisabled = new SimpleBooleanProperty(false);
@@ -72,6 +74,11 @@ public class MainViewModel {
     public void login() {
         if (!rememberMe.get()) {
             ConfigManager.setConfig("plex.token", "");
+            rememberMeProperty().set(false);
+        }
+        if (plexAddress.isEmpty().get() && plexPort.isEmpty().get()) {
+            ConfigManager.setConfig("plex.address", "");
+            ConfigManager.setConfig("plex.port", "");
         }
         this.logoutButtonDisabled.set(true);
         this.loading.set(true);
@@ -105,13 +112,7 @@ public class MainViewModel {
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
                         SharedVariables.authToken = response.authToken;
-
-                        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
-                            LOG.info(String.format("Manual plex server specified. Address: %s Port: %s", plexAddress.get(), plexPort.get()));
-                            return plexApi.getServers(response.authToken, plexAddress.get(), plexPort.get()).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
-                        } else {
-                            return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
-                        }
+                        return checkServers(response);
                     })
                     .flatMap(response -> {
                         LOG.debug(new Gson().toJson(response));
@@ -123,7 +124,7 @@ public class MainViewModel {
                     .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         } else {
             SharedVariables.authToken = authToken;
-            plexApi.getServers(authToken)
+            checkServers(authToken)
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
                         LOG.debug(new Gson().toJson(response));
@@ -137,8 +138,26 @@ public class MainViewModel {
 
     }
 
+    private Observable<List<Server>> checkServers(PlexAuth response) {
+        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
+            LOG.info(String.format("Manual plex server specified. Address: %s Port: %s", plexAddress.get(), plexPort.get()));
+            return plexApi.getServers(response.authToken, plexAddress.get(), plexPort.get()).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        } else {
+            return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        }
+    }
+
+    private Observable<List<Server>> checkServers(String authToken) {
+        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
+            LOG.info(String.format("Manual plex server specified. Address: %s Port: %s", plexAddress.get(), plexPort.get()));
+            return plexApi.getServers(authToken, plexAddress.get(), plexPort.get()).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        } else {
+            return plexApi.getServers(authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        }
+    }
+
     private void postLogin(User response) {
-        if (this.servers.size() == 0 ) {
+        if (this.servers.size() == 0) {
             handleError("Obtain plex server ", "Failed to find any plex servers.");
             return;
         }
@@ -161,6 +180,8 @@ public class MainViewModel {
 
     public void logout() {
         this.loading.set(false);
+        plexAddress.set("");
+        plexPort.set("");
         workerService.cancel();
         authToken = null;
         LOG.info("Logged out");
@@ -297,6 +318,10 @@ public class MainViewModel {
 
     public BooleanProperty rememberMeProperty() {
         return rememberMe;
+    }
+
+    public BooleanProperty manualServerProperty() {
+        return manualServer;
     }
 
     public BooleanProperty logoutButtonEnabled() {

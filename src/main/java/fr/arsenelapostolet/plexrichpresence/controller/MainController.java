@@ -3,6 +3,7 @@ package fr.arsenelapostolet.plexrichpresence.controller;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
 import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -11,6 +12,8 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 
@@ -82,11 +85,15 @@ public class MainController {
             this.vbox_status.setManaged(newValue);
             this.vbox_status.setVisible(newValue);
         });
+        this.chk_manualServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            this.hbox_manualServerInput.setDisable(!newValue);
+            if (!newValue) {
+                this.viewModel.plexAddressProperty().set("");
+                this.viewModel.plexPortProperty().set("");
+            }
+        });
 
-        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
-            viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
-            this.viewModel.login();
-        }
+
 
     }
 
@@ -119,8 +126,19 @@ public class MainController {
         this.vbox_login.setVisible(true);
     }
 
-    public void chk_manualServer_onAction(ActionEvent actionEvent) {
-        hbox_manualServerInput.setDisable(!chk_manualServer.isSelected());
+    public MainViewModel getViewModel() {
+        return this.viewModel;
+    }
+
+
+    public void quit(ActionEvent actionEvent) {
+        if (!this.viewModel.rememberMeProperty().get()) {
+            ConfigManager.setConfig("plex.token", "");
+            chk_rememberMe.setSelected(false);
+        }
+        ConfigManager.saveConfig();
+        Platform.exit();
+        System.exit(0);
     }
 }
 

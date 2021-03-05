@@ -7,5 +7,7 @@ public final class SharedVariables {
     public static final String plexProduct = "Discord_Plex_Rich_Presence";
     public static final String plexClientIdentifier = "nDwkFkJCCJQEjq44TDaLJwKW54";
     public static String authToken = "";
+    public static String plexAddress = "";
+    public static String plexPort = "";
     public static ObservableList<String> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 }
