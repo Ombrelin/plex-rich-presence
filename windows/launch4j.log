@@ -196,3 +196,15 @@ Launcher:	C:\Users\arsen\git\plex-rich-presence\windows\jre\bin\javaw.exe
 Launcher args:	-jar "C:\Users\arsen\git\plex-rich-presence\windows\plex-rich-presence-1.5.exe"
 Args length:	79/32768 chars
 Exit code:	0
+
+
+Version:	3.14
+CmdLine:	C:\Users\arsen\git\plex-rich-presence\windows\plex-rich-presence-1.6.exe --l4j-debug
+WOW64:		yes
+Create mutex:	Plex Rich Presence
+Working dir:	C:\Users\arsen\git\plex-rich-presence\windows\.
+Java min ver:	
+Java max ver:	
+Bundled JRE(s):	jre
+Check launcher:	C:\Users\arsen\git\plex-rich-presence\windows\jre\bin\javaw.exe (not found)
+Error msg:	This application requires a Java Runtime Environment.

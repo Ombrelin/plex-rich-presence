@@ -10,7 +10,7 @@
     </parent>
     <groupId>fr.arsenelapostolet</groupId>
     <artifactId>plex-rich-presence</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
     <name>plex-rich-presence</name>
     <description>Rich presence provider for plex media server</description>
 

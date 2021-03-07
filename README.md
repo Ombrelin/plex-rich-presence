@@ -7,8 +7,8 @@ Plex Rich Presence works with Java 11+. A JRE 11 is now bundled with the Windows
 
 ## Release Version
 
-- [Portable and Executable JAR](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-1.5.jar)
-- [Windows Installer](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-setup-1.5.exe)
+- [Portable and Executable JAR](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-1.6.jar)
+- [Windows Installer](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-setup.exe)
 
 You can also install the windows version using the WinGet package manager : 
 
@@ -40,7 +40,7 @@ mvn clean package
 Once build, you can run the app by running :
 
 ```
-java -jar ./target/plex-rich-presence-1.5.jar
+java -jar ./target/plex-rich-presence-1.6.jar
 ```
 
 ## Libraries used
