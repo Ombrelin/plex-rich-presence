@@ -184,6 +184,7 @@ public class MainViewModel {
         plexPort.set("");
         workerService.cancel();
         authToken = null;
+        richPresence.stopPresence();
         LOG.info("Logged out");
     }
 
@@ -262,6 +263,9 @@ public class MainViewModel {
                 break;
             case "episode":
                 richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
+                break;
+            case "track":
+                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("♫ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
                 break;
             default:
                 richPresence.updateMessage(

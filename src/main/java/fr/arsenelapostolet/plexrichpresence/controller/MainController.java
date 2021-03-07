@@ -93,7 +93,17 @@ public class MainController {
             }
         });
 
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.address")) && !StringUtils.isEmpty(ConfigManager.getConfig("plex.port")) ) {
+            viewModel.plexAddressProperty().set(ConfigManager.getConfig("plex.address"));
+            viewModel.plexPortProperty().set(ConfigManager.getConfig("plex.port"));
+            viewModel.manualServerProperty().set(true);
+        }
 
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
+            viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
+            viewModel.rememberMeProperty().set(true);
+            Platform.runLater(viewModel::login);
+        }
 
     }
 
