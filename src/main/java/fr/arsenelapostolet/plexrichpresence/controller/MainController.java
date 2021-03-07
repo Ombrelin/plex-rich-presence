@@ -12,8 +12,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Component;
 
 

@@ -11,9 +11,9 @@ public class WorkerService extends Service {
 
     @Override
     protected Task<Void> createTask() {
-        return new Task<Void>() {
+        return new Task<>() {
             @Override
-            protected Void call() throws Exception {
+            protected Void call() {
 
                 for (int i = 0; i < 100; i++) {
                     updateProgress(i, 100);

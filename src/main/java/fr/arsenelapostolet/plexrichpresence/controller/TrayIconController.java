@@ -80,7 +80,6 @@ public class TrayIconController {
 
     private void showStage() {
         if (stage != null) {
-            stage.setIconified(false);
             stage.show();
             stage.toFront();
         }
