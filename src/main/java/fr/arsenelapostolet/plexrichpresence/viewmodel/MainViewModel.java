@@ -2,8 +2,9 @@ package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
 import com.google.gson.Gson;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
-import fr.arsenelapostolet.plexrichpresence.Constants;
+import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
+import fr.arsenelapostolet.plexrichpresence.model.PlexAuth;
 import fr.arsenelapostolet.plexrichpresence.model.Server;
 import fr.arsenelapostolet.plexrichpresence.model.User;
 import fr.arsenelapostolet.plexrichpresence.services.RichPresence;
@@ -15,6 +16,7 @@ import javafx.scene.control.Alert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import java.awt.*;
@@ -32,13 +34,17 @@ public class MainViewModel {
     private WorkerService workerService;
 
     // Properties
-    private final BooleanProperty rememberMe = new SimpleBooleanProperty(true);
+    private final BooleanProperty rememberMe = new SimpleBooleanProperty(false);
+    private final BooleanProperty manualServer = new SimpleBooleanProperty(false);
     private final BooleanProperty loading = new SimpleBooleanProperty(false);
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
     private final BooleanProperty logoutButtonDisabled = new SimpleBooleanProperty(false);
 
     private final StringProperty plexStatusLabel = new SimpleStringProperty("...");
     private final StringProperty discordStatusLabel = new SimpleStringProperty("...");
+
+    private final StringProperty plexAddress = new SimpleStringProperty();
+    private final StringProperty plexPort = new SimpleStringProperty();
 
     private List<Server> servers;
     private String loggedUsername;
@@ -58,7 +64,7 @@ public class MainViewModel {
         };
         this.richPresence.getHandlers().errored = (err1, err2) -> {
             LOG.error("Error occurred when connecting to discord RPC");
-            LOG.error("Error Code: " + String.valueOf(err1));
+            LOG.error("Error Code: " + err1);
             LOG.error("Message: " + err2);
             Platform.runLater(() -> discordStatusLabel().set("Disconnected"));
         };
@@ -68,6 +74,11 @@ public class MainViewModel {
     public void login() {
         if (!rememberMe.get()) {
             ConfigManager.setConfig("plex.token", "");
+            rememberMeProperty().set(false);
+        }
+        if (plexAddress.isEmpty().get() && plexPort.isEmpty().get()) {
+            ConfigManager.setConfig("plex.address", "");
+            ConfigManager.setConfig("plex.port", "");
         }
         this.logoutButtonDisabled.set(true);
         this.loading.set(true);
@@ -75,15 +86,15 @@ public class MainViewModel {
         LOG.info("Logging in");
 
         if (authToken == null) {
-            plexApi.getPlexAuthPin(true, Constants.plexProduct, Constants.plexClientIdentifier)
+            plexApi.getPlexAuthPin(true, SharedVariables.plexProduct, SharedVariables.plexClientIdentifier)
                     .doOnError(throwable -> handleError("Get plex auth pin ", throwable.getMessage()))
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
                         LOG.debug(new Gson().toJson(response));
                         String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
-                                Constants.plexClientIdentifier,
+                                SharedVariables.plexClientIdentifier,
                                 response.code,
-                                Constants.plexProduct);
+                                SharedVariables.plexProduct);
                         LOG.info("Please sign in using this url: " + authURL);
                         Desktop desktop = Desktop.getDesktop();
                         try {
@@ -92,7 +103,7 @@ public class MainViewModel {
                             handleError("Open login page ", e.getMessage());
                         }
                         Platform.runLater(() -> plexStatusLabel.set("Waiting for user to login..."));
-                        return plexApi.validatePlexAuthPin(response.id, response.code, Constants.plexClientIdentifier)
+                        return plexApi.validatePlexAuthPin(response.id, response.code, SharedVariables.plexClientIdentifier)
                                 .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
@@ -100,8 +111,8 @@ public class MainViewModel {
                         LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
-                        Constants.authToken = response.authToken;
-                        return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+                        SharedVariables.authToken = response.authToken;
+                        return checkServers(response);
                     })
                     .flatMap(response -> {
                         LOG.debug(new Gson().toJson(response));
@@ -112,8 +123,8 @@ public class MainViewModel {
                     })
                     .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         } else {
-            Constants.authToken = authToken;
-            plexApi.getServers(authToken)
+            SharedVariables.authToken = authToken;
+            checkServers(authToken)
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
                         LOG.debug(new Gson().toJson(response));
@@ -121,13 +132,39 @@ public class MainViewModel {
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.servers = response;
                         return plexApi.getUser(authToken).doOnError(throwable -> handleError("Obtain user info ", throwable.getMessage()));
-                    })
+                    }).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()))
                     .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         }
 
     }
 
+    private Observable<List<Server>> checkServers(PlexAuth response) {
+        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
+            LOG.info(String.format("Manual plex server specified. Address: %s Port: %s", plexAddress.get(), plexPort.get()));
+            return plexApi.getServers(response.authToken, plexAddress.get(), plexPort.get()).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        } else {
+            return plexApi.getServers(response.authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        }
+    }
+
+    private Observable<List<Server>> checkServers(String authToken) {
+        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
+            LOG.info(String.format("Manual plex server specified. Address: %s Port: %s", plexAddress.get(), plexPort.get()));
+            return plexApi.getServers(authToken, plexAddress.get(), plexPort.get()).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        } else {
+            return plexApi.getServers(authToken).doOnError(throwable -> handleError("Obtain plex server ", throwable.getMessage()));
+        }
+    }
+
     private void postLogin(User response) {
+        if (this.servers.size() == 0) {
+            handleError("Obtain plex server ", "Failed to find any plex servers.");
+            return;
+        }
+        if (plexAddress.isNotEmpty().get() && plexPort.isNotEmpty().get()) {
+            ConfigManager.setConfig("plex.address", plexAddress.get());
+            ConfigManager.setConfig("plex.port", plexPort.get());
+        }
         LOG.debug(new Gson().toJson(response));
         LOG.info("Successfully logged in as: " + response.getUsername());
         Platform.runLater(() -> {
@@ -143,12 +180,16 @@ public class MainViewModel {
 
     public void logout() {
         this.loading.set(false);
+        plexAddress.set("");
+        plexPort.set("");
         workerService.cancel();
         authToken = null;
+        richPresence.stopPresence();
         LOG.info("Logged out");
     }
 
     private void handleError(String name, String message) {
+        this.authToken = null;
         LOG.error(name + "failed : " + message);
         this.loading.set(false);
         Platform.runLater(() -> {
@@ -183,6 +224,7 @@ public class MainViewModel {
 
         if ((userMetaDatum == null) || (userMetaDatum.size() == 0)) {
             LOG.info("No active sessions found for current user.");
+            Platform.runLater(() -> plexStatusLabel.set("No Stream Detected"));
             richPresence.stopPresence();
             waitBetweenCalls();
             return;
@@ -196,7 +238,7 @@ public class MainViewModel {
                         + "(" + session.getParentTitle() + ") from "
                         + session.getGrandparentTitle()
         );
-        Platform.runLater(() -> plexStatusLabel.set("Stream detected!"));
+        Platform.runLater(() -> plexStatusLabel.set("Stream Detected"));
 
 
         final String currentPlayerState;
@@ -221,6 +263,9 @@ public class MainViewModel {
                 break;
             case "episode":
                 richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
+                break;
+            case "track":
+                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("♫ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
                 break;
             default:
                 richPresence.updateMessage(
@@ -279,8 +324,20 @@ public class MainViewModel {
         return rememberMe;
     }
 
+    public BooleanProperty manualServerProperty() {
+        return manualServer;
+    }
+
     public BooleanProperty logoutButtonEnabled() {
         return logoutButtonDisabled;
+    }
+
+    public StringProperty plexAddressProperty() {
+        return plexAddress;
+    }
+
+    public StringProperty plexPortProperty() {
+        return plexPort;
     }
 
     public void setRememberMe(boolean rememberMe) {

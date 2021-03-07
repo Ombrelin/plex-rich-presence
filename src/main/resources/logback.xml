@@ -11,19 +11,12 @@
         </encoder>
     </appender>
 
-    <appender name="MyCustomAppender"
-              class="fr.arsenelapostolet.plexrichpresence.controller.MyStaticOutputStreamAppender">
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>INFO</level>
-        </filter>
-        <encoder>
-            <pattern>%-5level - %msg%n</pattern>
-        </encoder>
-    </appender>
+    <appender name="ListAppender" class="fr.arsenelapostolet.plexrichpresence.services.ListAppender"/>
 
-    <root>
-        <appender-ref ref="STDOUT" level="info"/>
-        <appender-ref ref="MyCustomAppender"/>
+    <root level="${LOG_LEVEL:-INFO}">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="ListAppender"/>
     </root>
-
+    <logger name="sun.util.logging.internal.LoggingProviderImpl$JULWrapper" level="ERROR"/>
+    <logger name="org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener" level="ERROR"/>
 </configuration>
