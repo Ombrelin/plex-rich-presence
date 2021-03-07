@@ -18,23 +18,25 @@ public class LogViewModel {
     public void exportLog() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Export log file");
-        File file = fileChooser.showSaveDialog(new Stage());
+        File exportFile = fileChooser.showSaveDialog(new Stage());
 
-        if (file == null) {
+        if (exportFile == null) {
             return;
         }
 
         try {
-            FileWriter writer = new FileWriter(file.getAbsolutePath());
+            FileWriter writer = new FileWriter(exportFile.getAbsolutePath());
             for(String str: SharedVariables.logList) {
                 writer.write(str + System.lineSeparator());
             }
             writer.close();
-            LOG.info("Log exported to " + file.getAbsolutePath());
+            LOG.info("Log exported to " + exportFile.getAbsolutePath());
         } catch (Exception e) {
             LOG.error("Failed to export log.");
         }
+    }
 
-
+    public void clearLogs(){
+        SharedVariables.logList.clear();
     }
 }

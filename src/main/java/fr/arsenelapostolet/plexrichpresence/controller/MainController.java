@@ -63,10 +63,20 @@ public class MainController {
 
     private ListView<String> eventLog;
 
-    private Stage logWindow;
-
     @FXML
     public void initialize() {
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.address")) && !StringUtils.isEmpty(ConfigManager.getConfig("plex.port")) ) {
+            this.viewModel.plexAddressProperty().set(ConfigManager.getConfig("plex.address"));
+            this.viewModel.plexPortProperty().set(ConfigManager.getConfig("plex.port"));
+            this.viewModel.manualServerProperty().set(true);
+        }
+
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
+            this.viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
+            this.viewModel.rememberMeProperty().set(true);
+            Platform.runLater(this.viewModel::login);
+        }
+
         eventLog = new ListView<>();
         eventLog.setItems(SharedVariables.logList);
 
@@ -77,6 +87,12 @@ public class MainController {
         this.btn_logout.disableProperty().bindBidirectional(this.viewModel.logoutButtonEnabled());
         this.txt_plexAddress.textProperty().bindBidirectional(this.viewModel.plexAddressProperty());
         this.txt_plexPort.textProperty().bindBidirectional(this.viewModel.plexPortProperty());
+        this.vbox_settings.visibleProperty().bindBidirectional(this.viewModel.settingsShownProperty());
+
+        this.viewModel.settingsShownProperty().addListener((observable, oldValue, newValue)  -> {
+            this.vbox_login.setVisible(!newValue);
+        });
+
         this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
             this.vbox_login.setManaged(!newValue);
             this.vbox_login.setVisible(!newValue);
@@ -90,19 +106,6 @@ public class MainController {
                 this.viewModel.plexPortProperty().set("");
             }
         });
-
-        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.address")) && !StringUtils.isEmpty(ConfigManager.getConfig("plex.port")) ) {
-            viewModel.plexAddressProperty().set(ConfigManager.getConfig("plex.address"));
-            viewModel.plexPortProperty().set(ConfigManager.getConfig("plex.port"));
-            viewModel.manualServerProperty().set(true);
-        }
-
-        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
-            viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
-            viewModel.rememberMeProperty().set(true);
-            Platform.runLater(viewModel::login);
-        }
-
     }
 
     @FXML
@@ -125,28 +128,15 @@ public class MainController {
     }
 
     public void showSettings(ActionEvent actionEvent) {
-        this.vbox_settings.setVisible(true);
-        this.vbox_login.setVisible(false);
+        this.viewModel.showSettings();
     }
 
     public void closeSettings(ActionEvent actionEvent) {
-        this.vbox_settings.setVisible(false);
-        this.vbox_login.setVisible(true);
+        this.viewModel.closeSettings();
     }
-
-    public MainViewModel getViewModel() {
-        return this.viewModel;
-    }
-
 
     public void quit(ActionEvent actionEvent) {
-        if (!this.viewModel.rememberMeProperty().get()) {
-            ConfigManager.setConfig("plex.token", "");
-            chk_rememberMe.setSelected(false);
-        }
-        ConfigManager.saveConfig();
-        Platform.exit();
-        System.exit(0);
+        this.viewModel.quit();
     }
 }
 

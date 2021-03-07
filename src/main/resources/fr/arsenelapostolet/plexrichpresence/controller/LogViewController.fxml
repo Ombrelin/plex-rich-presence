@@ -10,6 +10,6 @@
            <Button fx:id="btn_export" mnemonicParsing="false" onAction="#exportOnClick" text="Export"/>
            <Button fx:id="btn_clearLog" mnemonicParsing="false" text="Clear" onAction="#clearLog"/>
        </ToolBar>
-       <ListView fx:id="list_logs" prefWidth="200.0" VBox.vgrow="ALWAYS"/>
+       <ListView fx:id="logs_list" prefWidth="200.0" VBox.vgrow="ALWAYS"/>
    </children>
 </VBox>

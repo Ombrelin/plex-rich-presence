@@ -12,7 +12,9 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApi;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
 import javafx.application.Platform;
 import javafx.beans.property.*;
+import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,6 +48,8 @@ public class MainViewModel {
     private final StringProperty plexAddress = new SimpleStringProperty();
     private final StringProperty plexPort = new SimpleStringProperty();
 
+    private final BooleanProperty settingsShown = new SimpleBooleanProperty(false);
+
     private List<Server> servers;
     private String loggedUsername;
     private String authToken;
@@ -53,6 +57,8 @@ public class MainViewModel {
     public MainViewModel(RichPresence richPresence, PlexApi plexApi) {
         this.richPresence = richPresence;
         this.plexApi = plexApi;
+
+
 
         this.richPresence.getHandlers().ready = (user) -> {
             LOG.info("Connected to Discord RPC");
@@ -219,8 +225,6 @@ public class MainViewModel {
 
 
     public void processSessions(List<Metadatum> userMetaDatum) {
-        long currentTime = System.currentTimeMillis() / 1000;
-
 
         if ((userMetaDatum == null) || (userMetaDatum.size() == 0)) {
             LOG.info("No active sessions found for current user.");
@@ -238,59 +242,19 @@ public class MainViewModel {
                         + "(" + session.getParentTitle() + ") from "
                         + session.getGrandparentTitle()
         );
+
         Platform.runLater(() -> plexStatusLabel.set("Stream Detected"));
-
-
-        final String currentPlayerState;
-        switch (session.getPlayer().getState()) {
-            case "buffering":
-                currentPlayerState = "⟲";
-                richPresence.setEndTimestamp(currentTime);
-                break;
-            case "paused":
-                currentPlayerState = "⏸";
-                richPresence.setEndTimestamp(currentTime);
-                break;
-            default:
-                currentPlayerState = "▶";
-                richPresence.setEndTimestamp(currentTime + ((Long.parseLong(session.getDuration()) - Long.parseLong(session.getViewOffset())) / 1000));
-                break;
-        }
-
-        switch (session.getType()) {
-            case "movie":
-                richPresence.updateMessage(currentPlayerState + " ", session.getTitle());
-                break;
-            case "episode":
-                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("⏏ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
-                break;
-            case "track":
-                richPresence.updateMessage(String.format("%s %s", currentPlayerState, session.getGrandparentTitle()), String.format("♫ %02dx%02d - %s", Integer.parseInt(session.getParentIndex()), Integer.parseInt(session.getIndex()), session.getTitle()));
-                break;
-            default:
-                richPresence.updateMessage(
-                        session.getGrandparentTitle() + " - " + session.getParentTitle(),
-                        session.getTitle()
-                );
-                break;
-        }
-
-
+        richPresence.updateRichPresence(session);
         waitBetweenCalls();
-
-
     }
+
+
 
     public StringProperty plexStatusLabel() {
         return plexStatusLabel;
     }
-
     public StringProperty discordStatusLabel() {
         return discordStatusLabel;
-    }
-
-    public WorkerService getWorkerService() {
-        return workerService;
     }
 
     void waitBetweenCalls() {
@@ -300,59 +264,55 @@ public class MainViewModel {
         workerService.start();
     }
 
-    public double getProgress() {
-        return progress.get();
-    }
-
     public void setAuthToken(String authToken) {
         this.authToken = authToken;
     }
-
-    public DoubleProperty progressProperty() {
-        return progress;
-    }
-
-    public void setProgress(double progress) {
-        this.progress.set(progress);
-    }
-
-    public boolean isRememberMe() {
-        return rememberMe.get();
-    }
-
     public BooleanProperty rememberMeProperty() {
         return rememberMe;
     }
-
     public BooleanProperty manualServerProperty() {
         return manualServer;
     }
-
     public BooleanProperty logoutButtonEnabled() {
         return logoutButtonDisabled;
     }
-
     public StringProperty plexAddressProperty() {
         return plexAddress;
     }
-
     public StringProperty plexPortProperty() {
         return plexPort;
     }
-
-    public void setRememberMe(boolean rememberMe) {
-        this.rememberMe.set(rememberMe);
-    }
-
-    public boolean isLoading() {
-        return loading.get();
-    }
-
     public BooleanProperty loadingProperty() {
         return loading;
     }
 
-    public void setLoading(boolean loading) {
-        this.loading.set(loading);
+    public void quit(){
+        if (!this.rememberMeProperty().get()) {
+            ConfigManager.setConfig("plex.token", "");
+            this.rememberMeProperty().set(false);
+        }
+        ConfigManager.saveConfig();
+        Platform.exit();
+        System.exit(0);
+    }
+
+    public boolean isSettingsShown() {
+        return settingsShown.get();
+    }
+
+    public BooleanProperty settingsShownProperty() {
+        return settingsShown;
+    }
+
+    public void setSettingsShown(boolean settingsShown) {
+        this.settingsShown.set(settingsShown);
+    }
+
+    public void showSettings() {
+        this.settingsShown.set(true);
+    }
+
+    public void closeSettings() {
+        this.settingsShown.set(false);
     }
 }
