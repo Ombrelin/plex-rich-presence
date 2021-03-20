@@ -1,7 +1,8 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
-import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.LogViewModel;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Component;
 @FxmlView
 public class LogViewController {
     private final LogViewModel viewModel;
+    public static ObservableList<String> logList = FXCollections.synchronizedObservableList(FXCollections.observableArrayList());
 
     public LogViewController(LogViewModel viewModel) {
         this.viewModel = viewModel;
@@ -22,7 +24,7 @@ public class LogViewController {
 
     @FXML
     public void initialize() {
-        logs_list.setItems(SharedVariables.logList);
+        logs_list.setItems(logList);
     }
 
     public void exportOnClick(ActionEvent e) {

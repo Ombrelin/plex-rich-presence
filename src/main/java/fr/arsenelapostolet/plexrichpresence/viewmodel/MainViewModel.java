@@ -2,7 +2,6 @@ package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
 import com.google.gson.Gson;
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
-import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
 import fr.arsenelapostolet.plexrichpresence.model.PlexAuth;
 import fr.arsenelapostolet.plexrichpresence.model.Server;
@@ -12,9 +11,7 @@ import fr.arsenelapostolet.plexrichpresence.services.plexapi.PlexApi;
 import fr.arsenelapostolet.plexrichpresence.services.plexapi.WorkerService;
 import javafx.application.Platform;
 import javafx.beans.property.*;
-import javafx.event.ActionEvent;
 import javafx.scene.control.Alert;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -28,6 +25,8 @@ import java.util.List;
 @Component
 public class MainViewModel {
 
+    public static final String plexProduct = "Discord_Plex_Rich_Presence";
+    public static final String plexClientIdentifier = "nDwkFkJCCJQEjq44TDaLJwKW54";
     private final Logger LOG = LoggerFactory.getLogger(MainViewModel.class);
 
     // Services
@@ -92,15 +91,15 @@ public class MainViewModel {
         LOG.info("Logging in");
 
         if (authToken == null) {
-            plexApi.getPlexAuthPin(true, SharedVariables.plexProduct, SharedVariables.plexClientIdentifier)
+            plexApi.getPlexAuthPin(true, plexProduct, plexClientIdentifier)
                     .doOnError(throwable -> handleError("Get plex auth pin ", throwable.getMessage()))
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
                         LOG.debug(new Gson().toJson(response));
                         String authURL = String.format("https://app.plex.tv/auth#?clientID=%s&code=%s&context%%5Bdevice%%5D%%5Bproduct%%5D=%s",
-                                SharedVariables.plexClientIdentifier,
+                                plexClientIdentifier,
                                 response.code,
-                                SharedVariables.plexProduct);
+                                plexProduct);
                         LOG.info("Please sign in using this url: " + authURL);
                         Desktop desktop = Desktop.getDesktop();
                         try {
@@ -109,7 +108,7 @@ public class MainViewModel {
                             handleError("Open login page ", e.getMessage());
                         }
                         Platform.runLater(() -> plexStatusLabel.set("Waiting for user to login..."));
-                        return plexApi.validatePlexAuthPin(response.id, response.code, SharedVariables.plexClientIdentifier)
+                        return plexApi.validatePlexAuthPin(response.id, response.code, plexClientIdentifier)
                                 .doOnError(throwable -> handleError("Validate auth pin/code ", throwable.getMessage()));
                     })
                     .flatMap(response -> {
@@ -117,7 +116,6 @@ public class MainViewModel {
                         LOG.info("Obtaining Plex servers...");
                         Platform.runLater(() -> plexStatusLabel.set("Obtaining plex servers..."));
                         this.authToken = response.authToken;
-                        SharedVariables.authToken = response.authToken;
                         return checkServers(response);
                     })
                     .flatMap(response -> {
@@ -129,7 +127,6 @@ public class MainViewModel {
                     })
                     .subscribe(this::postLogin, throwable -> handleError("Initialization ", throwable.getMessage()));
         } else {
-            SharedVariables.authToken = authToken;
             checkServers(authToken)
                     .subscribeOn(Schedulers.io())
                     .flatMap(response -> {
