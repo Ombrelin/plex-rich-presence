@@ -12,7 +12,8 @@
     <licenseUrl>https://raw.githubusercontent.com/Ombrelin/plex-rich-presence/master/LICENSE</licenseUrl>
     <projectSourceUrl>https://github.com/Ombrelin/plex-rich-presence</projectSourceUrl>
     <bugTrackerUrl>https://github.com/Ombrelin/plex-rich-presence/issues</bugTrackerUrl>
-    <tags>plex,discord,java</tags>
+    <releaseNotes>https://github.com/Ombrelin/plex-rich-presence/releases/latest</releaseNotes>
+    <tags>plex discord java</tags>
     <summary>Discord Rich Presence Provider for PLEX Media Server</summary>
     <description>Lightweight GUI app to authenticate to your PLEX account and enable your PLEX active session to be displayed as Discord Rich Presence activity</description>
     <dependencies>
