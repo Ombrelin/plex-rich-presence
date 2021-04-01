@@ -1,6 +1,9 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi;
 
-import fr.arsenelapostolet.plexrichpresence.model.*;
+import fr.arsenelapostolet.plexrichpresence.model.Metadatum;
+import fr.arsenelapostolet.plexrichpresence.model.PlexAuth;
+import fr.arsenelapostolet.plexrichpresence.model.Server;
+import fr.arsenelapostolet.plexrichpresence.model.User;
 import rx.Observable;
 
 import java.util.List;

@@ -1,7 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.services.plexapi.server;
 
 import fr.arsenelapostolet.plexrichpresence.model.PlexSessions;
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import rx.Observable;

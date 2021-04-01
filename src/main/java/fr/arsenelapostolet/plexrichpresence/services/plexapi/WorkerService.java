@@ -8,13 +8,14 @@ import org.slf4j.LoggerFactory;
 
 public class WorkerService extends Service {
     private final Logger LOG = LoggerFactory.getLogger(MainViewModel.class);
+
     @Override
     protected Task<Void> createTask() {
         return new Task<Void>() {
             @Override
             protected Void call() throws Exception {
 
-                for(int i=0; i<100; i++){
+                for (int i = 0; i < 100; i++) {
                     updateProgress(i, 100);
                     try {
                         Thread.sleep(100);

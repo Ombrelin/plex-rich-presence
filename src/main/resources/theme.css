@@ -50,7 +50,7 @@
     -fx-background-color: graphic_color;
 }
 
-.text-input, .text-input:focused, .text-input:hover,.text-field:focused,.text-field:hover {
+.text-input, .text-input:focused, .text-input:hover, .text-field:focused, .text-field:hover {
     -fx-text-fill: #ffffff !important;
 
 }

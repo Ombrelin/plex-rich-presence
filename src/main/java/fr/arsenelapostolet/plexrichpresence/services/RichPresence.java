@@ -3,11 +3,6 @@ package fr.arsenelapostolet.plexrichpresence.services;
 import club.minnced.discord.rpc.DiscordEventHandlers;
 import club.minnced.discord.rpc.DiscordRPC;
 import club.minnced.discord.rpc.DiscordRichPresence;
-import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
-import javafx.application.Platform;
-import javafx.beans.property.StringProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -42,7 +37,7 @@ public class RichPresence {
         return handlers;
     }
 
-    public void updateMessage(String state, String media){
+    public void updateMessage(String state, String media) {
         presence.details = state;
         presence.state = media;
         lib.Discord_UpdatePresence(presence);
@@ -53,7 +48,7 @@ public class RichPresence {
     }
 
     public void setEndTimestamp(long end) {
-         presence.endTimestamp = end;
+        presence.endTimestamp = end;
         lib.Discord_UpdatePresence(presence);
     }
 

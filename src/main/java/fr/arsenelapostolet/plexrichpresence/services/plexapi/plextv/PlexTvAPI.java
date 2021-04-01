@@ -4,7 +4,6 @@ import fr.arsenelapostolet.plexrichpresence.model.MediaContainerServer;
 import fr.arsenelapostolet.plexrichpresence.model.PlexAuth;
 import fr.arsenelapostolet.plexrichpresence.model.PlexLogin;
 import fr.arsenelapostolet.plexrichpresence.model.User;
-import retrofit2.Call;
 import retrofit2.http.*;
 import rx.Observable;
 
@@ -12,10 +11,10 @@ public interface PlexTvAPI {
 
     @POST("/users/sign_in.json")
     Observable<PlexLogin> login(@Query("user[login]") String login,
-                          @Query("user[password]") String password,
-                          @Header("X-Plex-Product") String os,
-                          @Header("X-Plex-Version") String version,
-                          @Header("X-Plex-Client-Identifier") String client);
+                                @Query("user[password]") String password,
+                                @Header("X-Plex-Product") String os,
+                                @Header("X-Plex-Version") String version,
+                                @Header("X-Plex-Client-Identifier") String client);
 
     @GET("/pms/servers.xml")
     Observable<MediaContainerServer> getServers(@Query("X-Plex-Token") String plexToken);
@@ -34,7 +33,6 @@ public interface PlexTvAPI {
     Observable<User> getUser(@Query("X-Plex-Token") String plexToken,
                              @Query("X-Plex-Client-Identifier") String plexIdentifier,
                              @Query("X-Plex-Product") String plexProduct);
-
 
 
 }
