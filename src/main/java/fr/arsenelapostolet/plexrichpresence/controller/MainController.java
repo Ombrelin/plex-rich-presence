@@ -1,27 +1,18 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
+import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import jfxtras.styles.jmetro.JMetro;
-import jfxtras.styles.jmetro.Style;
 import net.rgielen.fxweaver.core.FxmlView;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.Objects;
 
 
 @Component
@@ -29,6 +20,8 @@ import java.util.Objects;
 public class MainController {
 
     private final MainViewModel viewModel;
+
+    private Stage logViewWindow;
 
     public MainController(MainViewModel viewModel) {
         this.viewModel = viewModel;
@@ -39,6 +32,9 @@ public class MainController {
 
     @FXML
     private VBox vbox_status;
+
+    @FXML
+    private VBox vbox_settings;
 
     @FXML
     private Button btn_logout;
@@ -52,33 +48,64 @@ public class MainController {
     @FXML
     private CheckBox chk_rememberMe;
 
-    private TextArea eventLog;
+    @FXML
+    private CheckBox chk_manualServer;
 
-    private Stage logWindow;
+    @FXML
+    private HBox hbox_manualServerInput;
+
+    @FXML
+    private TextField txt_plexAddress;
+
+    @FXML
+    private TextField txt_plexPort;
+
+
+    private ListView<String> eventLog;
 
     @FXML
     public void initialize() {
-        eventLog = new TextArea();
-        eventLog.setEditable(false);
-        final OutputStream os = new TextAreaOutputStream(eventLog);
-        MyStaticOutputStreamAppender.setStaticOutputStream(os);
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.address")) && !StringUtils.isEmpty(ConfigManager.getConfig("plex.port")) ) {
+            this.viewModel.plexAddressProperty().set(ConfigManager.getConfig("plex.address"));
+            this.viewModel.plexPortProperty().set(ConfigManager.getConfig("plex.port"));
+            this.viewModel.manualServerProperty().set(true);
+        }
+
+        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
+            this.viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
+            this.viewModel.rememberMeProperty().set(true);
+            Platform.runLater(this.viewModel::login);
+        }
+
+        eventLog = new ListView<>();
+        eventLog.setItems(SharedVariables.logList);
+
         // Databinding
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
         this.lbl_plexStatus.textProperty().bindBidirectional(this.viewModel.plexStatusLabel());
         this.lbl_discordStatus.textProperty().bindBidirectional(this.viewModel.discordStatusLabel());
         this.btn_logout.disableProperty().bindBidirectional(this.viewModel.logoutButtonEnabled());
+        this.txt_plexAddress.textProperty().bindBidirectional(this.viewModel.plexAddressProperty());
+        this.txt_plexPort.textProperty().bindBidirectional(this.viewModel.plexPortProperty());
+        this.vbox_settings.visibleProperty().bindBidirectional(this.viewModel.settingsShownProperty());
+
+        this.viewModel.settingsShownProperty().addListener((observable, oldValue, newValue)  -> {
+            this.vbox_login.setVisible(!newValue);
+        });
+
         this.viewModel.loadingProperty().addListener((observable, oldValue, newValue) -> {
             this.vbox_login.setManaged(!newValue);
             this.vbox_login.setVisible(!newValue);
             this.vbox_status.setManaged(newValue);
             this.vbox_status.setVisible(newValue);
         });
-
-        if (!StringUtils.isEmpty(ConfigManager.getConfig("plex.token"))) {
-            viewModel.setAuthToken(ConfigManager.getConfig("plex.token"));
-            this.viewModel.login();
-        }
-
+        this.chk_manualServer.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            this.hbox_manualServerInput.setDisable(!newValue);
+            if (!newValue) {
+                this.viewModel.plexAddressProperty().set("");
+                this.viewModel.plexPortProperty().set("");
+            }
+        });
     }
 
     @FXML
@@ -93,43 +120,24 @@ public class MainController {
 
     @FXML
     public void openLog(ActionEvent event) {
-        if (!Objects.isNull(logWindow)) {
-            logWindow.show();
-            logWindow.toFront();
-            return;
-        }
-        final StackPane layout = new StackPane();
-        layout.getChildren().add(eventLog);
-
-        final Scene logScene = new Scene(layout, 400, 200);
-
-        final JMetro jMetro = new JMetro(Style.DARK);
-        jMetro.setScene(logScene);
-        logScene.getStylesheets().add(getClass().getClassLoader().getResource("style.css").toExternalForm());
-        logScene.getStylesheets().add(getClass().getClassLoader().getResource("theme.css").toExternalForm());
-
-        logWindow = new Stage();
-        logWindow.setTitle("Log");
-        logWindow.setScene(logScene);
-        logWindow.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/icon.png")));
-        logWindow.setTitle("Plex Rich Presence Logs");
-        logWindow.show();
+        logViewWindow.show();
     }
 
-    private static class TextAreaOutputStream extends OutputStream {
-        private final TextArea textArea;
-
-        public TextAreaOutputStream(TextArea textArea) {
-            this.textArea = textArea;
-        }
-
-        @Override
-        public void write(int b) throws IOException {
-            textArea.appendText(String.valueOf((char) b));
-        }
-
+    public void setLogViewStage(Stage logViewStage) {
+        this.logViewWindow = logViewStage;
     }
 
+    public void showSettings(ActionEvent actionEvent) {
+        this.viewModel.showSettings();
+    }
+
+    public void closeSettings(ActionEvent actionEvent) {
+        this.viewModel.closeSettings();
+    }
+
+    public void quit(ActionEvent actionEvent) {
+        this.viewModel.quit();
+    }
 }
 
 
