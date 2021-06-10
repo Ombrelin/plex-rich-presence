@@ -19,6 +19,7 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import java.awt.*;
+import java.io.IOException;
 import java.net.URI;
 import java.util.List;
 
@@ -52,6 +53,7 @@ public class MainViewModel {
     private List<Server> servers;
     private String loggedUsername;
     private String authToken;
+    private boolean isSecure = false;
 
     public MainViewModel(RichPresence richPresence, PlexApi plexApi) {
         this.richPresence = richPresence;
@@ -205,11 +207,15 @@ public class MainViewModel {
     }
 
     private void fetchSession() {
-        plexApi.getSessions(servers, this.loggedUsername)
+        plexApi.getSessions(servers, this.loggedUsername, isSecure)
                 .subscribeOn(Schedulers.io())
                 .doOnError(throwable -> {
                     if (throwable instanceof NullPointerException) {
                         processSessions(null);
+                    } else if (throwable instanceof IOException) {
+                        this.isSecure = true;
+                        LOG.info("Attempting SSL connection...");
+                        fetchSession();
                     } else {
                         handleError("Error getting sessions ", throwable.getMessage());
                     }

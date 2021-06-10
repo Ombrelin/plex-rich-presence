@@ -85,13 +85,13 @@ public class PlexApiImpl implements PlexApi {
     }
 
     @Override
-    public Observable<List<Metadatum>> getSessions(List<Server> servers, String username) {
+    public Observable<List<Metadatum>> getSessions(List<Server> servers, String username, boolean secure) {
 
         List<Observable<PlexSessions>> sessionsObs =
                 servers
                         .stream()
                         .map(server ->
-                                new PlexSessionHttpClient(server.getFinalAddress(), server.getPort())
+                                new PlexSessionHttpClient(server.getFinalAddress(), server.getPort(), secure)
                                         .getAPI()
                                         .getSessions(server.getAccessToken(), "application/json"))
                         .collect(Collectors.toList());
@@ -103,6 +103,8 @@ public class PlexApiImpl implements PlexApi {
                 .filter(session -> session.getUser().getTitle().equals(username))
                 .collect(Collectors.toList()));
     }
+
+
 
     @Override
     public Observable<PlexAuth> getPlexAuthPin(boolean strong, String plexProduct, String plexClientId) {

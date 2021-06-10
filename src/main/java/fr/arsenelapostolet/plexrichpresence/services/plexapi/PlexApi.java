@@ -15,7 +15,7 @@ public interface PlexApi {
 
     Observable<User> getUser(String authToken);
 
-    Observable<List<Metadatum>> getSessions(List<Server> servers, String username);
+    Observable<List<Metadatum>> getSessions(List<Server> servers, String username, boolean secure);
 
     Observable<PlexAuth> getPlexAuthPin(boolean strong, String plexProduct, String plexClientId);
 
