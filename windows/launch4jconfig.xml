@@ -2,8 +2,8 @@
 <launch4jConfig>
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
-  <jar>C:\Users\arsen\git\plex-rich-presence\target\plex-rich-presence-1.6.jar</jar>
-  <outfile>C:\Users\arsen\git\plex-rich-presence\windows\plex-rich-presence-1.6.exe</outfile>
+  <jar>target\plex-rich-presence.jar</jar>
+  <outfile>windows\plex-rich-presence.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
@@ -13,13 +13,13 @@
   <stayAlive>true</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
-  <icon>C:\Users\arsen\git\plex-rich-presence\windows\icon.ico</icon>
+  <icon>windows\icon.ico</icon>
   <singleInstance>
     <mutexName>Plex Rich Presence</mutexName>
     <windowTitle>Plex Rich Presence</windowTitle>
   </singleInstance>
   <jre>
-    <path>jre</path>
+    <path>windows\jre</path>
     <bundledJre64Bit>true</bundledJre64Bit>
     <bundledJreAsFallback>false</bundledJreAsFallback>
     <minVersion></minVersion>
