@@ -6,14 +6,12 @@ on:
 
 
 jobs:
-  build:
-    name: Build Windows Installer
-    runs-on: windows-latest
+  build_jar:
+    name: Build JAR
+    runs-on: ubuntu-latest
 
     steps: 
     - uses: actions/checkout@v2
-    - name: Install launch4j
-      run: choco install launch4j
     - name: Set up JDK 11
       uses: actions/setup-java@v2
       with:
@@ -21,6 +19,26 @@ jobs:
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+    - name: Save JAR file as Artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: plex-rich-presence-jar
+        path: target\plex-rich-presence.jar
+    
+  build_exe:
+    name: Build Windows exe
+    runs-on: windows-latest
+    - uses: actions/download-artifact@master
+      with:
+        name: plex-rich-presence-jar
+        path: target\plex-rich-presence.jar
+    - name: Set up JDK 8
+      uses: actions/setup-java@v2
+      with:
+        java-version: '8'
+        distribution: 'adopt'
+    - name: Install launch4j
+      run: choco install launch4j
     - name: Build windows executable
       run: C:\"Program Files (x86)"\Launch4j\launch4jc.exe windows\launch4jconfig.xml
     - name: Build windows installer
@@ -30,9 +48,3 @@ jobs:
       with:
         name: plex-rich-presence-setup
         path: windows\plex-rich-presence-setup.exe
-    - name: Save JAR file as Artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: plex-rich-presence-setup
-        path: windows\plex-rich-presence-setup.exe
-    
