@@ -25,7 +25,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: plex-rich-presence-jar
-        path: target\plex-rich-presence.jar
+        path: target/plex-rich-presence.jar
     
   build_exe:
     name: Build Windows exe
