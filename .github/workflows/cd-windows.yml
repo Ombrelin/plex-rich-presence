@@ -22,7 +22,7 @@ jobs:
     - name: Build with Maven
       run: mvn -B package --file pom.xml
     - name: Build windows executable
-      run: C:\Program Files (x86)\Launch4j\launch4jc.exe windows\launch4jconfig.xml
+      run: C:\"Program Files (x86)"\Launch4j\launch4jc.exe windows\launch4jconfig.xml
     - name: Build windows installer
       run: iscc windows\innosetupconfig.iss
     - name: Save Installer as Artifact
