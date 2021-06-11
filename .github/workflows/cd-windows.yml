@@ -19,8 +19,6 @@ jobs:
         distribution: 'adopt'
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-    - name: Check for JAR
-      run: ls && ls target
     - name: Save JAR file as Artifact
       uses: actions/upload-artifact@v2
       with:
@@ -44,6 +42,8 @@ jobs:
         distribution: 'adopt'
     - name: Install launch4j
       run: choco install launch4j
+    - name: Check Java version
+      run: java -version
     - name: Build windows executable
       run: C:\"Program Files (x86)"\Launch4j\launch4jc.exe windows\launch4jconfig.xml
     - name: Build windows installer
