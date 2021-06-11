@@ -28,6 +28,7 @@ jobs:
   build_exe:
     name: Build Windows exe
     runs-on: windows-latest
+    needs: [build_jar]
 
     steps:
     - uses: actions/download-artifact@master
