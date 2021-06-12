@@ -1,6 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.viewmodel;
 
-import fr.arsenelapostolet.plexrichpresence.SharedVariables;
+import fr.arsenelapostolet.plexrichpresence.controller.LogViewController;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -26,7 +26,7 @@ public class LogViewModel {
 
         try {
             FileWriter writer = new FileWriter(exportFile.getAbsolutePath());
-            for(String str: SharedVariables.logList) {
+            for(String str: LogViewController.logList) {
                 writer.write(str + System.lineSeparator());
             }
             writer.close();
@@ -37,6 +37,6 @@ public class LogViewModel {
     }
 
     public void clearLogs(){
-        SharedVariables.logList.clear();
+        LogViewController.logList.clear();
     }
 }

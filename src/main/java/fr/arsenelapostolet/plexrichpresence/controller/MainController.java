@@ -1,7 +1,6 @@
 package fr.arsenelapostolet.plexrichpresence.controller;
 
 import fr.arsenelapostolet.plexrichpresence.ConfigManager;
-import fr.arsenelapostolet.plexrichpresence.SharedVariables;
 import fr.arsenelapostolet.plexrichpresence.viewmodel.MainViewModel;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -78,7 +77,7 @@ public class MainController {
         }
 
         eventLog = new ListView<>();
-        eventLog.setItems(SharedVariables.logList);
+        eventLog.setItems(LogViewController.logList);
 
         // Databinding
         this.chk_rememberMe.selectedProperty().bindBidirectional(this.viewModel.rememberMeProperty());
