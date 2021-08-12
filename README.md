@@ -43,6 +43,20 @@ Once build, you can run the app by running :
 java -jar ./target/plex-rich-presence-1.6.jar
 ```
 
+## Troubleshooting
+
+### Linux : 'Error initializing QuantumRenderer: no suitable pipeline found'
+
+Run the JAR archive with : 
+
+```bash
+java --module-path /path/to/javafx/libs --add-modules=javafx.controls,javafx.fxml -jar plex-rich-presence.jar
+```
+The `/path/to/javafx/libs` depends on your linux ditribution, for instance : 
+
+- Fedora : `/usr/lib/jvm/openjfx/`
+- Debian : `/usr/share/openjfx/lib/`
+
 ## Libraries used
 
 - JavaFX
