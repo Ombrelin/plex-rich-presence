@@ -58,6 +58,10 @@ public class TrayIconController {
             trayIcon.setImageAutoSize(true);
             trayIcon.addMouseListener(this.mouseListener);
 
+            java.awt.MenuItem openItem = new java.awt.MenuItem("Open");
+
+            openItem.addActionListener(event -> Platform.runLater(this::showStage));
+
             java.awt.MenuItem exitItem = new java.awt.MenuItem("Exit");
 
             exitItem.addActionListener(event -> {
@@ -67,6 +71,7 @@ public class TrayIconController {
             });
 
             final PopupMenu popup = new PopupMenu();
+            popup.add(openItem);
             popup.add(exitItem);
             trayIcon.setPopupMenu(popup);
             tray.add(trayIcon);
