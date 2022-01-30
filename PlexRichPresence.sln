@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.DiscordGameSDK", "src\PlexRichPresence.DiscordGameSDK\PlexRichPresence.DiscordGameSDK.csproj", "{914C6EE4-1E1C-4C6E-A14E-52FC638B9C55}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.DiscordGameSDK.Test", "test\PlexRichPresence.DiscordGameSDK.Test\PlexRichPresence.DiscordGameSDK.Test.csproj", "{29349640-9DBC-42A4-8C85-62F15EF9CD68}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{914C6EE4-1E1C-4C6E-A14E-52FC638B9C55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{914C6EE4-1E1C-4C6E-A14E-52FC638B9C55}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{914C6EE4-1E1C-4C6E-A14E-52FC638B9C55}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{914C6EE4-1E1C-4C6E-A14E-52FC638B9C55}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29349640-9DBC-42A4-8C85-62F15EF9CD68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29349640-9DBC-42A4-8C85-62F15EF9CD68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29349640-9DBC-42A4-8C85-62F15EF9CD68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29349640-9DBC-42A4-8C85-62F15EF9CD68}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

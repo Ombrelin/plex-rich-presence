@@ -1,0 +1,13 @@
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\bin\Debug\net6.0\PlexRichPresence.DiscordGameSDK.deps.json
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\bin\Debug\net6.0\PlexRichPresence.DiscordGameSDK.dll
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\bin\Debug\net6.0\ref\PlexRichPresence.DiscordGameSDK.dll
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\bin\Debug\net6.0\PlexRichPresence.DiscordGameSDK.pdb
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.csproj.AssemblyReference.cache
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.AssemblyInfoInputs.cache
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.AssemblyInfo.cs
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.csproj.CoreCompileInputs.cache
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.dll
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\ref\PlexRichPresence.DiscordGameSDK.dll
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\obj\Debug\net6.0\PlexRichPresence.DiscordGameSDK.pdb
+C:\Users\arsen\git\plex-rich-presence\src\PlexRichPresence.DiscordGameSDK\bin\Debug\net6.0\discord_game_sdk.dll
