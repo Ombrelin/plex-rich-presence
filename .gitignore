@@ -32,3 +32,6 @@ build/
 *.exe
 .mvn
 windows/jre
+.vs
+**/bin
+**/obj
