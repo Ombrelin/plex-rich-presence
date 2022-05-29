@@ -9,6 +9,8 @@ Plex Rich Presence works with Java 11+. A JRE 11 is now bundled with the Windows
 
 I've started to plan the next version of the application, it is all explained [here](https://github.com/Ombrelin/plex-rich-presence/discussions/66)
 
+[Current roadmap](https://github.com/Ombrelin/plex-rich-presence/wiki/Roadmap)
+
 ## Release Version
 
 - [Portable and Executable JAR](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence.jar)
