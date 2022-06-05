@@ -12,7 +12,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
 
         <!-- Display name -->
-        <ApplicationTitle>PlexRichPresence.UI</ApplicationTitle>
+        <ApplicationTitle>Plex Rich Presence</ApplicationTitle>
 
         <!-- App Identifier -->
         <ApplicationId>fr.arsenelapostolet.plexrichpresence.ui</ApplicationId>
@@ -32,7 +32,7 @@
 
     <ItemGroup>
         <!-- App Icon -->
-        <MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+        <MauiIcon Include="Resources\AppIcon\icon.png" />
 
         <!-- Splash Screen -->
         <MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#512BD4" BaseSize="128,128" />
@@ -49,9 +49,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="CommunityToolkit.Maui" Version="1.0.0" />
-      <PackageReference Include="CommunityToolkit.Maui.Markup" Version="1.0.0" />
-      <PackageReference Include="Microsoft.Toolkit.Mvvm" Version="7.1.2" />
+        <PackageReference Include="CommunityToolkit.Maui" Version="1.0.0" />
+        <PackageReference Include="CommunityToolkit.Maui.Markup" Version="1.0.0" />
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
+        <PackageReference Include="Plex.Api" Version="3.0.6" />
     </ItemGroup>
 
 </Project>

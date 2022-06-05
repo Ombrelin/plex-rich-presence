@@ -1,6 +1,6 @@
 ﻿namespace PlexRichPresence.UI;
 
-class App : Application
+internal class App : Application
 {
     public App(AppShell shell)
     {
