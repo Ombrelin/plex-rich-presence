@@ -51,26 +51,14 @@ public partial class LoginPageViewModel
             else break;
         }
         await SecureStorage.Default.SetAsync("plex_token", plexPin.AuthToken);
-      
-        await Shell.Current.GoToAsync("servers");
-    }
-
-    [ICommand]
-    public async Task CheckToken()
-    {
-        await Task.Delay(1);
-        string plexToken = await SecureStorage.Default.GetAsync("plex_token");
-        if (!string.IsNullOrEmpty(plexToken)){
-            try
-            {
-                await Shell.Current.GoToAsync("servers");
-
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e);
-            }
-            
+        
+        try
+        {
+            await Shell.Current.GoToAsync("servers");
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
         }
     }
 }

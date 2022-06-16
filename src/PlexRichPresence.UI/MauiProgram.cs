@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
+using Microsoft.Extensions.Logging;
 using Plex.Api.Factories;
 using Plex.Library.Factories;
 using Plex.ServerApi;
@@ -26,7 +27,13 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
 
-
+// ...
+#if DEBUG
+        builder.Services.AddLogging(configure =>
+        {
+            configure.AddDebug();
+        });
+#endif
         // App Shell
         builder.Services.AddTransient<AppShell>();
 

@@ -13,20 +13,29 @@ public class ServersPage : BaseContentPage<ServersPageViewModel>
         Title = "Choose a PLEX server";
         Content = new ScrollView
         {
-            Content = new ListView
+            Content = new VerticalStackLayout
             {
-                BackgroundColor = Colors.Transparent,
-                SelectionMode = ListViewSelectionMode.Single,
-                ItemTemplate = new ServerItemTemplate()
+                Children =
+                {
+                    new ListView
+                        {
+                            BackgroundColor = Colors.Transparent,
+                            SelectionMode = ListViewSelectionMode.Single,
+                            ItemTemplate = new ServerItemTemplate()
+                        }
+                        .Bind(ListView.ItemsSourceProperty, nameof(ServersPageViewModel.Servers))
+                }
             }
-            .Bind(ListView.ItemsSourceProperty, nameof(ServersPageViewModel.Servers))
         };
     }
 
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        this.ViewModel.GetServersCommand.ExecuteAsync(null);
+        Dispatcher.Dispatch(async () =>
+        {
+            await this.ViewModel.GetServers();
+        });
     }
 
 }
@@ -39,7 +48,6 @@ public class ServerItemTemplate : DataTemplate
     }
 
     static TextCell GetContent() => new TextCell()
-        .Bind(TextCell.TextProperty, "Name")
-        .Bind(TextCell.TextProperty, "Address");
+        .Bind(TextCell.TextProperty, "Name");
 }
 

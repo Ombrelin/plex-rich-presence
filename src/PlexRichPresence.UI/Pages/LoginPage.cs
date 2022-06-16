@@ -9,10 +9,8 @@ namespace PlexRichPresence.UI.Pages;
 
 internal class LoginPage : BaseContentPage<LoginPageViewModel>
 {
-
     public LoginPage(LoginPageViewModel viewModel) : base(viewModel)
     {
-
         Title = "Login to PLEX";
         Content = new ScrollView
         {
@@ -38,12 +36,12 @@ internal class LoginPage : BaseContentPage<LoginPageViewModel>
                             new Label { VerticalOptions = LayoutOptions.Center }.Text("Login : ")
                                 .Column(Column.Description).Row(Row.TextEntry),
                             new Entry
-                            {
-                                WidthRequest = 200
-                            }
-                            .Column(Column.Input)
-                            .Row(Row.TextEntry)
-                            .Bind(Entry.TextProperty, nameof(LoginPageViewModel.Login), BindingMode.TwoWay)
+                                {
+                                    WidthRequest = 200
+                                }
+                                .Column(Column.Input)
+                                .Row(Row.TextEntry)
+                                .Bind(Entry.TextProperty, nameof(LoginPageViewModel.Login), BindingMode.TwoWay)
                         }
                     },
                     new Grid
@@ -58,18 +56,19 @@ internal class LoginPage : BaseContentPage<LoginPageViewModel>
                         Margin = new Thickness(0, 0, 0, 8),
                         Children =
                         {
-                            new Label {
-                                VerticalOptions = LayoutOptions.Center
-                            }
-                            .Text("Password : ")
-                            .Column(Column.Description).Row(Row.TextEntry),
+                            new Label
+                                {
+                                    VerticalOptions = LayoutOptions.Center
+                                }
+                                .Text("Password : ")
+                                .Column(Column.Description).Row(Row.TextEntry),
                             new Entry
-                            {
-                                IsPassword = true
-                            }
-                            .Column(Column.Input)
-                            .Row(Row.TextEntry)
-                            .Bind(Entry.TextProperty, nameof(LoginPageViewModel.Password), BindingMode.TwoWay)
+                                {
+                                    IsPassword = true
+                                }
+                                .Column(Column.Input)
+                                .Row(Row.TextEntry)
+                                .Bind(Entry.TextProperty, nameof(LoginPageViewModel.Password), BindingMode.TwoWay)
                         }
                     },
                     new HorizontalStackLayout
@@ -88,16 +87,17 @@ internal class LoginPage : BaseContentPage<LoginPageViewModel>
                     {
                         Children =
                         {
-                            new Button {
-                                WidthRequest = 200,
-                                Text = "Login in with browser"
-                            }
-                            .Bind(Button.CommandProperty, nameof(LoginPageViewModel.LoginWithBrowserCommand)),
-                            new Button {
-                                WidthRequest = 200,
-                                Text = "Navigate"
-                            }
-                            .Bind(Button.CommandProperty, nameof(LoginPageViewModel.CheckTokenCommand))
+                            new Button
+                                {
+                                    WidthRequest = 200,
+                                    Text = "Login in with browser"
+                                }
+                                .Bind(Button.CommandProperty, nameof(LoginPageViewModel.LoginWithBrowserCommand)),
+                            new Button
+                                {
+                                    WidthRequest = 200,
+                                    Text = "Navigate"
+                                }
                         }
                     }
                 }
@@ -107,8 +107,22 @@ internal class LoginPage : BaseContentPage<LoginPageViewModel>
 
     protected override void OnAppearing()
     {
-        base.OnAppearing();
-        this.ViewModel.CheckTokenCommand.ExecuteAsync(null);
+        Dispatcher.Dispatch(async () => { await NavigateToServerListIfTokenFound(); });
     }
 
+    private async Task NavigateToServerListIfTokenFound()
+    {
+        string plexToken = await SecureStorage.Default.GetAsync("plex_token");
+
+        if (string.IsNullOrEmpty(plexToken)) return;
+
+        try
+        {
+            await Shell.Current.GoToAsync("servers");
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e);
+        }
+    }
 }

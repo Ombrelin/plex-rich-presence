@@ -10,6 +10,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace PlexRichPresence.UI.ViewModels;
 
@@ -25,20 +27,53 @@ public partial class ServersPageViewModel
         this.plexFactory = plexFactory;
         
     }
-
-    [ICommand]
+    
     public async Task GetServers()
     {
         string plexToken = await SecureStorage.GetAsync("plex_token");
-        PlexAccount account = this.plexFactory.GetPlexAccount(plexToken);
-        Debug.WriteLine(account.Username);
-        
-        foreach (Server server in await account.Servers())
+        PlexAccount account = await Task.Run(() => this.plexFactory.GetPlexAccount(plexToken));
+        Debug.WriteLine(plexToken);
+        try
         {
-            Debug.WriteLine(server.Name);
-            Debug.WriteLine(server.Address);
-            //Servers.Add(server);
+            //var servers = (await Task.Run(() => account.Servers().Result)).ToList();
+
+            var response = await new HttpClient().SendAsync(new HttpRequestMessage
+            {
+                Method = HttpMethod.Get,
+                RequestUri = new Uri("https://plex.tv/pms/servers.xml/")
+            });
+            string readAsStreamAsync = await response.Content.ReadAsStringAsync();
+            Debug.WriteLine(readAsStreamAsync);
+            //Debug.WriteLine(servers.Count);
+            //Debug.WriteLine(servers[0].Name);
+            //foreach (Server server in servers)
+            //{
+            //    Debug.WriteLine(server.Name);
+            //    Debug.WriteLine(server.Address);
+            //    Servers.Add(server);
+            //}
+        }catch (Exception e)
+        {
+            Debug.WriteLine(e.StackTrace);
         }
+
+        /*try
+        {
+            string plexToken = await SecureStorage.GetAsync("plex_token");
+            PlexAccount account = this.plexFactory.GetPlexAccount(plexToken);
+            Debug.WriteLine(account.Username);
+
+            foreach (Server server in await account.Servers())
+            {
+                Debug.WriteLine(server.Name);
+                Debug.WriteLine(server.Address);
+                //Servers.Add(server);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.WriteLine(e.StackTrace);
+        }*/
     }
 }
 
