@@ -1,79 +1,53 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using Plex.Api.Factories;
-using Plex.Library.ApiModels.Accounts;
-using Plex.Library.ApiModels.Servers;
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
+using CommunityToolkit.Mvvm.ComponentModel;
+using Plex.Api.Factories;
+using Plex.ServerApi.Clients.Interfaces;
+using Plex.ServerApi.PlexModels.Account;
 
 namespace PlexRichPresence.UI.ViewModels;
 
 [INotifyPropertyChanged]
 public partial class ServersPageViewModel
 {
+    public ObservableCollection<AccountServer> Servers { get; set; } = new();
+    private readonly IPlexAccountClient plexAccountClient;
 
-    public ObservableCollection<Server> Servers { get; set; } = new();
-    private readonly IPlexFactory plexFactory;
+    [ObservableProperty] private string username;
+    [ObservableProperty] private string thumbnailUrl;
+    [ObservableProperty] private bool loading = true;
+    [ObservableProperty] private AccountServer selectedServer;
 
-    public ServersPageViewModel(IPlexFactory plexFactory)
+    public ServersPageViewModel(IPlexAccountClient plexAccountClient)
     {
-        this.plexFactory = plexFactory;
-        
+        this.plexAccountClient = plexAccountClient;
+    }
+
+    public async Task GetData()
+    {
+        await Task.WhenAll(
+            this.GetServers(),
+            this.GetUsernameAndThumbnail()
+        );
+        this.Loading = false;
     }
     
+    public async Task GetUsernameAndThumbnail()
+    {
+        string plexToken = await SecureStorage.GetAsync("plex_token");
+        PlexAccount account = await this.plexAccountClient.GetPlexAccountAsync(plexToken);
+        this.Username = account.Username;
+        this.ThumbnailUrl = account.Thumb;
+    }
+
     public async Task GetServers()
     {
         string plexToken = await SecureStorage.GetAsync("plex_token");
-        PlexAccount account = await Task.Run(() => this.plexFactory.GetPlexAccount(plexToken));
-        Debug.WriteLine(plexToken);
-        try
-        {
-            //var servers = (await Task.Run(() => account.Servers().Result)).ToList();
+        AccountServerContainer serverContainer = await this.plexAccountClient.GetAccountServersAsync(plexToken);
 
-            var response = await new HttpClient().SendAsync(new HttpRequestMessage
-            {
-                Method = HttpMethod.Get,
-                RequestUri = new Uri("https://plex.tv/pms/servers.xml/")
-            });
-            string readAsStreamAsync = await response.Content.ReadAsStringAsync();
-            Debug.WriteLine(readAsStreamAsync);
-            //Debug.WriteLine(servers.Count);
-            //Debug.WriteLine(servers[0].Name);
-            //foreach (Server server in servers)
-            //{
-            //    Debug.WriteLine(server.Name);
-            //    Debug.WriteLine(server.Address);
-            //    Servers.Add(server);
-            //}
-        }catch (Exception e)
+        foreach (AccountServer server in serverContainer.Servers)
         {
-            Debug.WriteLine(e.StackTrace);
+            Servers.Add(server);
         }
-
-        /*try
-        {
-            string plexToken = await SecureStorage.GetAsync("plex_token");
-            PlexAccount account = this.plexFactory.GetPlexAccount(plexToken);
-            Debug.WriteLine(account.Username);
-
-            foreach (Server server in await account.Servers())
-            {
-                Debug.WriteLine(server.Name);
-                Debug.WriteLine(server.Address);
-                //Servers.Add(server);
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.WriteLine(e.StackTrace);
-        }*/
     }
 }
-
