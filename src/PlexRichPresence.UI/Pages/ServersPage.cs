@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Maui.Markup;
-using Plex.Library.ApiModels.Servers;
 using PlexRichPresence.UI.Pages.Base;
-using PlexRichPresence.UI.ViewModels;
+using PlexRichPresence.ViewModels;
 
 
 namespace PlexRichPresence.UI.Pages;
@@ -53,7 +52,12 @@ public class ServersPage : BaseContentPage<ServersPageViewModel>
                                     ItemTemplate = new ServerItemTemplate()
                                 }
                                 .Bind(ListView.ItemsSourceProperty, nameof(ServersPageViewModel.Servers))
-                                .Bind(ListView.SelectedItemProperty, nameof(ServersPageViewModel.SelectedServer), BindingMode.OneWayToSource)
+                                .Bind(ListView.SelectedItemProperty, nameof(ServersPageViewModel.SelectedServer),
+                                    BindingMode.OneWayToSource),
+                            new Button
+                            {
+                                HorizontalOptions = LayoutOptions.Center
+                            }.Text("Continue")
                         }
                     }.Bind(
                         IsVisibleProperty,
@@ -69,7 +73,8 @@ public class ServersPage : BaseContentPage<ServersPageViewModel>
                         .Bind(
                             ActivityIndicator.IsRunningProperty,
                             nameof(this.ViewModel.Loading),
-                            BindingMode.OneWay)
+                            BindingMode.OneWay
+                        )
                 }
             }
         };

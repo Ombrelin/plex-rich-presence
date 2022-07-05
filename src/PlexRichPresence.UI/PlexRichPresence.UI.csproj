@@ -15,7 +15,7 @@
         <ApplicationTitle>Plex Rich Presence</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>fr.arsenelapostolet.plexrichpresence.ui</ApplicationId>
+        <ApplicationId>fr.arsenelapostolet.plexrichpresence</ApplicationId>
         <ApplicationIdGuid>98CDDC53-F624-4816-A7F5-71A53CD37187</ApplicationIdGuid>
 
         <!-- Versions -->
@@ -51,9 +51,16 @@
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Maui" Version="1.0.0" />
         <PackageReference Include="CommunityToolkit.Maui.Markup" Version="1.0.0" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0-preview3" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
-        <PackageReference Include="Plex.Api" Version="3.0.6" />
+
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="ViewModels" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PlexRichPresence.ViewModels\PlexRichPresence.ViewModels.csproj" />
     </ItemGroup>
 
 </Project>

@@ -1,8 +1,8 @@
 ﻿using CommunityToolkit.Maui.Markup;
 using Microsoft.Maui.Layouts;
 using PlexRichPresence.UI.Pages.Base;
-using PlexRichPresence.UI.ViewModels;
 using System.Diagnostics;
+using PlexRichPresence.ViewModels;
 using static CommunityToolkit.Maui.Markup.GridRowsColumns;
 
 namespace PlexRichPresence.UI.Pages;
@@ -33,7 +33,7 @@ internal class LoginPage : BaseContentPage<LoginPageViewModel>
                         Margin = new Thickness(0, 0, 0, 8),
                         Children =
                         {
-                            new Label { VerticalOptions = LayoutOptions.Center }.Text("Login : ")
+                            new Label {VerticalOptions = LayoutOptions.Center}.Text("Login : ")
                                 .Column(Column.Description).Row(Row.TextEntry),
                             new Entry
                                 {
@@ -92,12 +92,7 @@ internal class LoginPage : BaseContentPage<LoginPageViewModel>
                                     WidthRequest = 200,
                                     Text = "Login in with browser"
                                 }
-                                .Bind(Button.CommandProperty, nameof(LoginPageViewModel.LoginWithBrowserCommand)),
-                            new Button
-                                {
-                                    WidthRequest = 200,
-                                    Text = "Navigate"
-                                }
+                                .Bind(Button.CommandProperty, nameof(LoginPageViewModel.LoginWithBrowserCommand))
                         }
                     }
                 }

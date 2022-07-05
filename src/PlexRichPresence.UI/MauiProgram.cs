@@ -8,7 +8,10 @@ using Plex.ServerApi.Api;
 using Plex.ServerApi.Clients;
 using Plex.ServerApi.Clients.Interfaces;
 using PlexRichPresence.UI.Pages;
+using PlexRichPresence.UI.Service;
 using PlexRichPresence.UI.ViewModels;
+using PlexRichPresence.ViewModels;
+using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.UI;
 
@@ -56,6 +59,10 @@ public static class MauiProgram
         builder.Services.AddTransient<IApiService, ApiService>();
         builder.Services.AddTransient<IPlexFactory, PlexFactory>();
         builder.Services.AddTransient<IPlexRequestsHttpClient, PlexRequestsHttpClient>();
+        builder.Services.AddSingleton<INavigationService, NavigationService>();
+        builder.Services.AddSingleton<IBrowserService, BrowserService>();
+        builder.Services.AddSingleton<IStorageService, StorageService>();
+        builder.Services.AddSingleton<IPlexActivityService, PlexActivityService>();
 
         // Pages
         builder.Services.AddTransient<LoginPage>();

@@ -1,11 +1,9 @@
 ﻿using System.Collections.ObjectModel;
-using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
-using Plex.Api.Factories;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
 
-namespace PlexRichPresence.UI.ViewModels;
+namespace PlexRichPresence.ViewModels;
 
 [INotifyPropertyChanged]
 public partial class ServersPageViewModel
@@ -17,7 +15,7 @@ public partial class ServersPageViewModel
     [ObservableProperty] private string thumbnailUrl;
     [ObservableProperty] private bool loading = true;
     [ObservableProperty] private AccountServer selectedServer;
-
+    
     public ServersPageViewModel(IPlexAccountClient plexAccountClient)
     {
         this.plexAccountClient = plexAccountClient;
