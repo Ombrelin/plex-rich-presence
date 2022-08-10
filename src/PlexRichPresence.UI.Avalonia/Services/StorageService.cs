@@ -1,8 +1,10 @@
-﻿using PlexRichPresence.ViewModels.Services;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using PlexRichPresence.ViewModels.Services;
 
-namespace PlexRichPresence.ViewModels.Test.Fakes;
+namespace PlexRichPresence.UI.Avalonia.Services;
 
-public class FakeStorageService : IStorageService
+public class StorageService : IStorageService
 {
     private readonly Dictionary<string, string> data = new ();
     

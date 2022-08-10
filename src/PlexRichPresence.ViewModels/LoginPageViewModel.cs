@@ -23,13 +23,15 @@ public partial class LoginPageViewModel
         this.browserService = browserService;
     }
 
-    [ObservableProperty] [AlsoNotifyCanExecuteFor(nameof(LoginWithCredentialsCommand))]
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
     private string login;
 
-    [ObservableProperty] [AlsoNotifyCanExecuteFor(nameof(LoginWithCredentialsCommand))]
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
     private string password;
 
-    [ICommand(AllowConcurrentExecutions = false, CanExecute = "CanLoginWithCredentials")]
+    [RelayCommand(AllowConcurrentExecutions = false, CanExecute = "CanLoginWithCredentials")]
     private async Task LoginWithCredentials()
     {
         PlexAccount account = await this.plexClient.GetPlexAccountAsync(this.Login, this.Password);
@@ -44,7 +46,7 @@ public partial class LoginPageViewModel
 
     private bool CanLoginWithCredentials => !(string.IsNullOrEmpty(this.Login) || string.IsNullOrEmpty(this.password));
 
-    [ICommand(AllowConcurrentExecutions = false)]
+    [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task LoginWithBrowser()
     {
         var oauthUrl = await this.plexClient.CreateOAuthPinAsync("");

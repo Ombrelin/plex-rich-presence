@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.ViewModels
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.ViewModels", "src\PlexRichPresence.ViewModels\PlexRichPresence.ViewModels.csproj", "{159D97E7-313E-45F7-B8CC-07B461DBF5E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.UI.Avalonia", "src\PlexRichPresence.UI.Avalonia\PlexRichPresence.UI.Avalonia.csproj", "{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,6 +30,10 @@ Global
 		{159D97E7-313E-45F7-B8CC-07B461DBF5E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{159D97E7-313E-45F7-B8CC-07B461DBF5E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{159D97E7-313E-45F7-B8CC-07B461DBF5E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

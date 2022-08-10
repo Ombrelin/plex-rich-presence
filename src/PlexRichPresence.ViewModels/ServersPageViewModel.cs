@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
+using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels;
 
@@ -10,15 +11,20 @@ public partial class ServersPageViewModel
 {
     public ObservableCollection<AccountServer> Servers { get; set; } = new();
     private readonly IPlexAccountClient plexAccountClient;
+    private readonly IStorageService storageService;
 
     [ObservableProperty] private string username;
     [ObservableProperty] private string thumbnailUrl;
     [ObservableProperty] private bool loading = true;
     [ObservableProperty] private AccountServer selectedServer;
     
-    public ServersPageViewModel(IPlexAccountClient plexAccountClient)
+    public ServersPageViewModel(
+        IPlexAccountClient plexAccountClient,
+        IStorageService storageService
+    )
     {
         this.plexAccountClient = plexAccountClient;
+        this.storageService = storageService;
     }
 
     public async Task GetData()
@@ -32,7 +38,7 @@ public partial class ServersPageViewModel
     
     public async Task GetUsernameAndThumbnail()
     {
-        string plexToken = await SecureStorage.GetAsync("plex_token");
+        string plexToken = await this.storageService.GetAsync("plex_token");
         PlexAccount account = await this.plexAccountClient.GetPlexAccountAsync(plexToken);
         this.Username = account.Username;
         this.ThumbnailUrl = account.Thumb;
@@ -40,7 +46,7 @@ public partial class ServersPageViewModel
 
     public async Task GetServers()
     {
-        string plexToken = await SecureStorage.GetAsync("plex_token");
+        string plexToken = await this.storageService.GetAsync("plex_token");
         AccountServerContainer serverContainer = await this.plexAccountClient.GetAccountServersAsync(plexToken);
 
         foreach (AccountServer server in serverContainer.Servers)
