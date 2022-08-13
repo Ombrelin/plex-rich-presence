@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Controls;
 
 namespace PlexRichPresence.UI.Avalonia.Views
@@ -7,6 +8,9 @@ namespace PlexRichPresence.UI.Avalonia.Views
         public MainWindow()
         {
             InitializeComponent();
+#if DEBUG
+            this.AttachDevTools();
+#endif
         }
     }
 }

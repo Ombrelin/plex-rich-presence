@@ -11,6 +11,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.ViewModels
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.UI.Avalonia", "src\PlexRichPresence.UI.Avalonia\PlexRichPresence.UI.Avalonia.csproj", "{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{21FCC632-1CE9-46D0-8982-968631B7E7BB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.UI.Avalonia.Tests", "test\PlexRichPresence.UI.Avalonia.Tests\PlexRichPresence.UI.Avalonia.Tests.csproj", "{DEB38FDC-3CB9-4DF7-989C-58FAC474EA6E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -34,11 +38,18 @@ Global
 		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BD911207-F0EC-41AE-A1A9-BFC1AF906E08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEB38FDC-3CB9-4DF7-989C-58FAC474EA6E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEB38FDC-3CB9-4DF7-989C-58FAC474EA6E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEB38FDC-3CB9-4DF7-989C-58FAC474EA6E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEB38FDC-3CB9-4DF7-989C-58FAC474EA6E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B4ED64C9-496E-43D8-98D7-E56876BC6910}
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DEB38FDC-3CB9-4DF7-989C-58FAC474EA6E} = {21FCC632-1CE9-46D0-8982-968631B7E7BB}
 	EndGlobalSection
 EndGlobal

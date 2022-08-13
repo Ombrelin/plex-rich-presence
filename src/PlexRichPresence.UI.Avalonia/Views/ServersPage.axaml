@@ -2,7 +2,52 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PlexRichPresence.ViewModels;assembly=PlexRichPresence.ViewModels"
+             xmlns:plex-account="clr-namespace:Plex.ServerApi.PlexModels.Account;assembly=Plex.ServerApi"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage">
-    Welcome to Avalonia 2!
+             x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage"
+             x:DataType="viewModels:ServersPageViewModel">
+    <Grid Margin="16" IsVisible="{CompiledBinding !Loading}">
+        <Grid.RowDefinitions>.5*,*,*,2*,*</Grid.RowDefinitions>
+
+        <ProgressBar IsVisible="{CompiledBinding Loading}" IsIndeterminate="True"></ProgressBar>
+        <StackPanel Orientation="Horizontal">
+            <Label HorizontalContentAlignment="Right">Welcome, </Label>
+            <Label Content="{CompiledBinding Username}"></Label>
+        </StackPanel>
+        
+        <StackPanel Grid.Row="1">
+            <Image VerticalAlignment="Top" x:Name="profilePicture" Width="100" Height="100" Source="{CompiledBinding ThumbnailUrl}"></Image>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal">
+            <Label VerticalAlignment="Center">Choose a PLEX server : </Label>
+            <ComboBox HorizontalAlignment="Center" VerticalAlignment="Center" Items="{CompiledBinding Servers}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate x:DataType="plex-account:AccountServer">
+                                <Label Content="{CompiledBinding Name}"></Label>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+        </StackPanel>
+
+
+        <Expander Grid.Row="3" Header="Manuel Server Configuration">
+            <Grid>
+                <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <Label>Server IP :</Label>
+                    <TextBox Text="{CompiledBinding CustomServerIp}"></TextBox>
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center"
+                            VerticalAlignment="Top">
+                    <Label>Server Port :</Label>
+                    <TextBox Text="{CompiledBinding CustomServerPort}"></TextBox>
+                </StackPanel>
+            </Grid>
+        </Expander>
+
+        <Button Grid.Row="4" HorizontalAlignment="Center">Continue</Button>
+    </Grid>
+
+
 </UserControl>

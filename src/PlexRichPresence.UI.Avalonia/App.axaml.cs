@@ -1,8 +1,13 @@
 using System;
+using System.Diagnostics;
+using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media;
+using Avalonia.Threading;
+using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Plex.Api.Factories;
@@ -19,7 +24,7 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.UI.Avalonia;
 
-public partial class App : Application
+public class App : Application
 {
     private readonly IServiceCollection services = new ServiceCollection()
         .AddSingleton(new ClientOptions
@@ -28,7 +33,7 @@ public partial class App : Application
             DeviceName = Environment.MachineName,
             ClientId = "nDwkFkJCCJQEjq44TDaLJwKW54",
             Platform = "Desktop",
-            Version = "v1"
+            Version = "v2"
         })
         .AddTransient<IPlexServerClient, PlexServerClient>()
         .AddTransient<IPlexAccountClient, PlexAccountClient>()
@@ -36,10 +41,12 @@ public partial class App : Application
         .AddTransient<IApiService, ApiService>()
         .AddTransient<IPlexFactory, PlexFactory>()
         .AddTransient<IPlexRequestsHttpClient, PlexRequestsHttpClient>()
-        .AddSingleton<IStorageService, StorageService>()
-        .AddLogging()
-        .AddSingleton<LoginPageViewModel>();
-    
+        .AddSingleton<IStorageService>(
+            new StorageService($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence"))
+        .AddSingleton<LoginPageViewModel>()
+        .AddSingleton<IBrowserService, BrowserService>()
+        .AddLogging();
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -49,10 +56,9 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow
-            {
-                DataContext = new MainWindowViewModel(),
-            };
+            var faTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>();
+            faTheme.CustomAccentColor = Color.FromRgb(0, 102, 204);
+            desktop.MainWindow = new MainWindow();
             var navigationFrame = desktop.MainWindow.FindControl<Frame>("navigationFrame");
             var navigationService = new NavigationService(navigationFrame);
             navigationService.RegisterPage("login", typeof(LoginPage));
@@ -60,9 +66,25 @@ public partial class App : Application
 
             services.AddSingleton<INavigationService>(navigationService);
             this.Resources[typeof(IServiceProvider)] = services.BuildServiceProvider();
-            navigationService.NavigateToAsync("login");
-        }
 
+            IStorageService storageService = services.BuildServiceProvider().GetService<IStorageService>()
+                                             ?? throw new InvalidOperationException(
+                                                 "Can't get storage service from DI");
+            Dispatcher.UIThread.Post(() => NavigateToFirstPage(storageService, navigationService));
+        }
+        
         base.OnFrameworkInitializationCompleted();
+    }
+    
+    private async Task NavigateToFirstPage(IStorageService storageService, INavigationService navigationService)
+    {
+        if (await storageService.ContainsKeyAsync("plex_token"))
+        {
+            await navigationService.NavigateToAsync("servers");
+        }
+        else
+        {
+            await navigationService.NavigateToAsync("login");
+        }
     }
 }

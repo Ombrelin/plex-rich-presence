@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
 using PlexRichPresence.ViewModels.Services;
@@ -17,6 +18,9 @@ public partial class ServersPageViewModel
     [ObservableProperty] private string thumbnailUrl;
     [ObservableProperty] private bool loading = true;
     [ObservableProperty] private AccountServer selectedServer;
+    [ObservableProperty] private string customServerIp;
+    [ObservableProperty] private string customServerPort;
+    
     
     public ServersPageViewModel(
         IPlexAccountClient plexAccountClient,
@@ -27,6 +31,7 @@ public partial class ServersPageViewModel
         this.storageService = storageService;
     }
 
+    [RelayCommand]
     public async Task GetData()
     {
         await Task.WhenAll(
