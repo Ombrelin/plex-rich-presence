@@ -16,6 +16,7 @@ using Plex.ServerApi;
 using Plex.ServerApi.Api;
 using Plex.ServerApi.Clients;
 using Plex.ServerApi.Clients.Interfaces;
+using PlexRichPresence.PlexActivity;
 using PlexRichPresence.UI.Avalonia.Services;
 using PlexRichPresence.UI.Avalonia.ViewModels;
 using PlexRichPresence.UI.Avalonia.Views;
@@ -45,6 +46,7 @@ public class App : Application
             new StorageService($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence"))
         .AddSingleton<LoginPageViewModel>()
         .AddSingleton<IBrowserService, BrowserService>()
+        .AddSingleton<IPlexActivityService, PlexActivityService>()
         .AddLogging();
 
     public override void Initialize()
@@ -63,6 +65,7 @@ public class App : Application
             var navigationService = new NavigationService(navigationFrame);
             navigationService.RegisterPage("login", typeof(LoginPage));
             navigationService.RegisterPage("servers", typeof(ServersPage));
+            navigationService.RegisterPage("activity", typeof(ActivityPage));
 
             services.AddSingleton<INavigationService>(navigationService);
             this.Resources[typeof(IServiceProvider)] = services.BuildServiceProvider();
@@ -72,13 +75,18 @@ public class App : Application
                                                  "Can't get storage service from DI");
             Dispatcher.UIThread.Post(() => NavigateToFirstPage(storageService, navigationService));
         }
-        
+
         base.OnFrameworkInitializationCompleted();
     }
-    
+
     private async Task NavigateToFirstPage(IStorageService storageService, INavigationService navigationService)
     {
-        if (await storageService.ContainsKeyAsync("plex_token"))
+        if (await storageService.ContainsKeyAsync("serverIp")
+            && await storageService.ContainsKeyAsync("serverPort"))
+        {
+            await navigationService.NavigateToAsync("activity");
+        }
+        else if (await storageService.ContainsKeyAsync("plex_token"))
         {
             await navigationService.NavigateToAsync("servers");
         }

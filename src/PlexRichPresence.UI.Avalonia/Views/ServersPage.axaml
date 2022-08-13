@@ -15,19 +15,26 @@
             <Label HorizontalContentAlignment="Right">Welcome, </Label>
             <Label Content="{CompiledBinding Username}"></Label>
         </StackPanel>
-        
+
         <StackPanel Grid.Row="1">
-            <Image VerticalAlignment="Top" x:Name="profilePicture" Width="100" Height="100" Source="{CompiledBinding ThumbnailUrl}"></Image>
+            <Image VerticalAlignment="Top" x:Name="profilePicture" Width="100" Height="100"
+                   Source="{CompiledBinding ThumbnailUrl}">
+            </Image>
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Label VerticalAlignment="Center">Choose a PLEX server : </Label>
-            <ComboBox HorizontalAlignment="Center" VerticalAlignment="Center" Items="{CompiledBinding Servers}">
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate x:DataType="plex-account:AccountServer">
-                                <Label Content="{CompiledBinding Name}"></Label>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
-                    </ComboBox>
+            <ComboBox 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                Items="{CompiledBinding Servers}"
+                SelectedItem="{CompiledBinding SelectedServer}"
+                >
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="plex-account:AccountServer">
+                        <Label Content="{CompiledBinding Name}"></Label>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
         </StackPanel>
 
 
@@ -43,10 +50,13 @@
                     <Label>Server Port :</Label>
                     <TextBox Text="{CompiledBinding CustomServerPort}"></TextBox>
                 </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+                    <ToggleSwitch IsChecked="{CompiledBinding UseCustomServer}"></ToggleSwitch>
+                </StackPanel>
             </Grid>
         </Expander>
 
-        <Button Grid.Row="4" HorizontalAlignment="Center">Continue</Button>
+        <Button Command="{Binding ValidateServerSelectionCommand}" Grid.Row="4" HorizontalAlignment="Center">Continue</Button>
     </Grid>
 
 

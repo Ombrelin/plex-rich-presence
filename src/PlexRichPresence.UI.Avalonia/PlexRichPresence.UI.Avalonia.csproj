@@ -32,6 +32,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
-      <ProjectReference Include="..\PlexRichPresence.ViewModels\PlexRichPresence.ViewModels.csproj" />
+        <ProjectReference Include="..\PlexRichPresence.PlexActivity\PlexRichPresence.PlexActivity.csproj" />
+        <ProjectReference Include="..\PlexRichPresence.ViewModels\PlexRichPresence.ViewModels.csproj" />
     </ItemGroup>
 </Project>

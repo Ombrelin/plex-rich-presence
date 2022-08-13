@@ -1,0 +1,28 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PlexRichPresence.ViewModels;assembly=PlexRichPresence.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PlexRichPresence.UI.Avalonia.Views.ActivityPage"
+             x:DataType="viewModels:PlexActivityViewModel">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal">
+            <Label>Server Ip : </Label>
+            <Label Content="{CompiledBinding PlexServerIp}"></Label>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Label>Server Port : </Label>
+            <Label Content="{CompiledBinding PlexServerPort}"></Label>
+        </StackPanel>
+
+        <Button IsVisible="{CompiledBinding !IsConnected}" HorizontalAlignment="Center" Grid.Row="2" Command="{Binding ConnectCommand}">Connect</Button>
+        <StackPanel Grid.Row="2">
+            <Label Content="{CompiledBinding CurrentActivity}" IsVisible="{CompiledBinding IsConnected}"></Label>
+        </StackPanel>
+    </Grid>
+
+</UserControl>

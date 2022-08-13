@@ -2,7 +2,9 @@
 
 public interface IPlexActivityService
 {
-    void Connect(string serverIp, string userToken);
+    void Connect(string serverIp, int serverPort, string userToken);
+
+    void Disconnect();
     event EventHandler OnActivityUpdated;
 
     class PlexActivityEventArg : EventArgs
