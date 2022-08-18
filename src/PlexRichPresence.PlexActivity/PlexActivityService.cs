@@ -1,6 +1,7 @@
 ﻿using System.Net.WebSockets;
 using System.Reactive.Linq;
 using System.Text.Json.Nodes;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Media;
@@ -11,60 +12,44 @@ namespace PlexRichPresence.PlexActivity;
 
 public class PlexActivityService : IPlexActivityService
 {
-    private IWebsocketClient client;
-    private readonly IPlexServerClient plexServerClient;
 
-    public PlexActivityService(IPlexServerClient plexServerClient)
+    private readonly ILogger logger;
+
+    public PlexActivityService(IPlexServerClient plexServerClient, ILogger logger)
     {
         this.plexServerClient = plexServerClient;
+        this.logger = logger;
     }
 
-    public void Connect(string serverIp, int serverPort, string userToken)
+    public void Connect(string serverIp, int serverPort, string userToken, bool isOwner)
     {
-        var uri = new Uri($"ws://{serverIp}:{serverPort}/:/websockets/notifications?X-Plex-Token={userToken}");
-        if (client is not null)
-        {
-            client.Dispose();
-        }
-
-        client = new WebsocketClient(uri);
-        IObservable<JsonNode?> observable = client.MessageReceived
-            .Select(message => JsonNode.Parse(message.Text)?["NotificationContainer"])
-            .Where(message => message["type"].GetValue<string>() is "playing");
-
-        client.MessageReceived
-            .Where(message => JsonNode.Parse(message.Text)?["NotificationContainer"]["type"].GetValue<string>() is "playing")
-            .Subscribe(notif => Console.WriteLine(notif.Text));
         
-        observable
-            .SelectMany(message => message["PlaySessionStateNotification"].AsArray())
-            .Select(message => message["key"].GetValue<string>().Split("/").Last())
-            .Select(mediaKey => this.plexServerClient.GetMediaMetadataAsync(
-                userToken,
-                new Uri($"http://{serverIp}:{serverPort}").ToString(),
-                mediaKey
-                )
-            )
-            .Subscribe(async mediaContainerTask
-                    =>
-                {
-                    MediaContainer mediaContainer = (await mediaContainerTask);
-                    //Console.WriteLine(JsonConvert.SerializeObject(mediaContainer));
-                    var media = mediaContainer.Media.First();
-                    this.OnActivityUpdated?.Invoke(
-                        this,
-                        new IPlexActivityService.PlexActivityEventArg { CurrentActivity = $"{media.Title} - {media.ParentTitle}" }
-                    );
-                }
-                );
-        client.Start();
+
+            .Subscribe(RaiseEventWithMedia, HandleError);
+            this.OnActivityUpdated?.Invoke(
+                this,
+                new IPlexActivityService.PlexActivityEventArg { CurrentActivity = $"{media.Title} - {media.ParentTitle}" }
+            );
     }
+
+    private void HandleError(Exception e)
+    {
+        this.OnDisconnection?.Invoke(this, null);
+        this.logger.LogWarning(JsonConvert.SerializeObject(e));
+    }
+    
+
+
+
 
     public event EventHandler? OnActivityUpdated;
+    public event EventHandler? OnDisconnection;
 
     public void Disconnect()
     {
-        client.Stop(WebSocketCloseStatus.NormalClosure, "Stopped");
-        client.Dispose();
+        client?.Stop(WebSocketCloseStatus.NormalClosure, "Stopped");
+        client?.Dispose();
     }
+
+
 }

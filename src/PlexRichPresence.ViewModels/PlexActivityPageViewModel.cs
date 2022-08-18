@@ -5,10 +5,11 @@ using PlexRichPresence.ViewModels.Services;
 namespace PlexRichPresence.ViewModels;
 
 [INotifyPropertyChanged]
-public partial class PlexActivityViewModel
+public partial class PlexActivityPageViewModel
 {
     private IPlexActivityService plexActivityService;
     private IStorageService storageService;
+    private INavigationService navigationService;
     private string userToken;
     
     [ObservableProperty] private bool isConnected = false;
@@ -16,15 +17,16 @@ public partial class PlexActivityViewModel
     [ObservableProperty] private string plexServerIp;
     [ObservableProperty] private int plexServerPort;
     
-    public PlexActivityViewModel(IPlexActivityService plexActivityService, IStorageService storageService)
+    public PlexActivityPageViewModel(IPlexActivityService plexActivityService, IStorageService storageService, INavigationService navigationService)
     {
         this.plexActivityService = plexActivityService;
         this.storageService = storageService;
-        
-        this.plexActivityService.OnActivityUpdated += (source, args) =>
+        this.navigationService = navigationService;
+        this.plexActivityService.OnDisconnection += (_, _) => IsConnected = false;
+        this.plexActivityService.OnActivityUpdated += (_, args) =>
         {
             var activity = (args as IPlexActivityService.PlexActivityEventArg).CurrentActivity;
-            this.CurrentActivity = $"Playing : {activity}";
+            CurrentActivity = $"Playing : {activity}";
         };
     }
 
@@ -39,7 +41,7 @@ public partial class PlexActivityViewModel
     [RelayCommand]
     public void Connect()
     {
-        this.plexActivityService.Connect(this.PlexServerIp, this.PlexServerPort, this.userToken);
+        this.plexActivityService.Connect(this.PlexServerIp, this.PlexServerPort, this.userToken, false);
         this.IsConnected = true;
     }
 
@@ -47,5 +49,12 @@ public partial class PlexActivityViewModel
     public void Disconnect()
     {
         this.plexActivityService.Disconnect();
+        this.IsConnected = false;
+    }
+
+    [RelayCommand]
+    public async Task ChangeServer()
+    {
+        await this.navigationService.NavigateToAsync("servers");
     }
 }

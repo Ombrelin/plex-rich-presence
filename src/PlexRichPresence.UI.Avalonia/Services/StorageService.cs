@@ -36,6 +36,11 @@ public class StorageService : IStorageService
 
         storedData[key] = value;
 
+        await WriteDataToFile(storedData);
+    }
+
+    private async Task WriteDataToFile(Dictionary<string, string> storedData)
+    {
         await File.WriteAllTextAsync(
             path: storedDataPath,
             contents: JsonConvert.SerializeObject(storedData)
@@ -80,5 +85,14 @@ public class StorageService : IStorageService
         EnsureDirectoryExists();
         Dictionary<string, string> storedData = await ReadStoredData();
         return storedData.ContainsKey(key);
+    }
+
+    public async Task RemoveAsync(string key)
+    {
+        EnsureDirectoryExists();
+        Dictionary<string, string> storedData = await ReadStoredData();
+        storedData.Remove(key);
+        
+        await WriteDataToFile(storedData);
     }
 }

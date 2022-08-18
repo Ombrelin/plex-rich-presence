@@ -11,7 +11,7 @@ public partial class ActivityPage : UserControl
     public ActivityPage()
     {
         InitializeComponent();
-        var plexActivityViewModel = this.CreateInstance<PlexActivityViewModel>();
+        var plexActivityViewModel = this.CreateInstance<PlexActivityPageViewModel>();
         this.DataContext = plexActivityViewModel;
         Task.Run(() => plexActivityViewModel.GetDataFromStorageCommand.ExecuteAsync(null));
     }

@@ -86,4 +86,11 @@ public partial class ServersPageViewModel
 
         throw new ArgumentException("No server selected");
     }
+
+    [RelayCommand]
+    public async Task LogOut()
+    {
+        await this.storageService.RemoveAsync("plex_token");
+        await this.navigationService.NavigateToAsync("login");
+    }
 }

@@ -23,12 +23,11 @@
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Label VerticalAlignment="Center">Choose a PLEX server : </Label>
-            <ComboBox 
-                HorizontalAlignment="Center" 
-                VerticalAlignment="Center" 
+            <ComboBox
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
                 Items="{CompiledBinding Servers}"
-                SelectedItem="{CompiledBinding SelectedServer}"
-                >
+                SelectedItem="{CompiledBinding SelectedServer}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="plex-account:AccountServer">
                         <Label Content="{CompiledBinding Name}"></Label>
@@ -56,7 +55,10 @@
             </Grid>
         </Expander>
 
-        <Button Command="{Binding ValidateServerSelectionCommand}" Grid.Row="4" HorizontalAlignment="Center">Continue</Button>
+        <StackPanel Spacing="16" Grid.Row="4" HorizontalAlignment="Center">
+            <Button Classes="accent" Command="{Binding ValidateServerSelectionCommand}" HorizontalAlignment="Center">Continue</Button>
+            <Button Command="{Binding LogOutCommand}" HorizontalAlignment="Center">Log Out</Button>
+        </StackPanel>
     </Grid>
 
 

@@ -1,5 +1,7 @@
 ﻿using Avalonia;
 using System;
+using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.FontAwesome;
 
 namespace PlexRichPresence.UI.Avalonia
 {
@@ -16,6 +18,7 @@ namespace PlexRichPresence.UI.Avalonia
         public static AppBuilder BuildAvaloniaApp()
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
-                .LogToTrace();
+                .LogToTrace()
+                .WithIcons(container => container.Register<FontAwesomeIconProvider>());
     }
 }

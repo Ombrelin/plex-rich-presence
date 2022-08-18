@@ -2,10 +2,11 @@
 
 public interface IPlexActivityService
 {
-    void Connect(string serverIp, int serverPort, string userToken);
+    void Connect(string serverIp, int serverPort, string userToken, bool isOwner);
 
     void Disconnect();
     event EventHandler OnActivityUpdated;
+    event EventHandler OnDisconnection;
 
     class PlexActivityEventArg : EventArgs
     {

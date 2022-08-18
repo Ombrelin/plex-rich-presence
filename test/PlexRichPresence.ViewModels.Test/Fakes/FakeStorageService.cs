@@ -13,4 +13,8 @@ public class FakeStorageService : IStorageService
     }
 
     public Task<string> GetAsync(string key) => Task.FromResult(data[key]);
+    public Task<bool> ContainsKeyAsync(string key)
+    {
+        throw new NotImplementedException();
+    }
 }

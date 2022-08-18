@@ -5,23 +5,49 @@
              xmlns:viewModels="clr-namespace:PlexRichPresence.ViewModels;assembly=PlexRichPresence.ViewModels"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlexRichPresence.UI.Avalonia.Views.ActivityPage"
-             x:DataType="viewModels:PlexActivityViewModel">
+             x:DataType="viewModels:PlexActivityPageViewModel">
 
     <Grid Margin="16">
-        <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
+        <Grid.RowDefinitions>*,*,*,*</Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal">
-            <Label>Server Ip : </Label>
-            <Label Content="{CompiledBinding PlexServerIp}"></Label>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Label>Server Port : </Label>
-            <Label Content="{CompiledBinding PlexServerPort}"></Label>
+        <StackPanel HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <Label>Server Ip : </Label>
+                <Label Content="{CompiledBinding PlexServerIp}"></Label>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Server Port : </Label>
+                <Label Content="{CompiledBinding PlexServerPort}"></Label>
+            </StackPanel>
         </StackPanel>
 
-        <Button IsVisible="{CompiledBinding !IsConnected}" HorizontalAlignment="Center" Grid.Row="2" Command="{Binding ConnectCommand}">Connect</Button>
-        <StackPanel Grid.Row="2">
-            <Label Content="{CompiledBinding CurrentActivity}" IsVisible="{CompiledBinding IsConnected}"></Label>
+        <StackPanel Grid.Row="1" Spacing="16">
+            <Button
+                Classes="accent"
+                IsVisible="{CompiledBinding !IsConnected}"
+                HorizontalAlignment="Center" Command="{Binding ConnectCommand}">
+                Connect
+            </Button>
+            <Button
+                IsVisible="{CompiledBinding !IsConnected}"
+                HorizontalAlignment="Center"
+                Command="{Binding ChangeServerCommand}"
+                >
+                Change Server
+            </Button>
+
+        </StackPanel>
+        <StackPanel Spacing="16" Grid.Row="1" IsVisible="{CompiledBinding IsConnected}">
+            <Label
+                HorizontalContentAlignment="Center"
+                Content="{CompiledBinding CurrentActivity}">
+
+            </Label>
+            <Button
+                HorizontalAlignment="Center"
+                Command="{Binding DisconnectCommand}">
+                Disconnect
+            </Button>
         </StackPanel>
     </Grid>
 
