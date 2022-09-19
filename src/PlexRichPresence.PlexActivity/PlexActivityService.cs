@@ -12,44 +12,22 @@ namespace PlexRichPresence.PlexActivity;
 
 public class PlexActivityService : IPlexActivityService
 {
-
+    private readonly IPlexServerClient plexServerClient;
     private readonly ILogger logger;
+    private IPlexSessionStrategy strategy;
 
     public PlexActivityService(IPlexServerClient plexServerClient, ILogger logger)
     {
         this.plexServerClient = plexServerClient;
+        this.plexServerClient = plexServerClient;
         this.logger = logger;
     }
 
-    public void Connect(string serverIp, int serverPort, string userToken, bool isOwner)
+
+    public IPlexSessionStrategy GetStrategy(bool isOwner)
     {
-        
-
-            .Subscribe(RaiseEventWithMedia, HandleError);
-            this.OnActivityUpdated?.Invoke(
-                this,
-                new IPlexActivityService.PlexActivityEventArg { CurrentActivity = $"{media.Title} - {media.ParentTitle}" }
-            );
+        return isOwner
+            ? new PlexSessionsPollingStrategy(logger, plexServerClient)
+            : new PlexSessionsWebSocketStrategy(logger, plexServerClient, new WebSocketClientFactory());
     }
-
-    private void HandleError(Exception e)
-    {
-        this.OnDisconnection?.Invoke(this, null);
-        this.logger.LogWarning(JsonConvert.SerializeObject(e));
-    }
-    
-
-
-
-
-    public event EventHandler? OnActivityUpdated;
-    public event EventHandler? OnDisconnection;
-
-    public void Disconnect()
-    {
-        client?.Stop(WebSocketCloseStatus.NormalClosure, "Stopped");
-        client?.Dispose();
-    }
-
-
 }

@@ -22,12 +22,6 @@ public partial class PlexActivityPageViewModel
         this.plexActivityService = plexActivityService;
         this.storageService = storageService;
         this.navigationService = navigationService;
-        this.plexActivityService.OnDisconnection += (_, _) => IsConnected = false;
-        this.plexActivityService.OnActivityUpdated += (_, args) =>
-        {
-            var activity = (args as IPlexActivityService.PlexActivityEventArg).CurrentActivity;
-            CurrentActivity = $"Playing : {activity}";
-        };
     }
 
     [RelayCommand]
@@ -41,7 +35,7 @@ public partial class PlexActivityPageViewModel
     [RelayCommand]
     public void Connect()
     {
-        this.plexActivityService.Connect(this.PlexServerIp, this.PlexServerPort, this.userToken, false);
+        this.plexActivityService.GetStrategy();
         this.IsConnected = true;
     }
 

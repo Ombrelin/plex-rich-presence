@@ -1,7 +1,9 @@
+using PlexRichPresence.ViewModels.Services;
+
 namespace PlexRichPresence.PlexActivity;
 
 public interface IPlexSessionStrategy
 {
-    IObservable<PlexSession> GetSessions(string serverIp, int serverPort, string userToken);
+    IAsyncEnumerable<PlexSession> GetSessions(string userId, string serverIp, int serverPort, string userToken);
     void Disconnect();
 }
