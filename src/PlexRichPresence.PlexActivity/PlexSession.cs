@@ -1,3 +1,3 @@
 namespace PlexRichPresence.PlexActivity;
 
-public record PlexSession(string  Title);
+public record PlexSession(string Title);

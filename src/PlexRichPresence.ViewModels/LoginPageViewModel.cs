@@ -15,7 +15,8 @@ public partial class LoginPageViewModel
     private readonly IStorageService storageService;
     private readonly IBrowserService browserService;
 
-    public LoginPageViewModel(IPlexAccountClient plexClient, INavigationService navigationService, IStorageService storageService, IBrowserService browserService)
+    public LoginPageViewModel(IPlexAccountClient plexClient, INavigationService navigationService,
+        IStorageService storageService, IBrowserService browserService)
     {
         this.plexClient = plexClient;
         this.navigationService = navigationService;
@@ -23,13 +24,11 @@ public partial class LoginPageViewModel
         this.browserService = browserService;
     }
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
-    private string login;
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
+    private string login = string.Empty;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
-    private string password;
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
+    private string password = string.Empty;
 
     [RelayCommand(AllowConcurrentExecutions = false, CanExecute = "CanLoginWithCredentials")]
     private async Task LoginWithCredentials()
@@ -49,7 +48,7 @@ public partial class LoginPageViewModel
     [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task LoginWithBrowser()
     {
-        var oauthUrl = await this.plexClient.CreateOAuthPinAsync("");
+        OAuthPin? oauthUrl = await this.plexClient.CreateOAuthPinAsync("");
         await this.browserService.OpenAsync(oauthUrl.Url);
 
         OAuthPin plexPin;

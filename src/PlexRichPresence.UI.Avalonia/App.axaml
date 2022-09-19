@@ -1,17 +1,16 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:PlexRichPresence.UI.Avalonia"
              xmlns:sty="using:FluentAvalonia.Styling"
              x:Class="PlexRichPresence.UI.Avalonia.App">
     <Application.Styles>
         <Style Selector="Button,TextBox, Label, ComboBox">
-            <Setter Property="Width" Value="200"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Width" Value="200" />
+            <Setter Property="Height" Value="32" />
         </Style>
-        <FluentTheme Mode="Dark"/>
+        <FluentTheme Mode="Dark" />
         <sty:FluentAvaloniaTheme />
     </Application.Styles>
-    
+
     <TrayIcon.Icons>
         <TrayIcons>
             <TrayIcon Icon="/Assets/avalonia-logo.ico" ToolTipText="Plex Rich Presence">

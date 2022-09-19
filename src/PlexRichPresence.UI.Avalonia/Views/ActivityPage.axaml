@@ -13,11 +13,11 @@
         <StackPanel HorizontalAlignment="Center">
             <StackPanel Orientation="Horizontal">
                 <Label>Server Ip : </Label>
-                <Label Content="{CompiledBinding PlexServerIp}"></Label>
+                <Label Content="{CompiledBinding PlexServerIp}" />
             </StackPanel>
             <StackPanel Orientation="Horizontal">
                 <Label>Server Port : </Label>
-                <Label Content="{CompiledBinding PlexServerPort}"></Label>
+                <Label Content="{CompiledBinding PlexServerPort}" />
             </StackPanel>
         </StackPanel>
 
@@ -31,8 +31,7 @@
             <Button
                 IsVisible="{CompiledBinding !IsConnected}"
                 HorizontalAlignment="Center"
-                Command="{Binding ChangeServerCommand}"
-                >
+                Command="{Binding ChangeServerCommand}">
                 Change Server
             </Button>
 
@@ -40,9 +39,7 @@
         <StackPanel Spacing="16" Grid.Row="1" IsVisible="{CompiledBinding IsConnected}">
             <Label
                 HorizontalContentAlignment="Center"
-                Content="{CompiledBinding CurrentActivity}">
-
-            </Label>
+                Content="{CompiledBinding CurrentActivity}" />
             <Button
                 HorizontalAlignment="Center"
                 Command="{Binding DisconnectCommand}">

@@ -11,13 +11,14 @@ public partial class PlexActivityPageViewModel
     private IStorageService storageService;
     private INavigationService navigationService;
     private string userToken;
-    
+
     [ObservableProperty] private bool isConnected = false;
     [ObservableProperty] private string currentActivity = "Idle";
-    [ObservableProperty] private string plexServerIp;
+    [ObservableProperty] private string plexServerIp = string.Empty;
     [ObservableProperty] private int plexServerPort;
-    
-    public PlexActivityPageViewModel(IPlexActivityService plexActivityService, IStorageService storageService, INavigationService navigationService)
+
+    public PlexActivityPageViewModel(IPlexActivityService plexActivityService, IStorageService storageService,
+        INavigationService navigationService)
     {
         this.plexActivityService = plexActivityService;
         this.storageService = storageService;
@@ -35,14 +36,14 @@ public partial class PlexActivityPageViewModel
     [RelayCommand]
     public void Connect()
     {
-        this.plexActivityService.GetStrategy();
+        //this.plexActivityService.GetStrategy();
         this.IsConnected = true;
     }
 
     [RelayCommand]
     public void Disconnect()
     {
-        this.plexActivityService.Disconnect();
+        //this.plexActivityService.Disconnect();
         this.IsConnected = false;
     }
 

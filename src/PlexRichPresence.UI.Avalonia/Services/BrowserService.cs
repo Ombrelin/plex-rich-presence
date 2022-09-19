@@ -33,7 +33,7 @@ public class BrowserService : IBrowserService
                 throw;
             }
         }
-        
+
         return Task.CompletedTask;
     }
 }

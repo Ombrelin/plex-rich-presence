@@ -10,16 +10,15 @@
     <Grid Margin="16" IsVisible="{CompiledBinding !Loading}">
         <Grid.RowDefinitions>.5*,*,*,2*,*</Grid.RowDefinitions>
 
-        <ProgressBar IsVisible="{CompiledBinding Loading}" IsIndeterminate="True"></ProgressBar>
+        <ProgressBar IsVisible="{CompiledBinding Loading}" IsIndeterminate="True" />
         <StackPanel Orientation="Horizontal">
             <Label HorizontalContentAlignment="Right">Welcome, </Label>
-            <Label Content="{CompiledBinding Username}"></Label>
+            <Label Content="{CompiledBinding Username}" />
         </StackPanel>
 
         <StackPanel Grid.Row="1">
             <Image VerticalAlignment="Top" x:Name="profilePicture" Width="100" Height="100"
-                   Source="{CompiledBinding ThumbnailUrl}">
-            </Image>
+                   Source="{CompiledBinding ThumbnailUrl}" />
         </StackPanel>
         <StackPanel Grid.Row="2" Orientation="Horizontal">
             <Label VerticalAlignment="Center">Choose a PLEX server : </Label>
@@ -30,7 +29,7 @@
                 SelectedItem="{CompiledBinding SelectedServer}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="plex-account:AccountServer">
-                        <Label Content="{CompiledBinding Name}"></Label>
+                        <Label Content="{CompiledBinding Name}" />
                     </DataTemplate>
                 </ComboBox.ItemTemplate>
             </ComboBox>
@@ -42,15 +41,15 @@
                 <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
                     <Label>Server IP :</Label>
-                    <TextBox Text="{CompiledBinding CustomServerIp}"></TextBox>
+                    <TextBox Text="{CompiledBinding CustomServerIp}" />
                 </StackPanel>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center"
                             VerticalAlignment="Top">
                     <Label>Server Port :</Label>
-                    <TextBox Text="{CompiledBinding CustomServerPort}"></TextBox>
+                    <TextBox Text="{CompiledBinding CustomServerPort}" />
                 </StackPanel>
                 <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <ToggleSwitch IsChecked="{CompiledBinding UseCustomServer}"></ToggleSwitch>
+                    <ToggleSwitch IsChecked="{CompiledBinding UseCustomServer}" />
                 </StackPanel>
             </Grid>
         </Expander>

@@ -1,8 +1,5 @@
-using System;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
-using Microsoft.Extensions.DependencyInjection;
 using PlexRichPresence.ViewModels;
 
 namespace PlexRichPresence.UI.Avalonia.Views;

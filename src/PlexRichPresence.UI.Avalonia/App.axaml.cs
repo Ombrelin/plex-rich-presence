@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Controls;
@@ -11,7 +10,6 @@ using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Debug;
 using Plex.Api.Factories;
 using Plex.Library.Factories;
 using Plex.ServerApi;
@@ -20,11 +18,9 @@ using Plex.ServerApi.Clients;
 using Plex.ServerApi.Clients.Interfaces;
 using PlexRichPresence.PlexActivity;
 using PlexRichPresence.UI.Avalonia.Services;
-using PlexRichPresence.UI.Avalonia.ViewModels;
 using PlexRichPresence.UI.Avalonia.Views;
 using PlexRichPresence.ViewModels;
 using PlexRichPresence.ViewModels.Services;
-using Microsoft.Extensions.Logging.Console;
 
 namespace PlexRichPresence.UI.Avalonia;
 
@@ -70,15 +66,12 @@ public class App : Application
             navigationService.RegisterPage("servers", typeof(ServersPage));
             navigationService.RegisterPage("activity", typeof(ActivityPage));
 
-            var logger = LoggerFactory.Create(config =>
-            {
-                config.AddConsole();
-            }).CreateLogger("Plex Rich Presence");
-            
+            var logger = LoggerFactory.Create(config => { config.AddConsole(); }).CreateLogger("Plex Rich Presence");
+
             services.AddSingleton<INavigationService>(navigationService);
             services.AddSingleton(logger);
             this.Resources[typeof(IServiceProvider)] = services.BuildServiceProvider();
-            
+
 
             IStorageService storageService = services.BuildServiceProvider().GetService<IStorageService>()
                                              ?? throw new InvalidOperationException(
@@ -113,7 +106,7 @@ public class App : Application
             desktop.MainWindow.Hide();
         }
     }
-        
+
     private void Show_OnClick(object? _, EventArgs e)
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)

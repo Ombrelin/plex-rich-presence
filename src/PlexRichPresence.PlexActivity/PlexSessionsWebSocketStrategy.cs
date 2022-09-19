@@ -103,5 +103,3 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
         client?.Dispose();
     }
 }
-
-

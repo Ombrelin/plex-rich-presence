@@ -1,9 +1,6 @@
 using System;
 using System.IO;
-using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
-using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.Media.Imaging;

@@ -103,7 +103,7 @@ public class PlexSessionWebSocketStrategyTests
 
         Func<Uri, CancellationToken, Task<WebSocket>> clientFactory = async Task<WebSocket>(url, cancellationToken) =>
             await wsClient.ConnectAsync(url, cancellationToken);
-        
+
         var client = new WebsocketClient(
             serverUrl,
             clientFactory

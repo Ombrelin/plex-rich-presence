@@ -18,7 +18,8 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
     }
 
 
-    public async IAsyncEnumerable<PlexSession> GetSessions(string userId, string serverIp, int serverPort, string userToken)
+    public async IAsyncEnumerable<PlexSession> GetSessions(string userId, string serverIp, int serverPort,
+        string userToken)
     {
         while (!isDisconnected)
         {

@@ -15,12 +15,12 @@ public partial class ServersPageViewModel
     private readonly IStorageService storageService;
     private readonly INavigationService navigationService;
 
-    [ObservableProperty] private string username;
-    [ObservableProperty] private string thumbnailUrl;
+    [ObservableProperty] private string username = string.Empty;
+    [ObservableProperty] private string thumbnailUrl = string.Empty;
     [ObservableProperty] private bool loading = true;
     [ObservableProperty] private AccountServer? selectedServer;
-    [ObservableProperty] private string customServerIp;
-    [ObservableProperty] private string customServerPort;
+    [ObservableProperty] private string customServerIp = string.Empty;
+    [ObservableProperty] private string customServerPort = string.Empty;
     [ObservableProperty] private bool useCustomServer;
 
     public ServersPageViewModel(
@@ -34,7 +34,7 @@ public partial class ServersPageViewModel
     }
 
     [RelayCommand]
-    public async Task GetData()
+    private async Task GetData()
     {
         await Task.WhenAll(
             this.GetServers(),
@@ -43,7 +43,7 @@ public partial class ServersPageViewModel
         this.Loading = false;
     }
 
-    public async Task GetUsernameAndThumbnail()
+    private async Task GetUsernameAndThumbnail()
     {
         string plexToken = await this.storageService.GetAsync("plex_token");
         PlexAccount account = await this.plexAccountClient.GetPlexAccountAsync(plexToken);
@@ -51,7 +51,7 @@ public partial class ServersPageViewModel
         this.ThumbnailUrl = account.Thumb;
     }
 
-    public async Task GetServers()
+    private async Task GetServers()
     {
         string plexToken = await this.storageService.GetAsync("plex_token");
         AccountServerContainer serverContainer = await this.plexAccountClient.GetAccountServersAsync(plexToken);

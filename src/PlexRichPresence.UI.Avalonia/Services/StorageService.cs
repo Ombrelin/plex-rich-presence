@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json.Nodes;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using PlexRichPresence.ViewModels.Services;
@@ -92,7 +91,7 @@ public class StorageService : IStorageService
         EnsureDirectoryExists();
         Dictionary<string, string> storedData = await ReadStoredData();
         storedData.Remove(key);
-        
+
         await WriteDataToFile(storedData);
     }
 }

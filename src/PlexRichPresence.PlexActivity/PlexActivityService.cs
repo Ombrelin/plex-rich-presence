@@ -1,12 +1,6 @@
-﻿using System.Net.WebSockets;
-using System.Reactive.Linq;
-using System.Text.Json.Nodes;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
-using Plex.ServerApi.PlexModels.Media;
 using PlexRichPresence.ViewModels.Services;
-using Websocket.Client;
 
 namespace PlexRichPresence.PlexActivity;
 

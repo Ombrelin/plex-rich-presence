@@ -10,7 +10,7 @@ public class NavigationService : INavigationService
 {
     private readonly IDictionary<string, Type> registeredPage = new Dictionary<string, Type>();
     private readonly Frame navigationFrame;
-    
+
     public NavigationService(Frame navigationFrame)
     {
         this.navigationFrame = navigationFrame;
