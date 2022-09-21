@@ -6,6 +6,15 @@ public class FakeStorageService : IStorageService
 {
     private readonly Dictionary<string, string> data = new();
 
+    public FakeStorageService()
+    {
+    }
+
+    public FakeStorageService(Dictionary<string, string> initialData)
+    {
+        data = initialData;
+    }
+
     public Task PutAsync(string key, string value)
     {
         data[key] = value;

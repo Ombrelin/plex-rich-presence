@@ -33,7 +33,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
 
         client.DisconnectionHappened.Subscribe(HandleDisconnection);
 
-        var mediaKeys = client.MessageReceived
+        IAsyncEnumerable<string> mediaKeys = client.MessageReceived
             .Select(ExtractNotification)
             .Where(IsPlayingNotification)
             .SelectMany(ExtractSession)
@@ -80,7 +80,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
     {
         JsonNode sessions = message["PlaySessionStateNotification"] ??
                             throw new ArgumentException("Notification has no sessions");
-        return sessions.AsArray();
+        return sessions.AsArray()!;
     }
 
     private JsonNode ExtractNotification(ResponseMessage message)

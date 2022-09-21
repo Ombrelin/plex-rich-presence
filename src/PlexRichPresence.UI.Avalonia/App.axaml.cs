@@ -58,6 +58,7 @@ public class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             var faTheme = AvaloniaLocator.Current.GetService<FluentAvaloniaTheme>();
+            faTheme.PreferSystemTheme = true;
             faTheme.CustomAccentColor = Color.FromRgb(0, 102, 204);
             desktop.MainWindow = new MainWindow();
             var navigationFrame = desktop.MainWindow.FindControl<Frame>("navigationFrame");

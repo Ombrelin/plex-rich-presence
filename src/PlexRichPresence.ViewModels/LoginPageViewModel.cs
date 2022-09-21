@@ -34,16 +34,17 @@ public partial class LoginPageViewModel
     private async Task LoginWithCredentials()
     {
         PlexAccount account = await this.plexClient.GetPlexAccountAsync(this.Login, this.Password);
-        await StoreTokenAndNavigateToServerPage(account.AuthToken);
+        await StoreTokenAndNavigateToServerPage(account.AuthToken, account.Uuid);
     }
 
-    private async Task StoreTokenAndNavigateToServerPage(string token)
+    private async Task StoreTokenAndNavigateToServerPage(string token, string userId)
     {
+        await storageService.PutAsync("plexUserId", userId);
         await storageService.PutAsync("plex_token", token);
         await navigationService.NavigateToAsync("servers");
     }
 
-    private bool CanLoginWithCredentials => !(string.IsNullOrEmpty(this.Login) || string.IsNullOrEmpty(this.password));
+    public bool CanLoginWithCredentials => !(string.IsNullOrEmpty(this.Login) || string.IsNullOrEmpty(this.password));
 
     [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task LoginWithBrowser()
@@ -62,6 +63,7 @@ public partial class LoginPageViewModel
             else break;
         }
 
-        await StoreTokenAndNavigateToServerPage(plexPin.AuthToken);
+        PlexAccount account = await this.plexClient.GetPlexAccountAsync(plexPin.AuthToken);
+        await StoreTokenAndNavigateToServerPage(plexPin.AuthToken, account.Uuid);
     }
 }

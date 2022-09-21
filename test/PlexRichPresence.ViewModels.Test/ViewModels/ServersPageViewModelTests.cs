@@ -2,6 +2,7 @@ using FluentAssertions;
 using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
+using PlexRichPresence.ViewModels.Services;
 using PlexRichPresence.ViewModels.Test.Fakes;
 
 namespace PlexRichPresence.ViewModels.Test.ViewModels;
@@ -22,7 +23,8 @@ public class ServersPageViewModelTests
         var fakeStorageService = new FakeStorageService();
         await fakeStorageService.PutAsync("plex_token", fakePlexToken);
         var plexAccountClientMock =
-            BuildPlexAccountClientMock(fakePlexToken, fakeUsername, fakeThumbnail, fakeServerName, fakeServerIp, fakeServerPort);
+            BuildPlexAccountClientMock(fakePlexToken, fakeUsername, fakeThumbnail, fakeServerName, fakeServerIp,
+                fakeServerPort);
         var navigationService = new FakeNavigationService();
 
         var viewModel = new ServersPageViewModel(
@@ -42,6 +44,51 @@ public class ServersPageViewModelTests
     }
 
     [Fact]
+    public async Task CanValidate_NoServerSelected_False()
+    {
+        // Given
+        var viewModel = new ServersPageViewModel(null,null,null);
+
+        // Then
+        viewModel.CanValidate.Should().BeFalse();
+    }
+
+    [Fact]
+    public void CanValidate_ServerSelected_True()
+    {
+        // Given
+        var viewModel = new ServersPageViewModel(null,null,null);
+
+        // When
+        viewModel.SelectedServer = new AccountServer();
+        
+        // Then
+        viewModel.CanValidate.Should().BeTrue();
+    }
+
+    [Theory]
+    [InlineData("","",false)]
+    [InlineData(null,null,false)]
+    [InlineData("","32400",false)]
+    [InlineData(null,"32400",false)]
+    [InlineData("111.111.111.111","",false)]
+    [InlineData("111.111.111.111",null,false)]
+    [InlineData("111.111.111.111","32400",true)]
+    public void CanValidate_CustomServer(string ip, string port, bool expected)
+    {
+        // Given
+        var viewModel = new ServersPageViewModel(null,null,null);
+        viewModel.UseCustomServer = true;
+
+        // When
+        viewModel.CustomServerIp = ip;
+        viewModel.CustomServerPort = port;
+
+        // Then
+        viewModel.CanValidate.Should().Be(expected);
+    } 
+    
+    [Fact]
     public async Task ValidateWithExistingServer_SetServerInfoInStorage()
     {
         // Given
@@ -55,7 +102,8 @@ public class ServersPageViewModelTests
         var fakeStorageService = new FakeStorageService();
         await fakeStorageService.PutAsync("plex_token", fakePlexToken);
         var plexAccountClientMock =
-            BuildPlexAccountClientMock(fakePlexToken, fakeUsername, fakeThumbnail, fakeServerName, fakeServerIp, fakeServerPort);
+            BuildPlexAccountClientMock(fakePlexToken, fakeUsername, fakeThumbnail, fakeServerName, fakeServerIp,
+                fakeServerPort);
         var navigationService = new FakeNavigationService();
 
         var viewModel = new ServersPageViewModel(
@@ -63,20 +111,21 @@ public class ServersPageViewModelTests
             fakeStorageService,
             navigationService
         );
-        
+
         await viewModel.GetDataCommand.ExecuteAsync(null);
-        
+
         // When
         viewModel.SelectedServer = viewModel.Servers.First();
         await viewModel.ValidateServerSelectionCommand.ExecuteAsync(null);
-        
+
         // Then
         viewModel.SelectedServer.Name.Should().Be(fakeServerName);
         (await fakeStorageService.GetAsync("serverIp")).Should().Be(fakeServerIp);
         (await fakeStorageService.GetAsync("serverPort")).Should().Be(fakeServerPort);
+        (await fakeStorageService.GetAsync("isServerOwned")).Should().Be(bool.TrueString);
         navigationService.CurrentPage.Should().Be("activity");
     }
-    
+
     [Fact]
     public async Task ValidateWithCustom_SetServerInfoInStorage()
     {
@@ -91,7 +140,8 @@ public class ServersPageViewModelTests
         var fakeStorageService = new FakeStorageService();
         await fakeStorageService.PutAsync("plex_token", fakePlexToken);
         var plexAccountClientMock =
-            BuildPlexAccountClientMock(fakePlexToken, fakeUsername, fakeThumbnail, fakeServerName, fakeServerIp, fakeServerPort);
+            BuildPlexAccountClientMock(fakePlexToken, fakeUsername, fakeThumbnail, fakeServerName, fakeServerIp,
+                fakeServerPort);
         var navigationService = new FakeNavigationService();
 
         var viewModel = new ServersPageViewModel(
@@ -99,18 +149,20 @@ public class ServersPageViewModelTests
             fakeStorageService,
             navigationService
         );
-        
+
         await viewModel.GetDataCommand.ExecuteAsync(null);
-        
+
         // When
         viewModel.UseCustomServer = true;
         viewModel.CustomServerIp = fakeServerIp;
         viewModel.CustomServerPort = fakeServerPort;
+        viewModel.IsCustomServerOwned = true;
         await viewModel.ValidateServerSelectionCommand.ExecuteAsync(null);
-        
+
         // Then
         (await fakeStorageService.GetAsync("serverIp")).Should().Be(fakeServerIp);
         (await fakeStorageService.GetAsync("serverPort")).Should().Be(fakeServerPort);
+        (await fakeStorageService.GetAsync("isServerOwned")).Should().Be(bool.TrueString);
         navigationService.CurrentPage.Should().Be("activity");
     }
 
@@ -130,7 +182,8 @@ public class ServersPageViewModelTests
                     {
                         Name = fakeServerName,
                         Address = fakeServerIp,
-                        Port = int.Parse(fakeServerPort)
+                        Port = int.Parse(fakeServerPort),
+                        Owned = 1
                     }
                 }
             }));

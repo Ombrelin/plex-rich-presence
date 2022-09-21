@@ -17,11 +17,18 @@ public partial class ServersPageViewModel
 
     [ObservableProperty] private string username = string.Empty;
     [ObservableProperty] private string thumbnailUrl = string.Empty;
-    [ObservableProperty] private bool loading = true;
     [ObservableProperty] private AccountServer? selectedServer;
     [ObservableProperty] private string customServerIp = string.Empty;
     [ObservableProperty] private string customServerPort = string.Empty;
     [ObservableProperty] private bool useCustomServer;
+    [ObservableProperty] private bool isCustomServerOwned;
+
+    public bool CanValidate => SelectedServer is not null || 
+                               (
+                                   UseCustomServer 
+                                   && !string.IsNullOrEmpty(CustomServerIp)
+                                   && !string.IsNullOrEmpty(CustomServerPort)
+                               );
 
     public ServersPageViewModel(
         IPlexAccountClient plexAccountClient,
@@ -40,7 +47,6 @@ public partial class ServersPageViewModel
             this.GetServers(),
             this.GetUsernameAndThumbnail()
         );
-        this.Loading = false;
     }
 
     private async Task GetUsernameAndThumbnail()
@@ -63,32 +69,33 @@ public partial class ServersPageViewModel
     }
 
     [RelayCommand]
-    public async Task ValidateServerSelection()
+    private async Task ValidateServerSelection()
     {
-        var (selectedServerIp, selectedServerPort) = GetSelectedServerInfo();
+        (string selectedServerIp, int selectedServerPort, bool isSelectedServerOwned) = GetSelectedServerInfo();
 
         await this.storageService.PutAsync("serverIp", selectedServerIp);
         await this.storageService.PutAsync("serverPort", selectedServerPort.ToString());
+        await this.storageService.PutAsync("isServerOwned", isSelectedServerOwned.ToString());
 
         await this.navigationService.NavigateToAsync("activity");
     }
 
-    private (string, int) GetSelectedServerInfo()
+    private (string, int, bool) GetSelectedServerInfo()
     {
         if (this.UseCustomServer)
         {
-            return (this.CustomServerIp, int.Parse(this.CustomServerPort));
+            return (this.CustomServerIp, int.Parse(this.CustomServerPort), this.IsCustomServerOwned);
         }
         else if (this.SelectedServer is not null)
         {
-            return (this.SelectedServer.Address, this.SelectedServer.Port);
+            return (this.SelectedServer.Address, this.SelectedServer.Port, this.SelectedServer.Owned == 1);
         }
 
         throw new ArgumentException("No server selected");
     }
 
     [RelayCommand]
-    public async Task LogOut()
+    private async Task LogOut()
     {
         await this.storageService.RemoveAsync("plex_token");
         await this.navigationService.NavigateToAsync("login");

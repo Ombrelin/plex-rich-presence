@@ -20,7 +20,7 @@
                 <Label Content="{CompiledBinding PlexServerPort}" />
             </StackPanel>
         </StackPanel>
-
+        <!--
         <StackPanel Grid.Row="1" Spacing="16">
             <Button
                 Classes="accent"
@@ -36,7 +36,8 @@
             </Button>
 
         </StackPanel>
-        <StackPanel Spacing="16" Grid.Row="1" IsVisible="{CompiledBinding IsConnected}">
+        --> <!--IsVisible="{CompiledBinding IsConnected}"-->
+        <StackPanel Spacing="16" Grid.Row="1">
             <Label
                 HorizontalContentAlignment="Center"
                 Content="{CompiledBinding CurrentActivity}" />

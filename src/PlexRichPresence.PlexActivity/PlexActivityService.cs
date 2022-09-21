@@ -8,7 +8,6 @@ public class PlexActivityService : IPlexActivityService
 {
     private readonly IPlexServerClient plexServerClient;
     private readonly ILogger logger;
-    private IPlexSessionStrategy strategy;
 
     public PlexActivityService(IPlexServerClient plexServerClient, ILogger logger)
     {

@@ -7,10 +7,10 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage"
              x:DataType="viewModels:ServersPageViewModel">
-    <Grid Margin="16" IsVisible="{CompiledBinding !Loading}">
+    <Grid Margin="16" IsVisible="{Binding !GetDataCommand.IsExecuting}">
         <Grid.RowDefinitions>.5*,*,*,2*,*</Grid.RowDefinitions>
 
-        <ProgressBar IsVisible="{CompiledBinding Loading}" IsIndeterminate="True" />
+        <ProgressBar IsVisible="{Binding !GetDataCommand.IsExecuting}" IsIndeterminate="True" />
         <StackPanel Orientation="Horizontal">
             <Label HorizontalContentAlignment="Right">Welcome, </Label>
             <Label Content="{CompiledBinding Username}" />

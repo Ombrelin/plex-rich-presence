@@ -28,7 +28,10 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 new Uri($"http://{serverIp}:{serverPort}").ToString()
             );
 
-            SessionMetadata currentUserSession = sessions.Metadata.First(session => session.User.Id == userId);
+            SessionMetadata currentUserSession = sessions
+                .Metadata
+                .First(session => session.User.Id == userId);
+
             await Task.Delay(TimeSpan.FromSeconds(2));
             yield return new PlexSession(Title: currentUserSession.Title);
         }
