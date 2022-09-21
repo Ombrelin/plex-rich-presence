@@ -17,15 +17,30 @@ public partial class ServersPageViewModel
 
     [ObservableProperty] private string username = string.Empty;
     [ObservableProperty] private string thumbnailUrl = string.Empty;
-    [ObservableProperty] private AccountServer? selectedServer;
-    [ObservableProperty] private string customServerIp = string.Empty;
-    [ObservableProperty] private string customServerPort = string.Empty;
-    [ObservableProperty] private bool useCustomServer;
-    [ObservableProperty] private bool isCustomServerOwned;
 
-    public bool CanValidate => SelectedServer is not null || 
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    private AccountServer? selectedServer;
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    private string customServerIp = string.Empty;
+
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    private string customServerPort = string.Empty;
+
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    private bool useCustomServer;
+
+    [ObservableProperty] 
+    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    private bool isCustomServerOwned;
+
+    public bool CanValidate => SelectedServer is not null ||
                                (
-                                   UseCustomServer 
+                                   UseCustomServer
                                    && !string.IsNullOrEmpty(CustomServerIp)
                                    && !string.IsNullOrEmpty(CustomServerPort)
                                );
@@ -68,7 +83,7 @@ public partial class ServersPageViewModel
         }
     }
 
-    [RelayCommand]
+    [RelayCommand(AllowConcurrentExecutions = false, CanExecute = "CanValidate")]
     private async Task ValidateServerSelection()
     {
         (string selectedServerIp, int selectedServerPort, bool isSelectedServerOwned) = GetSelectedServerInfo();

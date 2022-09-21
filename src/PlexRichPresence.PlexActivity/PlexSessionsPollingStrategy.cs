@@ -27,12 +27,22 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 userToken,
                 new Uri($"http://{serverIp}:{serverPort}").ToString()
             );
-
-            SessionMetadata currentUserSession = sessions
-                .Metadata
-                .First(session => session.User.Id == userId);
-
             await Task.Delay(TimeSpan.FromSeconds(2));
+
+            if (sessions.Metadata is null)
+            {
+                continue;
+            }
+            
+            SessionMetadata? currentUserSession = sessions
+                .Metadata
+                .FirstOrDefault(session => session.User.Id == userId);
+
+            if (currentUserSession is null)
+            {
+                continue;
+            }
+            
             yield return new PlexSession(Title: currentUserSession.Title);
         }
     }

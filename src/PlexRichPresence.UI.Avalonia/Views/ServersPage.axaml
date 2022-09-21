@@ -7,20 +7,20 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage"
              x:DataType="viewModels:ServersPageViewModel">
-    <Grid Margin="16" IsVisible="{Binding !GetDataCommand.IsExecuting}">
+    <Grid Margin="16" >
         <Grid.RowDefinitions>.5*,*,*,2*,*</Grid.RowDefinitions>
 
-        <ProgressBar IsVisible="{Binding !GetDataCommand.IsExecuting}" IsIndeterminate="True" />
-        <StackPanel Orientation="Horizontal">
+        <ProgressBar IsVisible="{Binding GetDataCommand.IsRunning}" IsIndeterminate="True" />
+        <StackPanel Orientation="Horizontal" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Label HorizontalContentAlignment="Right">Welcome, </Label>
             <Label Content="{CompiledBinding Username}" />
         </StackPanel>
 
-        <StackPanel Grid.Row="1">
+        <StackPanel Grid.Row="1" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Image VerticalAlignment="Top" x:Name="profilePicture" Width="100" Height="100"
                    Source="{CompiledBinding ThumbnailUrl}" />
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Horizontal">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Label VerticalAlignment="Center">Choose a PLEX server : </Label>
             <ComboBox
                 HorizontalAlignment="Center"
@@ -36,7 +36,7 @@
         </StackPanel>
 
 
-        <Expander Grid.Row="3" Header="Manuel Server Configuration">
+        <Expander Grid.Row="3" Header="Manuel Server Configuration" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Grid>
                 <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
@@ -54,7 +54,7 @@
             </Grid>
         </Expander>
 
-        <StackPanel Spacing="16" Grid.Row="4" HorizontalAlignment="Center">
+        <StackPanel Spacing="16" Grid.Row="4" HorizontalAlignment="Center" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Button Classes="accent" Command="{Binding ValidateServerSelectionCommand}" HorizontalAlignment="Center">Continue</Button>
             <Button Command="{Binding LogOutCommand}" HorizontalAlignment="Center">Log Out</Button>
         </StackPanel>
