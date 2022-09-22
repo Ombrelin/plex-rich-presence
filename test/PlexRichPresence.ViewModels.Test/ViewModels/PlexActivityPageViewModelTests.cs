@@ -1,4 +1,6 @@
 using FluentAssertions;
+using Moq;
+using PlexRichPresence.ViewModels.Services;
 using PlexRichPresence.ViewModels.Test.Fakes;
 
 namespace PlexRichPresence.ViewModels.Test.ViewModels;
@@ -21,7 +23,11 @@ public class PlexActivityPageViewModelTests
             ["plex_token"] = fakePlexToken,
             ["plexUserId"] = fakePlexUserId
         });
-        var viewModel = new PlexActivityPageViewModel(new FakePlexActivityService(), storageService, null);
+        var viewModel = new PlexActivityPageViewModel(
+            new FakePlexActivityService(), 
+            storageService, 
+            new Mock<INavigationService>().Object
+        );
 
         // When
         await viewModel.InitStrategyCommand.ExecuteAsync(null);

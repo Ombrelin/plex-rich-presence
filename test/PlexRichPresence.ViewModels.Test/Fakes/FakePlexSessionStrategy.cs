@@ -6,10 +6,10 @@ public class FakePlexSessionStrategy : IPlexSessionStrategy
 {
     public bool IsConnected { get; private set; }
 
-    public string CurrentUserId { get; private set; }
-    public string CurrentServerIp { get; private set; }
+    public string? CurrentUserId { get; private set; }
+    public string? CurrentServerIp { get; private set; }
     public int CurrentServerPort { get; private set; }
-    public string CurrentUserToken { get; private set; }
+    public string? CurrentUserToken { get; private set; }
 
 
     public async IAsyncEnumerable<PlexSession> GetSessions(string userId, string serverIp, int serverPort,

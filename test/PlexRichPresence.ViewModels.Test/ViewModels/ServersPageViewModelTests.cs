@@ -44,10 +44,14 @@ public class ServersPageViewModelTests
     }
 
     [Fact]
-    public async Task CanValidate_NoServerSelected_False()
+    public void CanValidate_NoServerSelected_False()
     {
         // Given
-        var viewModel = new ServersPageViewModel(null,null,null);
+        var viewModel = new ServersPageViewModel(
+            new Mock<IPlexAccountClient>().Object,
+            new Mock<IStorageService>().Object,
+            new Mock<INavigationService>().Object
+        );
 
         // Then
         viewModel.CanValidate.Should().BeFalse();
@@ -57,27 +61,35 @@ public class ServersPageViewModelTests
     public void CanValidate_ServerSelected_True()
     {
         // Given
-        var viewModel = new ServersPageViewModel(null,null,null);
+        var viewModel = new ServersPageViewModel(
+            new Mock<IPlexAccountClient>().Object,
+            new Mock<IStorageService>().Object,
+            new Mock<INavigationService>().Object
+        );
 
         // When
         viewModel.SelectedServer = new AccountServer();
-        
+
         // Then
         viewModel.CanValidate.Should().BeTrue();
     }
 
     [Theory]
-    [InlineData("","",false)]
-    [InlineData(null,null,false)]
-    [InlineData("","32400",false)]
-    [InlineData(null,"32400",false)]
-    [InlineData("111.111.111.111","",false)]
-    [InlineData("111.111.111.111",null,false)]
-    [InlineData("111.111.111.111","32400",true)]
+    [InlineData("", "", false)]
+    [InlineData(null, null, false)]
+    [InlineData("", "32400", false)]
+    [InlineData(null, "32400", false)]
+    [InlineData("111.111.111.111", "", false)]
+    [InlineData("111.111.111.111", null, false)]
+    [InlineData("111.111.111.111", "32400", true)]
     public void CanValidate_CustomServer(string ip, string port, bool expected)
     {
         // Given
-        var viewModel = new ServersPageViewModel(null,null,null);
+        var viewModel = new ServersPageViewModel(
+            new Mock<IPlexAccountClient>().Object,
+            new Mock<IStorageService>().Object,
+            new Mock<INavigationService>().Object
+        );
         viewModel.UseCustomServer = true;
 
         // When
@@ -86,8 +98,8 @@ public class ServersPageViewModelTests
 
         // Then
         viewModel.CanValidate.Should().Be(expected);
-    } 
-    
+    }
+
     [Fact]
     public async Task ValidateWithExistingServer_SetServerInfoInStorage()
     {

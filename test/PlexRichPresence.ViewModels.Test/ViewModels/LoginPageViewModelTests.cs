@@ -3,6 +3,7 @@ using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
 using Plex.ServerApi.PlexModels.OAuth;
+using PlexRichPresence.ViewModels.Services;
 using PlexRichPresence.ViewModels.Test.Fakes;
 
 namespace PlexRichPresence.ViewModels.Test.ViewModels;
@@ -107,10 +108,10 @@ public class LoginPageViewModelTests
     {
         // Given
         var viewModel = new LoginPageViewModel(
-            null,
-            null,
-            null,
-            null
+            new Mock<IPlexAccountClient>().Object,
+            new Mock<INavigationService>().Object,
+            new Mock<IStorageService>().Object,
+            new Mock<IBrowserService>().Object
         );
         
         // When

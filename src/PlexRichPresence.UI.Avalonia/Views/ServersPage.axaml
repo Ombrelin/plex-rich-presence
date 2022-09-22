@@ -8,7 +8,7 @@
              x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage"
              x:DataType="viewModels:ServersPageViewModel">
     <Grid Margin="16" >
-        <Grid.RowDefinitions>.5*,*,*,2*,*</Grid.RowDefinitions>
+        <Grid.RowDefinitions>.5*,*,*,3*,*</Grid.RowDefinitions>
 
         <ProgressBar IsVisible="{Binding GetDataCommand.IsRunning}" IsIndeterminate="True" />
         <StackPanel Orientation="Horizontal" IsVisible="{Binding !GetDataCommand.IsRunning}">
@@ -36,25 +36,30 @@
         </StackPanel>
 
 
-        <Expander Grid.Row="3" Header="Manuel Server Configuration" IsVisible="{Binding !GetDataCommand.IsRunning}">
+        <Expander Grid.Row="3" Header="Manual Server Configuration" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Grid>
-                <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <Label>Server IP :</Label>
-                    <TextBox Text="{CompiledBinding CustomServerIp}" />
+                <Grid.RowDefinitions>*,*,*,*</Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Use Custom Server :</Label>
+                    <ToggleSwitch IsChecked="{CompiledBinding UseCustomServer}" />
                 </StackPanel>
-                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center"
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Server IP :</Label>
+                    <TextBox IsEnabled="{CompiledBinding UseCustomServer}" Text="{CompiledBinding CustomServerIp}" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left"
                             VerticalAlignment="Top">
                     <Label>Server Port :</Label>
-                    <TextBox Text="{CompiledBinding CustomServerPort}" />
+                    <TextBox IsEnabled="{CompiledBinding UseCustomServer}" Text="{CompiledBinding CustomServerPort}" />
                 </StackPanel>
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
-                    <ToggleSwitch IsChecked="{CompiledBinding UseCustomServer}" />
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Is Custom Server Owned :</Label>
+                    <ToggleSwitch IsEnabled="{CompiledBinding UseCustomServer}" IsChecked="{CompiledBinding IsCustomServerOwned}" />
                 </StackPanel>
             </Grid>
         </Expander>
 
-        <StackPanel Spacing="16" Grid.Row="4" HorizontalAlignment="Center" IsVisible="{Binding !GetDataCommand.IsRunning}">
+        <StackPanel Margin="0,16,0,0" Spacing="16" Grid.Row="4" HorizontalAlignment="Center" IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Button Classes="accent" Command="{Binding ValidateServerSelectionCommand}" HorizontalAlignment="Center">Continue</Button>
             <Button Command="{Binding LogOutCommand}" HorizontalAlignment="Center">Log Out</Button>
         </StackPanel>
