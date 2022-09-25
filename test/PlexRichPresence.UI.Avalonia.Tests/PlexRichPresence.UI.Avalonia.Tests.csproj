@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
 
         <IsPackable>false</IsPackable>
+        <RootNamespace>PlexRichPresence.UI.Avalonia.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

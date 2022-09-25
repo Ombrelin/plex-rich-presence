@@ -53,7 +53,7 @@ public class PlexSessionWebSocketStrategyTests
             .HaveCount(elementsCountForTest);
 
         var titles = result
-            .Select(session => session.Title)
+            .Select(session => session.MediaTitle)
             .ToList();
 
         titles.Should().Contain("Test Media 0");

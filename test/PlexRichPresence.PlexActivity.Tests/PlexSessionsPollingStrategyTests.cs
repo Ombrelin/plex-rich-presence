@@ -29,14 +29,16 @@ public class PlexSessionsPollingStrategyTests
             fakeServerPort,
             fakeUserId);
 
+        var clock = new FakeClock(DateTime.Now);
+        DateTime now = DateTime.Now;
+        
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger>().Object,
-            serverClientMock.Object
+            serverClientMock.Object,
+            clock
         );
 
         var result = new List<PlexSession>();
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
 
         // When
         var sessionsStream = strategy.GetSessions(
@@ -54,26 +56,22 @@ public class PlexSessionsPollingStrategyTests
                 strategy.Disconnect();
             }
         }
-
-        stopwatch.Stop();
-
+        
         // Then
         result
             .Should()
             .HaveCount(elementsCountForTest);
 
         var titles = result
-            .Select(session => session.Title)
+            .Select(session => session.MediaTitle)
             .ToList();
 
         titles.Should().Contain("Test Media 1");
         titles.Should().Contain("Test Media 2");
         titles.Should().Contain("Test Media 3");
 
-        stopwatch
-            .Elapsed
-            .Should()
-            .BeGreaterThan(TimeSpan.FromSeconds(6));
+
+        clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }
 
     [Fact]
@@ -92,14 +90,15 @@ public class PlexSessionsPollingStrategyTests
             fakeUserId
         );
 
+        var clock = new FakeClock(DateTime.Now);
+        DateTime now = DateTime.Now;
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger>().Object,
-            serverClientMock.Object
+            serverClientMock.Object,
+            clock
         );
 
         var result = new List<PlexSession>();
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
 
         // When
         IAsyncEnumerable<PlexSession> sessionsStream = strategy.GetSessions(
@@ -117,24 +116,19 @@ public class PlexSessionsPollingStrategyTests
             }
         }
 
-        stopwatch.Stop();
-
         // Then
         result
             .Should()
             .HaveCount(elementsCountForTest - 1);
 
         var titles = result
-            .Select(session => session.Title)
+            .Select(session => session.MediaTitle)
             .ToList();
 
         titles.Should().Contain("Test Media 2");
         titles.Should().Contain("Test Media 3");
 
-        stopwatch
-            .Elapsed
-            .Should()
-            .BeGreaterThan(TimeSpan.FromSeconds(6));
+        clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }
 
 
@@ -154,14 +148,16 @@ public class PlexSessionsPollingStrategyTests
             fakeUserId
         );
 
+        var clock = new FakeClock(DateTime.Now);
+        DateTime now = DateTime.Now;
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger>().Object,
-            serverClientMock.Object
+            serverClientMock.Object,
+            clock
         );
 
         var result = new List<PlexSession>();
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
+
 
         // When
         IAsyncEnumerable<PlexSession> sessionsStream = strategy.GetSessions(
@@ -179,24 +175,20 @@ public class PlexSessionsPollingStrategyTests
             }
         }
 
-        stopwatch.Stop();
-
         // Then
         result
             .Should()
             .HaveCount(elementsCountForTest - 1);
 
         var titles = result
-            .Select(session => session.Title)
+            .Select(session => session.MediaTitle)
             .ToList();
 
         titles.Should().Contain("Test Media 2");
         titles.Should().Contain("Test Media 3");
 
-        stopwatch
-            .Elapsed
-            .Should()
-            .BeGreaterThan(TimeSpan.FromSeconds(6));
+
+        clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }
 
 

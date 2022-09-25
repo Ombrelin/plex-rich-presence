@@ -49,9 +49,15 @@ public partial class LoginPageViewModel
     [RelayCommand(AllowConcurrentExecutions = false)]
     private async Task LoginWithBrowser()
     {
-        OAuthPin? oauthUrl = await this.plexClient.CreateOAuthPinAsync("");
-        await this.browserService.OpenAsync(oauthUrl.Url);
+        OAuthPin oauthUrl = await OpenBrowserWitnPin();
+        OAuthPin plexPin = await WaitForBrowserLogin(oauthUrl);
 
+        PlexAccount account = await this.plexClient.GetPlexAccountAsync(plexPin.AuthToken);
+        await StoreTokenAndNavigateToServerPage(plexPin.AuthToken, account.Uuid);
+    }
+
+    private async Task<OAuthPin> WaitForBrowserLogin(OAuthPin oauthUrl)
+    {
         OAuthPin plexPin;
         while (true)
         {
@@ -63,7 +69,13 @@ public partial class LoginPageViewModel
             else break;
         }
 
-        PlexAccount account = await this.plexClient.GetPlexAccountAsync(plexPin.AuthToken);
-        await StoreTokenAndNavigateToServerPage(plexPin.AuthToken, account.Uuid);
+        return plexPin;
+    }
+
+    private async Task<OAuthPin> OpenBrowserWitnPin()
+    {
+        OAuthPin? oauthUrl = await this.plexClient.CreateOAuthPinAsync("");
+        await this.browserService.OpenAsync(oauthUrl.Url);
+        return oauthUrl;
     }
 }

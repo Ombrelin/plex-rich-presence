@@ -4,7 +4,9 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Media;
+using Plex.ServerApi.PlexModels.Server.Sessions;
 using Websocket.Client;
+using Medium = Plex.ServerApi.PlexModels.Server.Sessions.Medium;
 
 namespace PlexRichPresence.PlexActivity;
 
@@ -13,7 +15,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
     private readonly ILogger logger;
     private IWebsocketClient? client;
     private readonly IPlexServerClient plexServerClient;
-    private IWebSocketClientFactory webSocketClientFactory;
+    private readonly IWebSocketClientFactory webSocketClientFactory;
 
     public PlexSessionsWebSocketStrategy(
         ILogger logger,
@@ -31,32 +33,31 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
         client?.Dispose();
         client = webSocketClientFactory.GetWebSocketClient(serverIp, serverPort, userToken);
 
-        client.DisconnectionHappened.Subscribe(HandleDisconnection);
-
-        IAsyncEnumerable<string> mediaKeys = client.MessageReceived
+        IAsyncEnumerable<(string key, string state, long viewOffset)> sessions = client.MessageReceived
             .Select(ExtractNotification)
             .Where(IsPlayingNotification)
             .SelectMany(ExtractSession)
-            .Select(ExtractMediaKey)
+            .Select(ExtractSessionData)
             .ToAsyncEnumerable();
 
         await client.Start();
 
-        await foreach (string mediaKey in mediaKeys)
+        logger.LogInformation("Listening to sessions via websocket for {ServerIp}", serverIp);
+        await foreach ((string key, string state, long viewOffset) in sessions)
         {
-            yield return await ExtractPlexSession(serverIp, serverPort, userToken, mediaKey);
+            yield return await ExtractPlexSession(serverIp, serverPort, userToken, key,state, viewOffset);
         }
     }
 
     private async Task<PlexSession> ExtractPlexSession(string serverIp, int serverPort, string userToken,
-        string mediaKey)
+        string mediaKey, string state, long viewOffset)
     {
         MediaContainer mediaContainer = await this.GetMediaFromKey(mediaKey, userToken, serverIp, serverPort);
         Metadata media = mediaContainer.Media.First();
-        return new PlexSession(media.Title);
+        return new PlexSession(media,state,viewOffset);
     }
 
-    public Task<MediaContainer> GetMediaFromKey(string mediaKey, string userToken, string serverIp, int serverPort)
+    private Task<MediaContainer> GetMediaFromKey(string mediaKey, string userToken, string serverIp, int serverPort)
     {
         return this.plexServerClient.GetMediaMetadataAsync(
             userToken,
@@ -64,16 +65,14 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
             mediaKey
         );
     }
-
-    private void HandleDisconnection(DisconnectionInfo disconnectionInfo)
+    
+    private (string key, string state, long viewOffset) ExtractSessionData(JsonNode message)
     {
-        throw disconnectionInfo.Exception;
-    }
-
-    private string ExtractMediaKey(JsonNode message)
-    {
+        this.logger.LogInformation("Websocket session : {Session}", message.ToJsonString());
         JsonNode key = message["key"] ?? throw new ArgumentException("Media has no key");
-        return key.GetValue<string>().Split("/").Last();
+        JsonNode state = message["state"] ?? throw new ArgumentException("Media has no state");
+        JsonNode viewOffset = message["viewOffset"] ?? throw new ArgumentException("Media has no viewOffset");
+        return (key.GetValue<string>().Split("/").Last(), state.GetValue<string>(), viewOffset.GetValue<long>());
     }
 
     private IEnumerable<JsonNode> ExtractSession(JsonNode message)
@@ -85,6 +84,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
 
     private JsonNode ExtractNotification(ResponseMessage message)
     {
+        this.logger.LogInformation("Detected session");
         JsonNode webSocketMessage = JsonNode.Parse(message.Text) ??
                                     throw new ArgumentException("Can't parse WebSocket message as JSON");
         return webSocketMessage["NotificationContainer"] ??

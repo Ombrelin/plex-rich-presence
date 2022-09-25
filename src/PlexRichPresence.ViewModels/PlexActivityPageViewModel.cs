@@ -1,6 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using PlexRichPresence.PlexActivity;
+using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels;
@@ -9,8 +10,8 @@ namespace PlexRichPresence.ViewModels;
 public partial class PlexActivityPageViewModel
 {
     private readonly IPlexActivityService plexActivityService;
-    private IPlexSessionStrategy? plexActivityStrategy;
     private readonly IStorageService storageService;
+    private readonly IDiscordService discordService;
     private readonly INavigationService navigationService;
     private string userToken = string.Empty;
     private string userId = string.Empty;
@@ -23,12 +24,14 @@ public partial class PlexActivityPageViewModel
     public PlexActivityPageViewModel(
         IPlexActivityService plexActivityService,
         IStorageService storageService,
-        INavigationService navigationService
-    )
+        INavigationService navigationService,
+        IDiscordService discordService
+        )
     {
         this.plexActivityService = plexActivityService;
         this.storageService = storageService;
         this.navigationService = navigationService;
+        this.discordService = discordService;
     }
 
     [RelayCommand]
@@ -38,26 +41,21 @@ public partial class PlexActivityPageViewModel
         this.PlexServerPort = int.Parse(await this.storageService.GetAsync("serverPort"));
         this.userToken = await this.storageService.GetAsync("plex_token");
         this.IsPlexServerOwned = bool.Parse(await this.storageService.GetAsync("isServerOwned"));
-
-        this.plexActivityStrategy = this.plexActivityService.GetStrategy(this.IsPlexServerOwned);
     }
 
     [RelayCommand]
     private async Task StartActivity()
     {
-        if (this.plexActivityStrategy is null)
-        {
-            throw new InvalidOperationException("Strategy not initialised");
-        }
-
-        await foreach (PlexSession session in this.plexActivityStrategy.GetSessions(
+        await foreach (IPlexSession session in this.plexActivityService.GetSessions(
+                           this.IsPlexServerOwned,
                            userId,
                            this.PlexServerIp,
                            this.PlexServerPort,
                            this.userToken)
                       )
         {
-            this.CurrentActivity = session.Title;
+            this.CurrentActivity = session.MediaTitle;
+            this.discordService.SetDiscordPresenceToPlexSession(session);
         }
     }
 

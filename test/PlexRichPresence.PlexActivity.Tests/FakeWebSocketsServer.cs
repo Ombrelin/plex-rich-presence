@@ -31,7 +31,6 @@ public class FakeWebSocketsServer
                     using WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
                     for (var i = 0; i < 3; ++i)
                     {
-                        await Task.Delay(TimeSpan.FromMilliseconds(500));
                         await webSocket.SendAsync(
                             Encoding.UTF8.GetBytes(
                                 JsonSerializer.Serialize(
@@ -42,7 +41,7 @@ public class FakeWebSocketsServer
                                             type = "playing",
                                             PlaySessionStateNotification = new List<dynamic>
                                             {
-                                                new { key = $"test-media-key-{i}" }
+                                                new { key = $"test-media-key-{i}", state = "paused", viewOffset = 1000 }
                                             }
                                         }
                                     }

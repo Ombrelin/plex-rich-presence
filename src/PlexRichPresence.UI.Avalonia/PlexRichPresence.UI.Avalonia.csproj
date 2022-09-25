@@ -24,6 +24,7 @@
         <PackageReference Include="Avalonia.Desktop" Version="0.10.17" />
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
         <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="0.10.14" />
+
         <PackageReference Include="FluentAvaloniaUI" Version="1.4.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
         <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="6.0.0" />
@@ -35,6 +36,7 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="6.0.0" />
     </ItemGroup>
     <ItemGroup>
+        <ProjectReference Include="..\PlexRichPresence.DiscordRichPresence\PlexRichPresence.DiscordRichPresence.csproj" />
         <ProjectReference Include="..\PlexRichPresence.PlexActivity\PlexRichPresence.PlexActivity.csproj" />
         <ProjectReference Include="..\PlexRichPresence.ViewModels\PlexRichPresence.ViewModels.csproj" />
     </ItemGroup>

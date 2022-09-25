@@ -16,6 +16,8 @@ using Plex.ServerApi;
 using Plex.ServerApi.Api;
 using Plex.ServerApi.Clients;
 using Plex.ServerApi.Clients.Interfaces;
+using PlexRichPresence.DiscordRichPresence;
+using PlexRichPresence.DiscordRichPresence.Rendering;
 using PlexRichPresence.PlexActivity;
 using PlexRichPresence.UI.Avalonia.Services;
 using PlexRichPresence.UI.Avalonia.Views;
@@ -46,6 +48,10 @@ public class App : Application
         .AddSingleton<LoginPageViewModel>()
         .AddSingleton<IBrowserService, BrowserService>()
         .AddSingleton<IPlexActivityService, PlexActivityService>()
+        .AddSingleton<IDiscordService, DiscordService>()
+        .AddSingleton<IClock, Clock>()
+        .AddSingleton<PlexSessionRenderingService>()
+        .AddSingleton<PlexSessionRendererFactory>()
         .AddLogging();
 
     public override void Initialize()
@@ -63,7 +69,6 @@ public class App : Application
             var navigationService = new NavigationService(navigationFrame);
             ConfigureLogging();
             ConfigureNavigation(navigationService);
-
         }
 
         base.OnFrameworkInitializationCompleted();

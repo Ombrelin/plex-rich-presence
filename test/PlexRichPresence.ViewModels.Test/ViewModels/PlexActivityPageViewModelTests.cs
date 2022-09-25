@@ -26,8 +26,9 @@ public class PlexActivityPageViewModelTests
         var viewModel = new PlexActivityPageViewModel(
             new FakePlexActivityService(), 
             storageService, 
-            new Mock<INavigationService>().Object
-        );
+            new Mock<INavigationService>().Object,
+            new Mock<IDiscordService>().Object
+            );
 
         // When
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
@@ -57,7 +58,12 @@ public class PlexActivityPageViewModelTests
         });
 
         var fakeNavigationService = new FakeNavigationService();
-        var viewModel = new PlexActivityPageViewModel(new FakePlexActivityService(), storageService, fakeNavigationService);
+        var viewModel = new PlexActivityPageViewModel(
+            new FakePlexActivityService(), 
+            storageService,
+            fakeNavigationService,
+            new Mock<IDiscordService>().Object
+        );
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
         
         // When
@@ -78,6 +84,7 @@ public class PlexActivityPageViewModelTests
         const string fakePlexUserId = "fake plex user id";
 
         var plexActivityService = new FakePlexActivityService();
+        var discordService = new FakeDiscordService();
         var storageService = new FakeStorageService(new Dictionary<string, string>
         {
             ["serverIp"] = fakeServerIp,
@@ -90,15 +97,24 @@ public class PlexActivityPageViewModelTests
         var viewModel = new PlexActivityPageViewModel(
             plexActivityService,
             storageService,
-            navigationService
+            navigationService,
+            discordService
         );
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
 
         // When
-
         await viewModel.StartActivityCommand.ExecuteAsync(null);
 
         // Then
         viewModel.CurrentActivity.Should().Be("Test Media Title 3");
+        var sessions = discordService
+            .Sessions
+            .Select(session => session.MediaTitle)
+            .ToList();
+        sessions.Should().HaveCount(3);
+
+        sessions.Should().Contain("Test Media Title 1");
+        sessions.Should().Contain("Test Media Title 2");
+        sessions.Should().Contain("Test Media Title 3");
     }
 }

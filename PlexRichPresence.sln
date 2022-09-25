@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.PlexActivi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.PlexActivity.Tests", "test\PlexRichPresence.PlexActivity.Tests\PlexRichPresence.PlexActivity.Tests.csproj", "{0EEB732E-A4D0-49CA-8400-BAA904B5F876}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.DiscordRichPresence", "src\PlexRichPresence.DiscordRichPresence\PlexRichPresence.DiscordRichPresence.csproj", "{B3BD62BC-387B-4089-B106-A32D665A614D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.DiscordRichPresence.Tests", "test\PlexRichPresence.DiscordRichPresence.Tests\PlexRichPresence.DiscordRichPresence.Tests.csproj", "{5172431C-B131-4514-860D-E9DB44D52CBB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,6 +51,14 @@ Global
 		{0EEB732E-A4D0-49CA-8400-BAA904B5F876}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0EEB732E-A4D0-49CA-8400-BAA904B5F876}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0EEB732E-A4D0-49CA-8400-BAA904B5F876}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3BD62BC-387B-4089-B106-A32D665A614D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3BD62BC-387B-4089-B106-A32D665A614D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3BD62BC-387B-4089-B106-A32D665A614D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3BD62BC-387B-4089-B106-A32D665A614D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5172431C-B131-4514-860D-E9DB44D52CBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5172431C-B131-4514-860D-E9DB44D52CBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5172431C-B131-4514-860D-E9DB44D52CBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5172431C-B131-4514-860D-E9DB44D52CBB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

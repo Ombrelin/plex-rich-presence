@@ -10,9 +10,4 @@
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
         <PackageReference Include="Plex.Api" Version="4.0.4" />
     </ItemGroup>
-
-    <ItemGroup>
-      <ProjectReference Include="..\PlexRichPresence.PlexActivity\PlexRichPresence.PlexActivity.csproj" />
-    </ItemGroup>
-
 </Project>
