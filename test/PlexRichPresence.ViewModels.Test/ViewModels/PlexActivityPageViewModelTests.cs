@@ -14,14 +14,14 @@ public class PlexActivityPageViewModelTests
         const string fakePlexToken = "fake plex token";
         const string fakeServerIp = "111.111.111.111";
         const string fakeServerPort = "32400";
-        const string fakePlexUserId = "fake plex user id";
+        const string fakePlexUserName = "fake plex user name";
         var storageService = new FakeStorageService(new Dictionary<string, string>
         {
             ["serverIp"] = fakeServerIp,
             ["serverPort"] = fakeServerPort,
             ["isServerOwned"] = bool.TrueString,
             ["plex_token"] = fakePlexToken,
-            ["plexUserId"] = fakePlexUserId
+            ["plexUserName"] = fakePlexUserName
         });
         var viewModel = new PlexActivityPageViewModel(
             new FakePlexActivityService(), 
@@ -47,14 +47,14 @@ public class PlexActivityPageViewModelTests
         const string fakePlexToken = "fake plex token";
         const string fakeServerIp = "111.111.111.111";
         const string fakeServerPort = "32400";
-        const string fakePlexUserId = "fake plex user id";
+        const string fakePlexUserName = "fake plex user name";
         var storageService = new FakeStorageService(new Dictionary<string, string>
         {
             ["serverIp"] = fakeServerIp,
             ["serverPort"] = fakeServerPort,
             ["isServerOwned"] = bool.TrueString,
             ["plex_token"] = fakePlexToken,
-            ["plexUserId"] = fakePlexUserId
+            ["plexUserName"] = fakePlexUserName
         });
 
         var fakeNavigationService = new FakeNavigationService();
@@ -81,7 +81,7 @@ public class PlexActivityPageViewModelTests
         const string fakePlexToken = "fake plex token";
         const string fakeServerIp = "111.111.111.111";
         const string fakeServerPort = "32400";
-        const string fakePlexUserId = "fake plex user id";
+        const string fakePlexUserName = "fake plex user name";
 
         var plexActivityService = new FakePlexActivityService();
         var discordService = new FakeDiscordService();
@@ -91,7 +91,7 @@ public class PlexActivityPageViewModelTests
             ["serverPort"] = fakeServerPort,
             ["isServerOwned"] = bool.TrueString,
             ["plex_token"] = fakePlexToken,
-            ["plexUserId"] = fakePlexUserId
+            ["plexUserName"] = fakePlexUserName
         });
         var navigationService = new FakeNavigationService();
         var viewModel = new PlexActivityPageViewModel(
@@ -107,12 +107,19 @@ public class PlexActivityPageViewModelTests
 
         // Then
         viewModel.CurrentActivity.Should().Be("Test Media Title 3");
-        var sessions = discordService
+        List<string> sessions = discordService
             .Sessions
             .Select(session => session.MediaTitle)
             .ToList();
         sessions.Should().HaveCount(3);
 
+        plexActivityService.IsOwner.Should().BeTrue();
+        plexActivityService.CurrentServerIp.Should().Be(fakeServerIp);
+        plexActivityService.CurrentServerPort.ToString().Should().Be(fakeServerPort);
+        plexActivityService.CurrentUsername.Should().Be(fakePlexUserName);
+        plexActivityService.CurrentUserToken.Should().Be(fakePlexToken);
+        
+        
         sessions.Should().Contain("Test Media Title 1");
         sessions.Should().Contain("Test Media Title 2");
         sessions.Should().Contain("Test Media Title 3");

@@ -9,7 +9,7 @@ namespace PlexRichPresence.DiscordRichPresence.Tests;
 
 public class PlexSessionRenderingServiceTests
 {
-    public static TheoryData<FakePlexSession, string, string, TimeSpan>
+    public static TheoryData<FakePlexSession, string?, string?, bool, TimeSpan>
         RenderingTheoryData =>
         new()
         {
@@ -18,14 +18,14 @@ public class PlexSessionRenderingServiceTests
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Buffering
                 },
-                "⟲", "Test Movie", TimeSpan.Zero
+                "⟲", "Test Movie", true, TimeSpan.Zero
             },
             {
                 new FakePlexSession
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Paused
                 },
-                "⏸", "Test Movie", TimeSpan.Zero
+                "⏸", "Test Movie", true, TimeSpan.Zero
             },
             {
                 new FakePlexSession
@@ -33,7 +33,7 @@ public class PlexSessionRenderingServiceTests
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Playing,
                     Duration = 20_000, ViewOffset = 10_000
                 },
-                "▶", "Test Movie", TimeSpan.FromSeconds(10)
+                "▶", "Test Movie", true, TimeSpan.FromSeconds(10)
             },
             {
                 new FakePlexSession
@@ -42,7 +42,7 @@ public class PlexSessionRenderingServiceTests
                     MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Unknown,
                     PlayerState = PlexPlayerState.Paused
                 },
-                "Test Title", "Test Grand Parent Title - Test Parent Title", TimeSpan.Zero
+                "Test Title", "Test Grand Parent Title - Test Parent Title", true, TimeSpan.Zero
             },
             {
                 new FakePlexSession
@@ -51,9 +51,8 @@ public class PlexSessionRenderingServiceTests
                     MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Track,
                     PlayerState = PlexPlayerState.Paused
                 },
-                "⏸ Test Grand Parent Title", "♫ Test Title", TimeSpan.Zero
-            }
-            ,
+                "⏸ Test Grand Parent Title", "♫ Test Title", true, TimeSpan.Zero
+            },
             {
                 new FakePlexSession
                 {
@@ -61,7 +60,18 @@ public class PlexSessionRenderingServiceTests
                     MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Episode,
                     PlayerState = PlexPlayerState.Paused
                 },
-                "⏸ Test Grand Parent Title", "⏏ Test Title", TimeSpan.Zero
+                "⏸ Test Grand Parent Title", "⏏ Test Title", true, TimeSpan.Zero
+            },
+            {
+                new FakePlexSession
+                {
+                    MediaTitle = "Idle",
+                    MediaParentTitle = string.Empty,
+                    MediaGrandParentTitle = string.Empty,
+                    MediaType = PlexMediaType.Idle,
+                    PlayerState = PlexPlayerState.Idle
+                },
+                "Idle", null, false, TimeSpan.Zero
             }
         };
 
@@ -70,23 +80,27 @@ public class PlexSessionRenderingServiceTests
     [MemberData(nameof(RenderingTheoryData))]
     public void RenderPlayerState(
         FakePlexSession session,
-        string expectedState,
-        string expectedDetail,
+        string? expectedState,
+        string? expectedDetail,
+        bool setEndTimeStamp,
         TimeSpan expectedEndTimestampAfterNow
     )
     {
         // Given
         DateTime dateTime = DateTime.Now;
-        var mockClock = SharedSetup.BuildMockClock(dateTime);
+        Mock<IClock> mockClock = SharedSetup.BuildMockClock(dateTime);
         var plexSessionRenderingService =
             new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object));
-        
+
         // When
         RichPresence presence = plexSessionRenderingService.RenderSession(session);
 
         // Then
         presence.State.Should().Be(expectedState);
         presence.Details.Should().Be(expectedDetail);
-        presence.Timestamps.End.Should().Be(dateTime.Add(expectedEndTimestampAfterNow));
+        if (setEndTimeStamp)
+        {
+            presence.Timestamps.End.Should().Be(dateTime.Add(expectedEndTimestampAfterNow));
+        }
     }
 }

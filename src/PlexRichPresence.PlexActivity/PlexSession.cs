@@ -16,20 +16,19 @@ public class PlexSession : IPlexSession
     public PlexMediaType MediaType { get; }
     public long Duration { get; }
     public long ViewOffset { get; }
-    
-    
-    
+
+
     public PlexSession(SessionMetadata metadata)
     {
         MediaTitle = metadata.Title;
-        MediaIndex = metadata.Index is null ? 0u : uint.Parse(metadata.Index);
+        MediaIndex = (uint)metadata.Index;
         MediaParentTitle = metadata.ParentTitle;
-        MediaParentIndex = metadata.Index is null ? 0u : uint.Parse(metadata.ParentIndex);
+        MediaParentIndex = (uint)metadata.ParentIndex;
         MediaGrandParentTitle = metadata.GrandparentTitle;
-        PlayerState = GetPlayerState(metadata.Player?.State);
+        PlayerState = GetPlayerState(metadata.Player?.State ?? "buffering");
         MediaType = GetMediaType(metadata.Type);
-        Duration = metadata.Index is null ? 0L : long.Parse(metadata.Duration);
-        ViewOffset = metadata.Index is null ? 0L : long.Parse(metadata.ViewOffset);
+        Duration = metadata.Duration;
+        ViewOffset = metadata.ViewOffset;
     }
 
     public PlexSession(Metadata metadata, string state, long viewOffset)
@@ -43,6 +42,19 @@ public class PlexSession : IPlexSession
         MediaType = GetMediaType(metadata.Type);
         Duration = metadata.Duration;
         ViewOffset = viewOffset;
+    }
+
+    public PlexSession()
+    {
+        MediaTitle = "Idle";
+        MediaIndex = default;
+        MediaParentTitle = string.Empty;
+        MediaParentIndex = default;
+        MediaGrandParentTitle = string.Empty;
+        PlayerState = PlexPlayerState.Idle;
+        MediaType = PlexMediaType.Idle;
+        Duration = default;
+        ViewOffset = default;
     }
 
     private static PlexMediaType GetMediaType(string type) => type switch

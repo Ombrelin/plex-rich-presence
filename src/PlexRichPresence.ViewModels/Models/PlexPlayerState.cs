@@ -4,5 +4,6 @@ public enum PlexPlayerState
 {
     Buffering,
     Paused,
-    Playing
+    Playing,
+    Idle
 }

@@ -3,6 +3,7 @@ using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
 using Plex.ServerApi.PlexModels.OAuth;
+using PlexRichPresence.Tests.Common;
 using PlexRichPresence.ViewModels.Services;
 using PlexRichPresence.ViewModels.Test.Fakes;
 
@@ -14,15 +15,15 @@ public class LoginPageViewModelTests
     public async Task FillUsernameAndPasswordThenClickConnect_CredentialValid_StoresTokenAndIdAndThenNavigates()
     {
         // Given
-        const string fakeUsername = "username";
+        const string fakeLogin = "username";
         const string fakePassword = "password";
         const string fakeUserToken = "token";
-        const string fakePlexUserId = "plex user id";
+        const string fakePlexUserName = "plex user name";
 
         Mock<IPlexAccountClient> plexAccountClientMock = new Mock<IPlexAccountClient>();
         plexAccountClientMock
-            .Setup(mock => mock.GetPlexAccountAsync(fakeUsername, fakePassword))
-            .Returns(() => Task.FromResult(new PlexAccount { AuthToken = fakeUserToken, Uuid = fakePlexUserId }));
+            .Setup(mock => mock.GetPlexAccountAsync(fakeLogin, fakePassword))
+            .Returns(() => Task.FromResult(new PlexAccount { AuthToken = fakeUserToken, Username = fakePlexUserName }));
         var navigationService = new FakeNavigationService();
         var storageService = new FakeStorageService();
         var browserService = new FakeBrowserService();
@@ -31,18 +32,19 @@ public class LoginPageViewModelTests
             plexAccountClientMock.Object,
             navigationService,
             storageService,
-            browserService
+            browserService,
+            new Mock<IClock>().Object
         );
 
         // When
-        viewModel.Login = fakeUsername;
+        viewModel.Login = fakeLogin;
         viewModel.Password = fakePassword;
         await viewModel.LoginWithCredentialsCommand.ExecuteAsync(null);
 
         // Then
         navigationService.CurrentPage.Should().Be("servers");
         (await storageService.GetAsync("plex_token")).Should().Be(fakeUserToken);
-        (await storageService.GetAsync("plexUserId")).Should().Be(fakePlexUserId);
+        (await storageService.GetAsync("plexUserName")).Should().Be(fakePlexUserName);
         browserService.OpenedUrls.Should().BeEmpty();
     }
 
@@ -53,9 +55,9 @@ public class LoginPageViewModelTests
         const string fakeUserToken = "token";
         const string fakeOauthUrl = "plex oauth url";
         const int fakeOauthPinId = 999;
-        const string fakePlexUserId = "plex user id";
+        const string fakePlexUserName = "plex user name";
         int index = 0;
-        Mock<IPlexAccountClient> plexAccountClientMock = new Mock<IPlexAccountClient>();
+        var plexAccountClientMock = new Mock<IPlexAccountClient>();
         plexAccountClientMock
             .Setup(mock => mock.CreateOAuthPinAsync(It.IsAny<string>()))
             .Returns(() => Task.FromResult(new OAuthPin { Id = fakeOauthPinId, Url = fakeOauthUrl }));
@@ -73,17 +75,20 @@ public class LoginPageViewModelTests
             });
         plexAccountClientMock
             .Setup(mock => mock.GetPlexAccountAsync(fakeUserToken))
-            .Returns(() => Task.FromResult(new PlexAccount { AuthToken = fakeUserToken, Uuid = fakePlexUserId }));
+            .Returns(() => Task.FromResult(new PlexAccount { AuthToken = fakeUserToken, Username = fakePlexUserName }));
 
         var navigationService = new FakeNavigationService();
         var storageService = new FakeStorageService();
         var browserService = new FakeBrowserService();
+        DateTime now = DateTime.Now;
+        var clock = new FakeClock(now);
 
         var viewModel = new LoginPageViewModel(
             plexAccountClientMock.Object,
             navigationService,
             storageService,
-            browserService
+            browserService,
+            clock
         );
 
         // When
@@ -92,18 +97,21 @@ public class LoginPageViewModelTests
         // Then
         navigationService.CurrentPage.Should().Be("servers");
         (await storageService.GetAsync("plex_token")).Should().Be(fakeUserToken);
-        (await storageService.GetAsync("plexUserId")).Should().Be(fakePlexUserId);
+        (await storageService.GetAsync("plexUserName")).Should().Be(fakePlexUserName);
         browserService.OpenedUrls.Should().Contain(fakeOauthUrl);
+        clock.DateTimeAfterDelay
+            .Should()
+            .BeCloseTo(now.Add(TimeSpan.FromSeconds(6)), TimeSpan.FromSeconds(1));
     }
 
     [Theory]
-    [InlineData(null,null, false)]
-    [InlineData("","", false)]
-    [InlineData("test","", false)]
-    [InlineData("test",null, false)]
-    [InlineData("","test", false)]
-    [InlineData(null,"test", false)]
-    [InlineData("test","test", true)]
+    [InlineData(null, null, false)]
+    [InlineData("", "", false)]
+    [InlineData("test", "", false)]
+    [InlineData("test", null, false)]
+    [InlineData("", "test", false)]
+    [InlineData(null, "test", false)]
+    [InlineData("test", "test", true)]
     public void CanLoginWithCredentials(string login, string password, bool expected)
     {
         // Given
@@ -111,13 +119,14 @@ public class LoginPageViewModelTests
             new Mock<IPlexAccountClient>().Object,
             new Mock<INavigationService>().Object,
             new Mock<IStorageService>().Object,
-            new Mock<IBrowserService>().Object
+            new Mock<IBrowserService>().Object,
+            new Mock<IClock>().Object
         );
-        
+
         // When
         viewModel.Login = login;
         viewModel.Password = password;
-        
+
         // Then
         viewModel.CanLoginWithCredentials.Should().Be(expected);
     }

@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\PlexRichPresence.ViewModels\PlexRichPresence.ViewModels.csproj" />
+      <ProjectReference Include="..\PlexRichPresence.Tests.Common\PlexRichPresence.Tests.Common.csproj" />
     </ItemGroup>
 
     <ItemGroup>

@@ -35,6 +35,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\src\PlexRichPresence.PlexActivity\PlexRichPresence.PlexActivity.csproj" />
+      <ProjectReference Include="..\PlexRichPresence.Tests.Common\PlexRichPresence.Tests.Common.csproj" />
     </ItemGroup>
 
 </Project>

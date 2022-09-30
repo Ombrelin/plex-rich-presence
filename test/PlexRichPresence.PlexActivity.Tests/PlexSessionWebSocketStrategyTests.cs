@@ -27,8 +27,8 @@ public class PlexSessionWebSocketStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
 
-        var mockWebSocketClientFactory = BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
-        var mockPlexServerClient = BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
+        Mock<IWebSocketClientFactory> mockWebSocketClientFactory = BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
+        Mock<IPlexServerClient> mockPlexServerClient = BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
 
         var strategy = new PlexSessionsWebSocketStrategy(
             new Mock<ILogger>().Object,
@@ -95,7 +95,7 @@ public class PlexSessionWebSocketStrategyTests
         var server = new TestServer(builder);
         WebSocketClient wsClient = server.CreateWebSocketClient();
 
-        var serverUrl = new UriBuilder(server.BaseAddress)
+        Uri serverUrl = new UriBuilder(server.BaseAddress)
         {
             Scheme = "ws",
             Path = "ws"

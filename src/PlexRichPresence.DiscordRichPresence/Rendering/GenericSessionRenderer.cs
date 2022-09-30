@@ -27,13 +27,14 @@ public class GenericSessionRenderer : IPlexSessionRenderer
         };
     }
 
-    public (string playerState, DateTime endTimeStamp) RenderPlayerState(IPlexSession session)
+    protected (string playerState, DateTime endTimeStamp) RenderPlayerState(IPlexSession session)
     {
         return session.PlayerState switch
         {
             PlexPlayerState.Buffering => ("⟲", this.clock.Now),
             PlexPlayerState.Paused => ("⏸", this.clock.Now),
-            PlexPlayerState.Playing => ("▶", this.clock.Now.AddSeconds(ComputeSessionRemainingTime(session)))
+            PlexPlayerState.Playing => ("▶", this.clock.Now.AddSeconds(ComputeSessionRemainingTime(session))),
+            _ => throw new ArgumentOutOfRangeException()
         };
     }
 

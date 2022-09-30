@@ -17,6 +17,7 @@ public class DiscordService : IDiscordService
         this.logger = logger;
         this.plexSessionRenderingService = plexSessionRenderingService;
         this.discordRpcClient = new DiscordRpcClient(applicationID: "698954724019273770");
+        discordRpcClient.OnError += (sender, args) => this.logger.LogError(args.Message);
         discordRpcClient.Initialize();
     }
 
@@ -27,7 +28,6 @@ public class DiscordService : IDiscordService
         {
             LargeImageKey = "icon"
         };
-        discordRpcClient.OnError += (sender, args) => this.logger.LogError(args.Message);
         discordRpcClient.SetPresence(richPresence);
     }
 }

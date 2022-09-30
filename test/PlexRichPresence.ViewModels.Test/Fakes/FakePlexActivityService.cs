@@ -1,6 +1,5 @@
 using PlexRichPresence.PlexActivity;
 using PlexRichPresence.ViewModels.Models;
-using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels.Test.Fakes;
 
@@ -10,7 +9,7 @@ public class FakePlexActivityService : IPlexActivityService
 
     public bool IsConnected { get; private set; }
 
-    public string? CurrentUserId { get; private set; }
+    public string? CurrentUsername { get; private set; }
     public string? CurrentServerIp { get; private set; }
     public int CurrentServerPort { get; private set; }
     public string? CurrentUserToken { get; private set; }
@@ -23,7 +22,7 @@ public class FakePlexActivityService : IPlexActivityService
     public async IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken)
     {
         IsOwner = isOwner;
-        CurrentUserId = userId;
+        CurrentUsername = userId;
         CurrentServerIp = serverIp;
         CurrentServerPort = serverPort;
         CurrentUserToken = userToken;

@@ -14,7 +14,7 @@ public partial class PlexActivityPageViewModel
     private readonly IDiscordService discordService;
     private readonly INavigationService navigationService;
     private string userToken = string.Empty;
-    private string userId = string.Empty;
+    private string userName = string.Empty;
 
     [ObservableProperty] private string currentActivity = "Idle";
     [ObservableProperty] private string plexServerIp = string.Empty;
@@ -40,6 +40,7 @@ public partial class PlexActivityPageViewModel
         this.PlexServerIp = await this.storageService.GetAsync("serverIp");
         this.PlexServerPort = int.Parse(await this.storageService.GetAsync("serverPort"));
         this.userToken = await this.storageService.GetAsync("plex_token");
+        this.userName = await this.storageService.GetAsync("plexUserName");
         this.IsPlexServerOwned = bool.Parse(await this.storageService.GetAsync("isServerOwned"));
     }
 
@@ -48,7 +49,7 @@ public partial class PlexActivityPageViewModel
     {
         await foreach (IPlexSession session in this.plexActivityService.GetSessions(
                            this.IsPlexServerOwned,
-                           userId,
+                           userName,
                            this.PlexServerIp,
                            this.PlexServerPort,
                            this.userToken)

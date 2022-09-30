@@ -1,9 +1,6 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using PlexRichPresence.ViewModels.Services;
 
-namespace PlexRichPresence.PlexActivity.Tests;
+namespace PlexRichPresence.Tests.Common;
 
 public class FakeClock : IClock
 {

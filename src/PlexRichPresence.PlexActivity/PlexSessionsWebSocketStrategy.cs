@@ -4,9 +4,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Media;
-using Plex.ServerApi.PlexModels.Server.Sessions;
 using Websocket.Client;
-using Medium = Plex.ServerApi.PlexModels.Server.Sessions.Medium;
 
 namespace PlexRichPresence.PlexActivity;
 
@@ -28,7 +26,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
         this.webSocketClientFactory = webSocketClientFactory;
     }
 
-    public async IAsyncEnumerable<PlexSession> GetSessions(string _, string serverIp, int serverPort, string userToken)
+    public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort, string userToken)
     {
         client?.Dispose();
         client = webSocketClientFactory.GetWebSocketClient(serverIp, serverPort, userToken);

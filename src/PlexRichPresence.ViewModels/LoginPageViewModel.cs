@@ -14,14 +14,16 @@ public partial class LoginPageViewModel
     private readonly INavigationService navigationService;
     private readonly IStorageService storageService;
     private readonly IBrowserService browserService;
+    private readonly IClock clock;
 
     public LoginPageViewModel(IPlexAccountClient plexClient, INavigationService navigationService,
-        IStorageService storageService, IBrowserService browserService)
+        IStorageService storageService, IBrowserService browserService, IClock clock)
     {
         this.plexClient = plexClient;
         this.navigationService = navigationService;
         this.storageService = storageService;
         this.browserService = browserService;
+        this.clock = clock;
     }
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(LoginWithCredentialsCommand))]
@@ -34,12 +36,12 @@ public partial class LoginPageViewModel
     private async Task LoginWithCredentials()
     {
         PlexAccount account = await this.plexClient.GetPlexAccountAsync(this.Login, this.Password);
-        await StoreTokenAndNavigateToServerPage(account.AuthToken, account.Uuid);
+        await StoreTokenAndNavigateToServerPage(account.AuthToken, account.Username);
     }
 
-    private async Task StoreTokenAndNavigateToServerPage(string token, string userId)
+    private async Task StoreTokenAndNavigateToServerPage(string token, string userName)
     {
-        await storageService.PutAsync("plexUserId", userId);
+        await storageService.PutAsync("plexUserName", userName);
         await storageService.PutAsync("plex_token", token);
         await navigationService.NavigateToAsync("servers");
     }
@@ -53,7 +55,7 @@ public partial class LoginPageViewModel
         OAuthPin plexPin = await WaitForBrowserLogin(oauthUrl);
 
         PlexAccount account = await this.plexClient.GetPlexAccountAsync(plexPin.AuthToken);
-        await StoreTokenAndNavigateToServerPage(plexPin.AuthToken, account.Uuid);
+        await StoreTokenAndNavigateToServerPage(plexPin.AuthToken, account.Username);
     }
 
     private async Task<OAuthPin> WaitForBrowserLogin(OAuthPin oauthUrl)
@@ -64,7 +66,7 @@ public partial class LoginPageViewModel
             plexPin = await this.plexClient.GetAuthTokenFromOAuthPinAsync(oauthUrl.Id.ToString());
             if (string.IsNullOrEmpty(plexPin.AuthToken))
             {
-                await Task.Delay(3000);
+                await this.clock.Delay(TimeSpan.FromSeconds(2));
             }
             else break;
         }

@@ -66,7 +66,7 @@ public class StorageService : IStorageService
         {
             return await File.ReadAllTextAsync(storedDataPath);
         }
-        catch (FileNotFoundException _)
+        catch (FileNotFoundException)
         {
             return "";
         }

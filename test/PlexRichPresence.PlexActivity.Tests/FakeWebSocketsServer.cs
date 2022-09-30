@@ -4,16 +4,14 @@ using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 
 namespace PlexRichPresence.PlexActivity.Tests;
 
 public class FakeWebSocketsServer
 {
-    public void Configure(IApplicationBuilder app, IHostingEnvironment _)
+    public static void Configure(IApplicationBuilder app)
     {
         var webSocketOptions = new WebSocketOptions
         {

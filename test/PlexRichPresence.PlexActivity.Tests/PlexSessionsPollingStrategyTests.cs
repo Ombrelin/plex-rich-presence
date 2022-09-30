@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using FluentAssertions;
@@ -8,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Server.Sessions;
+using PlexRichPresence.Tests.Common;
 using Xunit;
 
 namespace PlexRichPresence.PlexActivity.Tests;
@@ -22,16 +22,16 @@ public class PlexSessionsPollingStrategyTests
         const string fakeToken = "test plex token";
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
-        const string fakeUserId = "fake user id";
-        var serverClientMock = SetupPlexClientServerClientMock(
+        const string fakeUserName = "fake user name";
+        Mock<IPlexServerClient> serverClientMock = SetupPlexClientServerClientMock(
             fakeToken,
             fakeServerIp,
             fakeServerPort,
-            fakeUserId);
+            fakeUserName);
 
         var clock = new FakeClock(DateTime.Now);
         DateTime now = DateTime.Now;
-        
+
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger>().Object,
             serverClientMock.Object,
@@ -42,7 +42,7 @@ public class PlexSessionsPollingStrategyTests
 
         // When
         var sessionsStream = strategy.GetSessions(
-            fakeUserId,
+            fakeUserName,
             fakeServerIp,
             fakeServerPort,
             fakeToken
@@ -56,13 +56,13 @@ public class PlexSessionsPollingStrategyTests
                 strategy.Disconnect();
             }
         }
-        
+
         // Then
         result
             .Should()
             .HaveCount(elementsCountForTest);
 
-        var titles = result
+        List<string> titles = result
             .Select(session => session.MediaTitle)
             .ToList();
 
@@ -75,19 +75,19 @@ public class PlexSessionsPollingStrategyTests
     }
 
     [Fact]
-    public async Task GetSessions_NoSession_DontYieldSession()
+    public async Task GetSessions_NoSession_YieldIdleSession()
     {
         // Given
         const int elementsCountForTest = 3;
         const string fakeToken = "test plex token";
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
-        const string fakeUserId = "fake user id";
-        var serverClientMock = SetupPlexClientServerClientMockNoAlwaysSession(
+        const string fakeUserName = "fake user name";
+        Mock<IPlexServerClient> serverClientMock = SetupPlexClientServerClientMockNoAlwaysSession(
             fakeToken,
             fakeServerIp,
             fakeServerPort,
-            fakeUserId
+            fakeUserName
         );
 
         var clock = new FakeClock(DateTime.Now);
@@ -102,7 +102,7 @@ public class PlexSessionsPollingStrategyTests
 
         // When
         IAsyncEnumerable<PlexSession> sessionsStream = strategy.GetSessions(
-            fakeUserId,
+            fakeUserName,
             fakeServerIp,
             fakeServerPort,
             fakeToken
@@ -110,7 +110,7 @@ public class PlexSessionsPollingStrategyTests
         await foreach (PlexSession plexSession in sessionsStream)
         {
             result.Add(plexSession);
-            if (result.Count == elementsCountForTest - 1)
+            if (result.Count == elementsCountForTest)
             {
                 strategy.Disconnect();
             }
@@ -119,33 +119,34 @@ public class PlexSessionsPollingStrategyTests
         // Then
         result
             .Should()
-            .HaveCount(elementsCountForTest - 1);
+            .HaveCount(elementsCountForTest);
 
-        var titles = result
+        List<string> titles = result
             .Select(session => session.MediaTitle)
             .ToList();
 
-        titles.Should().Contain("Test Media 2");
-        titles.Should().Contain("Test Media 3");
+        titles[0].Should().Contain("Idle");
+        titles[1].Should().Contain("Test Media 2");
+        titles[2].Should().Contain("Test Media 3");
 
         clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }
 
 
     [Fact]
-    public async Task GetSessions_NoSessionForUser_DontYieldSession()
+    public async Task GetSessions_NoSessionForUser_YieldIdleSessions()
     {
         // Given
         const int elementsCountForTest = 3;
         const string fakeToken = "test plex token";
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
-        const string fakeUserId = "fake user id";
+        const string fakeUserName = "fake user name";
         var serverClientMock = SetupPlexClientServerClientNoAlwaysSessionForUserMock(
             fakeToken,
             fakeServerIp,
             fakeServerPort,
-            fakeUserId
+            fakeUserName
         );
 
         var clock = new FakeClock(DateTime.Now);
@@ -161,7 +162,7 @@ public class PlexSessionsPollingStrategyTests
 
         // When
         IAsyncEnumerable<PlexSession> sessionsStream = strategy.GetSessions(
-            fakeUserId,
+            fakeUserName,
             fakeServerIp,
             fakeServerPort,
             fakeToken
@@ -169,7 +170,7 @@ public class PlexSessionsPollingStrategyTests
         await foreach (PlexSession plexSession in sessionsStream)
         {
             result.Add(plexSession);
-            if (result.Count == elementsCountForTest - 1)
+            if (result.Count == elementsCountForTest)
             {
                 strategy.Disconnect();
             }
@@ -178,14 +179,15 @@ public class PlexSessionsPollingStrategyTests
         // Then
         result
             .Should()
-            .HaveCount(elementsCountForTest - 1);
+            .HaveCount(elementsCountForTest);
 
-        var titles = result
+        List<string> titles = result
             .Select(session => session.MediaTitle)
             .ToList();
 
-        titles.Should().Contain("Test Media 2");
-        titles.Should().Contain("Test Media 3");
+        titles[0].Should().Contain("Idle");
+        titles[1].Should().Contain("Test Media 2");
+        titles[2].Should().Contain("Test Media 3");
 
 
         clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
@@ -196,7 +198,7 @@ public class PlexSessionsPollingStrategyTests
         string fakeToken,
         string fakeServerIp,
         int fakeServerPort,
-        string fakeUserId
+        string fakeUserName
     )
     {
         int mediaCount = 0;
@@ -216,7 +218,7 @@ public class PlexSessionsPollingStrategyTests
                         Title = $"Test Media {++mediaCount}",
                         User = new User
                         {
-                            Id = fakeUserId
+                            Title = fakeUserName
                         }
                     }
                 }
@@ -228,7 +230,7 @@ public class PlexSessionsPollingStrategyTests
         string fakeToken,
         string fakeServerIp,
         int fakeServerPort,
-        string fakeUserId
+        string fakeUserName
     )
     {
         int mediaCount = 0;
@@ -252,7 +254,7 @@ public class PlexSessionsPollingStrategyTests
                                 Title = $"Test Media {++mediaCount}",
                                 User = new User
                                 {
-                                    Id = fakeUserId
+                                    Title = fakeUserName
                                 }
                             }
                         }
@@ -269,7 +271,7 @@ public class PlexSessionsPollingStrategyTests
                             Title = $"Test Media {mediaCount}",
                             User = new User
                             {
-                                Id = "something else"
+                                Title = "something else"
                             }
                         }
                     }
@@ -282,7 +284,7 @@ public class PlexSessionsPollingStrategyTests
         string fakeToken,
         string fakeServerIp,
         int fakeServerPort,
-        string fakeUserId
+        string fakeUserName
     )
     {
         int mediaCount = 0;
@@ -306,7 +308,7 @@ public class PlexSessionsPollingStrategyTests
                                 Title = $"Test Media {++mediaCount}",
                                 User = new User
                                 {
-                                    Id = fakeUserId
+                                    Title = fakeUserName
                                 }
                             }
                         }

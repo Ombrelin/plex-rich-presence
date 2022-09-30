@@ -21,10 +21,10 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
     }
 
 
-    public async IAsyncEnumerable<PlexSession> GetSessions(string userId, string serverIp, int serverPort,
+    public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort,
         string userToken)
     {
-        logger.LogInformation("Listening to sessions via polling for {ServerIp}", serverIp);
+        logger.LogInformation("Listening to sessions via polling for IP : {ServerIp} for User : {Username}", serverIp, username);
         while (!isDisconnected)
         {
             SessionContainer sessions = await plexServerClient.GetSessionsAsync(
@@ -35,19 +35,25 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
 
             if (sessions.Metadata is null)
             {
+                this.logger.LogInformation("No session : Idling");
+                yield return new PlexSession();
                 continue;
             }
             
             SessionMetadata? currentUserSession = sessions
                 .Metadata
-                .FirstOrDefault(session => session.User.Id == userId);
+                .FirstOrDefault(session => session.User.Title == username);
 
             if (currentUserSession is null)
             {
+                this.logger.LogInformation("No session : Idling");
+                yield return new PlexSession();
                 continue;
             }
             
-            yield return new PlexSession(currentUserSession);
+            var plexSession = new PlexSession(currentUserSession);
+            this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
+            yield return plexSession;
         }
     }
 

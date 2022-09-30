@@ -1,4 +1,3 @@
-using PlexRichPresence.PlexActivity;
 using PlexRichPresence.ViewModels.Models;
 
 namespace PlexRichPresence.ViewModels.Services;

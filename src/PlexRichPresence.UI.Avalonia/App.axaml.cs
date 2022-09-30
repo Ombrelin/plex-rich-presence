@@ -90,10 +90,10 @@ public class App : Application
         navigationService.RegisterPage("servers", typeof(ServersPage));
         navigationService.RegisterPage("activity", typeof(ActivityPage));
         services.AddSingleton<INavigationService>(navigationService);
-        this.Resources[typeof(IServiceProvider)] = services.BuildServiceProvider();
-        IStorageService storageService = services.BuildServiceProvider().GetService<IStorageService>()
-                                         ?? throw new InvalidOperationException(
-                                             "Can't get storage service from DI");
+        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        this.Resources[typeof(IServiceProvider)] = serviceProvider;
+        IStorageService storageService = serviceProvider.GetService<IStorageService>() 
+                      ?? throw new InvalidOperationException("Can't get storage service from DI");
         Dispatcher.UIThread.Post(async () => await NavigateToFirstPage(storageService, navigationService));
     }
 
