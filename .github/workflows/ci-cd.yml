@@ -10,13 +10,13 @@ jobs:
     name: Buid and test application
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/dotnet/sdk:6.0
+      image: mcr.microsoft.com/dotnet/sdk:6.0.401-jammy
     steps:
       - uses: actions/checkout@v2
       - name: Restore dependencies
         run: dotnet restore
       - name: Build
-        run: dotnet build
+        run: dotnet build --no-restore
       - name: Test
         run: dotnet test --no-build --verbosity normal
         
