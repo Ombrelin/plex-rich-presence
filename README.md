@@ -2,7 +2,7 @@
 
 Plex Rich Presence is a multiplatform .NET 6 GUI App that allows you to display your current PLEX session in your Discord Rich presence status.
 
-<img src="https://github.com/Ombrelin/plex-rich-presence/blob/master/src/main/resources/images/icon.png?raw=true" width="250" height="250">
+<img src="https://github.com/Ombrelin/plex-rich-presence/blob/master/src/PlexRichPresence.UI.Avalonia/Assets/plex-rich-presence.png?raw=true" width="250" height="250">
 
 New features from version 2.0 : 
 
@@ -13,15 +13,7 @@ New features from version 2.0 :
 
 ## Release Version
 
-- [Portable DLL](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence.jar)
-- [Windows Installer](https://github.com/Ombrelin/plex-rich-presence/releases/latest/download/plex-rich-presence-setup.exe)
-- [Linux (Debian) package]()
-
-You can also install the windows version using the WinGet package manager : 
-
-```
-winget install PlexRichPresence
-```
+Releases for windows and linux can be found [here](https://github.com/Ombrelin/plex-rich-presence/releases/latest)
 
 ## Screenshots
 
@@ -42,13 +34,13 @@ dotnet run
 
 ## Libraries used
 
-- [AvaloniaUI]()
-- [.NET MVVM Toolkit]()
-- [Microsoft DI]()
-- [Moq]()
-- [PlexApi]()
-- [Discord RPC .NET]()
-- [FluentAssertions]()
+- AvaloniaUI
+- .NET MVVM Toolkit
+- Microsoft DI
+- Moq
+- PlexApi
+- Discord RPC .NET
+- FluentAssertions
 
 ## Special Thanks
 
