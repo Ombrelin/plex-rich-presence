@@ -1,0 +1,34 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PlexRichPresence.ViewModels;assembly=PlexRichPresence.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="360" d:DesignHeight="720"
+             x:Class="PlexRichPresence.UI.Avalonia.Views.LoginPage"
+             x:DataType="viewModels:LoginPageViewModel">
+    <Grid Margin="16">
+        <Grid.RowDefinitions>*,.5*,*,*,*,*</Grid.RowDefinitions>
+        <Label FontSize="24" HorizontalContentAlignment="Center" HorizontalAlignment="Center">Login to PLEX</Label>
+        <StackPanel Grid.Row="1">
+            <Image Width="150" Height="150" VerticalAlignment="Center" Source="/Assets/plex-rich-presence.png" />
+        </StackPanel>
+        <Grid Grid.Row="3">
+            <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Label>Login :</Label>
+                <TextBox Text="{CompiledBinding Login}" />
+            </StackPanel>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Label>Password :</Label>
+                <TextBox PasswordChar="•" Text="{CompiledBinding Password}" />
+            </StackPanel>
+        </Grid>
+        <Grid Grid.Row="4">
+            <Grid.RowDefinitions>*,*,*</Grid.RowDefinitions>
+            <Button Grid.Row="0" Command="{Binding LoginWithCredentialsCommand}" HorizontalAlignment="Center">Login</Button>
+            <Label Grid.Row="1" HorizontalContentAlignment="Center">Or</Label>
+            <Button Grid.Row="2" Command="{Binding LoginWithBrowserCommand}" HorizontalAlignment="Center">Login with browser</Button>
+        </Grid>
+
+    </Grid>
+</UserControl>

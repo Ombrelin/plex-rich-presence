@@ -1,0 +1,69 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PlexRichPresence.ViewModels;assembly=PlexRichPresence.ViewModels"
+             xmlns:plex-account="clr-namespace:Plex.ServerApi.PlexModels.Account;assembly=Plex.ServerApi"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage"
+             x:DataType="viewModels:ServersPageViewModel">
+    <Grid Margin="16" >
+        <Grid.RowDefinitions>.5*,*,*,3*,*</Grid.RowDefinitions>
+
+        <ProgressBar IsVisible="{Binding GetDataCommand.IsRunning}" IsIndeterminate="True" />
+        <StackPanel Orientation="Horizontal" IsVisible="{Binding !GetDataCommand.IsRunning}">
+            <Label HorizontalContentAlignment="Right">Welcome, </Label>
+            <Label Content="{CompiledBinding Username}" />
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" IsVisible="{Binding !GetDataCommand.IsRunning}">
+            <Image VerticalAlignment="Top" x:Name="profilePicture" Width="100" Height="100"
+                   Source="{CompiledBinding ThumbnailUrl}" />
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" IsVisible="{Binding !GetDataCommand.IsRunning}">
+            <Label VerticalAlignment="Center">Choose a PLEX server : </Label>
+            <ComboBox
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Items="{CompiledBinding Servers}"
+                SelectedItem="{CompiledBinding SelectedServer}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate x:DataType="plex-account:AccountServer">
+                        <Label Content="{CompiledBinding Name}" />
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+            </ComboBox>
+        </StackPanel>
+
+
+        <Expander Grid.Row="3" Header="Manual Server Configuration" IsVisible="{Binding !GetDataCommand.IsRunning}">
+            <Grid>
+                <Grid.RowDefinitions>*,*,*,*</Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Use Custom Server :</Label>
+                    <ToggleSwitch IsChecked="{CompiledBinding UseCustomServer}" />
+                </StackPanel>
+                <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Server IP :</Label>
+                    <TextBox IsEnabled="{CompiledBinding UseCustomServer}" Text="{CompiledBinding CustomServerIp}" />
+                </StackPanel>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left"
+                            VerticalAlignment="Top">
+                    <Label>Server Port :</Label>
+                    <TextBox IsEnabled="{CompiledBinding UseCustomServer}" Text="{CompiledBinding CustomServerPort}" />
+                </StackPanel>
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Is Custom Server Owned :</Label>
+                    <ToggleSwitch IsEnabled="{CompiledBinding UseCustomServer}" IsChecked="{CompiledBinding IsCustomServerOwned}" />
+                </StackPanel>
+            </Grid>
+        </Expander>
+
+        <StackPanel Margin="0,16,0,0" Spacing="16" Grid.Row="4" HorizontalAlignment="Center" IsVisible="{Binding !GetDataCommand.IsRunning}">
+            <Button Classes="accent" Command="{Binding ValidateServerSelectionCommand}" HorizontalAlignment="Center">Continue</Button>
+            <Button Command="{Binding LogOutCommand}" HorizontalAlignment="Center">Log Out</Button>
+        </StackPanel>
+    </Grid>
+
+
+</UserControl>

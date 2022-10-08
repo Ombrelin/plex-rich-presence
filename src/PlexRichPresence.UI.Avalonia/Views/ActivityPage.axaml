@@ -1,0 +1,52 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:viewModels="clr-namespace:PlexRichPresence.ViewModels;assembly=PlexRichPresence.ViewModels"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="PlexRichPresence.UI.Avalonia.Views.ActivityPage"
+             x:DataType="viewModels:PlexActivityPageViewModel">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>*,*,*,*</Grid.RowDefinitions>
+
+        <StackPanel HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
+                <Label>Server Ip : </Label>
+                <Label Content="{CompiledBinding PlexServerIp}" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Server Port : </Label>
+                <Label Content="{CompiledBinding PlexServerPort}" />
+            </StackPanel>
+        </StackPanel>
+        <!--
+        <StackPanel Grid.Row="1" Spacing="16">
+            <Button
+                Classes="accent"
+                IsVisible="{CompiledBinding !IsConnected}"
+                HorizontalAlignment="Center" Command="{Binding ConnectCommand}">
+                Connect
+            </Button>
+            <Button
+                IsVisible="{CompiledBinding !IsConnected}"
+                HorizontalAlignment="Center"
+                Command="{Binding ChangeServerCommand}">
+                Change Server
+            </Button>
+
+        </StackPanel>
+        --> <!--IsVisible="{CompiledBinding IsConnected}"-->
+        <StackPanel Spacing="16" Grid.Row="1">
+            <Label
+                HorizontalContentAlignment="Center"
+                Content="{CompiledBinding CurrentActivity}" />
+            <Button
+                HorizontalAlignment="Center"
+                Command="{Binding DisconnectCommand}">
+                Disconnect
+            </Button>
+        </StackPanel>
+    </Grid>
+
+</UserControl>
