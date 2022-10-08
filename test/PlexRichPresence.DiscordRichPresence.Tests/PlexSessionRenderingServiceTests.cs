@@ -1,9 +1,11 @@
+using Castle.Core.Logging;
 using DiscordRPC;
 using FluentAssertions;
 using Moq;
 using PlexRichPresence.DiscordRichPresence.Rendering;
 using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
+using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace PlexRichPresence.DiscordRichPresence.Tests;
 
@@ -90,7 +92,7 @@ public class PlexSessionRenderingServiceTests
         DateTime dateTime = DateTime.Now;
         Mock<IClock> mockClock = SharedSetup.BuildMockClock(dateTime);
         var plexSessionRenderingService =
-            new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object));
+            new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object), new Mock<ILogger>().Object);
 
         // When
         RichPresence presence = plexSessionRenderingService.RenderSession(session);

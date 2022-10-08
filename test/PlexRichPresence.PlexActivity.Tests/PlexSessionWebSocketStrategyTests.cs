@@ -41,9 +41,11 @@ public class PlexSessionWebSocketStrategyTests
         await foreach (PlexSession plexSession in strategy.GetSessions("", fakeServerIp, fakeServerPort, fakeToken))
         {
             result.Add(plexSession);
+            
             if (result.Count == elementsCountForTest)
             {
                 strategy.Disconnect();
+                break;
             }
         }
 
