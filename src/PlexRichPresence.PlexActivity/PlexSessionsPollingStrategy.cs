@@ -59,6 +59,7 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
 
     public void Disconnect()
     {
+        this.logger.LogInformation("Disconnected");
         this.isDisconnected = true;
     }
 }
