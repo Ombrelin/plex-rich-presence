@@ -84,4 +84,4 @@ jobs:
           files: |
             Release.txt
             linux/PlexRichPresence.UI.Avalonia.*.deb
-            windows/pandoc-gui-setup.exe
+            windows/plex-rich-presence-setup.exe
