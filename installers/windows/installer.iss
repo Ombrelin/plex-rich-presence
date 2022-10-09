@@ -1,10 +1,10 @@
 #define MyAppName "PLEX Rich Presence"
 #define MyAppVersion "2.0"
 #define MyAppPublisher "Arsene Lapostolet"
-#define MyAppExeName "PlexRichPresence.exe"
+#define MyAppExeName "PlexRichPresence.UI.Avalonia.exe"
 
 [Setup]
-AppId={{FCD2F146-6DB8-4DDC-AAA2-E9E5DA061AA6}
+AppId={{57756F84-9CCD-46E5-BD77-632DC2156EAF}
 AppName={#MyAppName}
 AppVersion={#MyAppVersion}.{#BuildNumber}
 AppPublisher={#MyAppPublisher}

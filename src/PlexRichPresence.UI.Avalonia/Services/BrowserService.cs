@@ -17,7 +17,7 @@ public class BrowserService : IBrowserService
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                url = url.Replace("&", "^&");
+                //url = url.Replace("&", "^&");
                 Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
             }
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
