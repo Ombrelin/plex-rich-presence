@@ -8,11 +8,11 @@ namespace PlexRichPresence.DiscordRichPresence;
 
 public class DiscordService : IDiscordService
 {
-    private readonly ILogger logger;
+    private readonly ILogger<DiscordService> logger;
     private readonly DiscordRpcClient discordRpcClient;
     private readonly PlexSessionRenderingService plexSessionRenderingService;
 
-    public DiscordService(ILogger logger, PlexSessionRenderingService plexSessionRenderingService)
+    public DiscordService(ILogger<DiscordService> logger, PlexSessionRenderingService plexSessionRenderingService)
     {
         this.logger = logger;
         this.plexSessionRenderingService = plexSessionRenderingService;

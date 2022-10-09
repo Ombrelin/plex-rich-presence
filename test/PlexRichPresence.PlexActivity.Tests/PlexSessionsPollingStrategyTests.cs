@@ -33,7 +33,7 @@ public class PlexSessionsPollingStrategyTests
         DateTime now = DateTime.Now;
 
         var strategy = new PlexSessionsPollingStrategy(
-            new Mock<ILogger>().Object,
+            new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
             serverClientMock.Object,
             clock
         );
@@ -93,7 +93,7 @@ public class PlexSessionsPollingStrategyTests
         var clock = new FakeClock(DateTime.Now);
         DateTime now = DateTime.Now;
         var strategy = new PlexSessionsPollingStrategy(
-            new Mock<ILogger>().Object,
+            new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
             serverClientMock.Object,
             clock
         );
@@ -152,7 +152,7 @@ public class PlexSessionsPollingStrategyTests
         var clock = new FakeClock(DateTime.Now);
         DateTime now = DateTime.Now;
         var strategy = new PlexSessionsPollingStrategy(
-            new Mock<ILogger>().Object,
+            new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
             serverClientMock.Object,
             clock
         );

@@ -23,6 +23,7 @@ using PlexRichPresence.UI.Avalonia.Services;
 using PlexRichPresence.UI.Avalonia.Views;
 using PlexRichPresence.ViewModels;
 using PlexRichPresence.ViewModels.Services;
+using Serilog;
 
 namespace PlexRichPresence.UI.Avalonia;
 
@@ -44,7 +45,7 @@ public class App : Application
         .AddTransient<IPlexFactory, PlexFactory>()
         .AddTransient<IPlexRequestsHttpClient, PlexRequestsHttpClient>()
         .AddSingleton<IStorageService>(
-            new StorageService($"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence"))
+            new StorageService(STORAGE_FOLDER))
         .AddSingleton<LoginPageViewModel>()
         .AddSingleton<IBrowserService, BrowserService>()
         .AddSingleton<IPlexActivityService, PlexActivityService>()
@@ -52,7 +53,12 @@ public class App : Application
         .AddSingleton<IClock, Clock>()
         .AddSingleton<PlexSessionRenderingService>()
         .AddSingleton<PlexSessionRendererFactory>()
-        .AddLogging();
+        .AddLogging(loggingBuilder =>
+        {
+            loggingBuilder.AddSerilog();
+        });
+
+    private static readonly string STORAGE_FOLDER = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence";
 
     public override void Initialize()
     {
@@ -63,25 +69,26 @@ public class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
+            ConfigureSerilog();
+            
+
             ConfigureTheme();
             desktop.MainWindow = new MainWindow();
             var navigationFrame = desktop.MainWindow.FindControl<Frame>("navigationFrame");
             var navigationService = new NavigationService(navigationFrame);
-            ConfigureLogging();
             ConfigureNavigation(navigationService);
         }
 
         base.OnFrameworkInitializationCompleted();
     }
 
-    private void ConfigureLogging()
+    private static void ConfigureSerilog()
     {
-        ILogger logger = LoggerFactory
-            .Create(config => { config.AddConsole(); })
-            .CreateLogger("Plex Rich Presence");
-
-        services.AddSingleton(logger);
-        
+        Log.Logger = new LoggerConfiguration()
+            .Enrich.FromLogContext()
+            .WriteTo.Console()
+            .WriteTo.File($"{STORAGE_FOLDER}/logs.txt")
+            .CreateLogger();
     }
 
     private void ConfigureNavigation(NavigationService navigationService)

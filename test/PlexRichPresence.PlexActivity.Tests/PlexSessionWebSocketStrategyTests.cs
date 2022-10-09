@@ -31,7 +31,7 @@ public class PlexSessionWebSocketStrategyTests
         Mock<IPlexServerClient> mockPlexServerClient = BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
 
         var strategy = new PlexSessionsWebSocketStrategy(
-            new Mock<ILogger>().Object,
+            new Mock<ILogger<PlexSessionsWebSocketStrategy>>().Object,
             mockPlexServerClient.Object,
             mockWebSocketClientFactory.Object
         );

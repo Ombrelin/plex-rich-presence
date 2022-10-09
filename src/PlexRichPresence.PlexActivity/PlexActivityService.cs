@@ -8,23 +8,25 @@ namespace PlexRichPresence.PlexActivity;
 public class PlexActivityService : IPlexActivityService
 {
     private readonly IPlexServerClient plexServerClient;
-    private readonly ILogger logger;
+    private readonly ILogger<PlexSessionsWebSocketStrategy> wsLogger;
+    private readonly ILogger<PlexSessionsPollingStrategy> pollingLogger;
     private readonly IClock clock;
 
-    public PlexActivityService(IPlexServerClient plexServerClient, ILogger logger, IClock clock)
+    public PlexActivityService(IPlexServerClient plexServerClient, IClock clock, ILogger<PlexSessionsWebSocketStrategy> wsLogger, ILogger<PlexSessionsPollingStrategy> pollingLogger)
     {
         this.plexServerClient = plexServerClient;
         this.plexServerClient = plexServerClient;
-        this.logger = logger;
         this.clock = clock;
+        this.wsLogger = wsLogger;
+        this.pollingLogger = pollingLogger;
     }
     
 
     public IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken)
     {
         IPlexSessionStrategy strategy = isOwner
-            ? new PlexSessionsPollingStrategy(logger, plexServerClient, this.clock)
-            : new PlexSessionsWebSocketStrategy(logger, plexServerClient, new WebSocketClientFactory());
+            ? new PlexSessionsPollingStrategy(pollingLogger, plexServerClient, this.clock)
+            : new PlexSessionsWebSocketStrategy(wsLogger, plexServerClient, new WebSocketClientFactory());
 
         return strategy.GetSessions(
             userId,

@@ -10,10 +10,10 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
     private bool isDisconnected = false;
 
     private readonly IClock clock;
-    private readonly ILogger logger;
+    private readonly ILogger<PlexSessionsPollingStrategy> logger;
     private readonly IPlexServerClient plexServerClient;
 
-    public PlexSessionsPollingStrategy(ILogger logger, IPlexServerClient plexServerClient, IClock clock)
+    public PlexSessionsPollingStrategy(ILogger<PlexSessionsPollingStrategy> logger, IPlexServerClient plexServerClient, IClock clock)
     {
         this.logger = logger;
         this.plexServerClient = plexServerClient;

@@ -10,13 +10,13 @@ namespace PlexRichPresence.PlexActivity;
 
 public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
 {
-    private readonly ILogger logger;
+    private readonly ILogger<PlexSessionsWebSocketStrategy> logger;
     private IWebsocketClient? client;
     private readonly IPlexServerClient plexServerClient;
     private readonly IWebSocketClientFactory webSocketClientFactory;
 
     public PlexSessionsWebSocketStrategy(
-        ILogger logger,
+        ILogger<PlexSessionsWebSocketStrategy> logger,
         IPlexServerClient plexServerClient,
         IWebSocketClientFactory webSocketClientFactory
     )
