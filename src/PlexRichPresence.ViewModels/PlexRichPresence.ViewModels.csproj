@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
-        <PackageReference Include="Plex.Api" Version="4.0.6" />
+        <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.2" />
+        <PackageReference Include="Plex.Api" Version="4.0.7" />
     </ItemGroup>
 </Project>

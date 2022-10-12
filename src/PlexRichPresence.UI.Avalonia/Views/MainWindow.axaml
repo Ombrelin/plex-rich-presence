@@ -8,5 +8,5 @@
         x:Class="PlexRichPresence.UI.Avalonia.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
         Title="Plex Rich Presence">
-    <ui:Frame Name="navigationFrame" />
+    <ui:Frame Name="navigationFrame" CacheSize="0" />
 </Window>

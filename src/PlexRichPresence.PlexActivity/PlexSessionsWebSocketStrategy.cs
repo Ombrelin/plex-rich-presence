@@ -40,7 +40,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
 
         await client.Start();
 
-        logger.LogInformation("Listening to sessions via websocket for {ServerIp}", serverIp);
+        logger.LogInformation("Listening to sessions via websocket for user : {Username}", username);
         await foreach ((string key, string state, long viewOffset) in sessions)
         {
             yield return await ExtractPlexSession(serverIp, serverPort, userToken, key,state, viewOffset);

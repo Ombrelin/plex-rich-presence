@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using PlexRichPresence.PlexActivity;
 using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
@@ -15,24 +16,30 @@ public partial class PlexActivityPageViewModel
     private readonly INavigationService navigationService;
     private string userToken = string.Empty;
     private string userName = string.Empty;
+    private ILogger<PlexActivityPageViewModel> logger;
 
     [ObservableProperty] private string currentActivity = "Idle";
     [ObservableProperty] private string plexServerIp = string.Empty;
     [ObservableProperty] private int plexServerPort;
     [ObservableProperty] private bool isPlexServerOwned;
+    [ObservableProperty] private bool isServerUnreachable;
 
     public PlexActivityPageViewModel(
         IPlexActivityService plexActivityService,
         IStorageService storageService,
         INavigationService navigationService,
-        IDiscordService discordService
+        IDiscordService discordService,
+        ILogger<PlexActivityPageViewModel> logger
         )
     {
         this.plexActivityService = plexActivityService;
         this.storageService = storageService;
         this.navigationService = navigationService;
         this.discordService = discordService;
+        this.logger = logger;
     }
+
+
 
     [RelayCommand]
     private async Task InitStrategy()
@@ -47,22 +54,32 @@ public partial class PlexActivityPageViewModel
     [RelayCommand]
     private async Task StartActivity()
     {
-        await foreach (IPlexSession session in this.plexActivityService.GetSessions(
-                           this.IsPlexServerOwned,
-                           userName,
-                           this.PlexServerIp,
-                           this.PlexServerPort,
-                           this.userToken)
-                      )
+        try
         {
-            this.CurrentActivity = session.MediaTitle;
-            this.discordService.SetDiscordPresenceToPlexSession(session);
+            await foreach (IPlexSession session in this.plexActivityService.GetSessions(
+                               this.IsPlexServerOwned,
+                               userName,
+                               this.PlexServerIp,
+                               this.PlexServerPort,
+                               this.userToken)
+                          )
+            {
+                this.CurrentActivity = session.MediaTitle;
+                this.discordService.SetDiscordPresenceToPlexSession(session);
+            }
         }
+        catch (Exception e)
+        {
+            this.logger.LogError(e, "Could not connect to server");
+            this.IsServerUnreachable = true;
+        }
+
     }
 
     [RelayCommand]
     private async Task ChangeServer()
     {
+        this.plexActivityService.Disconnect();
         await this.navigationService.NavigateToAsync("servers");
     }
 }

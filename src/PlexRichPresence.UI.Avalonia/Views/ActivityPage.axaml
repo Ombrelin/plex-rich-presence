@@ -20,31 +20,20 @@
                 <Label Content="{CompiledBinding PlexServerPort}" />
             </StackPanel>
         </StackPanel>
-        <!--
-        <StackPanel Grid.Row="1" Spacing="16">
+        <StackPanel Spacing="16" Grid.Row="1">
+            <Label
+                IsVisible="{CompiledBinding !IsServerUnreachable}"
+                HorizontalContentAlignment="Center"
+                Content="{CompiledBinding CurrentActivity}" />
+            <Label
+                    IsVisible="{CompiledBinding IsServerUnreachable}"
+                    HorizontalContentAlignment="Center"
+                    Content="Can't reach server !"
+                    Foreground="Red"/>
             <Button
-                Classes="accent"
-                IsVisible="{CompiledBinding !IsConnected}"
-                HorizontalAlignment="Center" Command="{Binding ConnectCommand}">
-                Connect
-            </Button>
-            <Button
-                IsVisible="{CompiledBinding !IsConnected}"
                 HorizontalAlignment="Center"
                 Command="{Binding ChangeServerCommand}">
                 Change Server
-            </Button>
-
-        </StackPanel>
-        --> <!--IsVisible="{CompiledBinding IsConnected}"-->
-        <StackPanel Spacing="16" Grid.Row="1">
-            <Label
-                HorizontalContentAlignment="Center"
-                Content="{CompiledBinding CurrentActivity}" />
-            <Button
-                HorizontalAlignment="Center"
-                Command="{Binding DisconnectCommand}">
-                Disconnect
             </Button>
         </StackPanel>
     </Grid>

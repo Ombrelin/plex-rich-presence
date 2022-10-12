@@ -24,7 +24,7 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
     public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort,
         string userToken)
     {
-        logger.LogInformation("Listening to sessions via polling for IP : {ServerIp} for User : {Username}", serverIp, username);
+        logger.LogInformation("Listening to sessions via polling for user : {Username}", username);
         while (!isDisconnected)
         {
             SessionContainer sessions = await plexServerClient.GetSessionsAsync(
