@@ -1,6 +1,8 @@
 name: CI/CD
 
 on:
+  pull_request:
+    branches:
   push:
     branches: [ develop, master ]
     tags:

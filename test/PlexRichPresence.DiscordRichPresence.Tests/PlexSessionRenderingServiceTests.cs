@@ -1,4 +1,3 @@
-using Castle.Core.Logging;
 using DiscordRPC;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -6,7 +5,6 @@ using Moq;
 using PlexRichPresence.DiscordRichPresence.Rendering;
 using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
-using ILogger = Microsoft.Extensions.Logging.ILogger;
 
 namespace PlexRichPresence.DiscordRichPresence.Tests;
 
@@ -21,14 +19,14 @@ public class PlexSessionRenderingServiceTests
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Buffering
                 },
-                "⟲", "Test Movie", true, TimeSpan.Zero
+                "⟲\x2800", "Test Movie", true, TimeSpan.Zero
             },
             {
                 new FakePlexSession
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Paused
                 },
-                "⏸", "Test Movie", true, TimeSpan.Zero
+                "⏸\x2800" , "Test Movie", true, TimeSpan.Zero
             },
             {
                 new FakePlexSession
@@ -36,7 +34,7 @@ public class PlexSessionRenderingServiceTests
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Playing,
                     Duration = 20_000, ViewOffset = 10_000
                 },
-                "▶", "Test Movie", true, TimeSpan.FromSeconds(10)
+                "▶\x2800", "Test Movie", true, TimeSpan.FromSeconds(10)
             },
             {
                 new FakePlexSession
@@ -90,7 +88,7 @@ public class PlexSessionRenderingServiceTests
     )
     {
         // Given
-        DateTime dateTime = DateTime.Now;
+        DateTime dateTime = DateTime.Now.ToUniversalTime();
         Mock<IClock> mockClock = SharedSetup.BuildMockClock(dateTime);
         var plexSessionRenderingService =
             new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object), new Mock<ILogger<PlexSessionRenderingService>>().Object);

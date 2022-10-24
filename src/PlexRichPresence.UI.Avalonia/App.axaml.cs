@@ -87,7 +87,7 @@ public class App : Application
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console()
-            .WriteTo.File($"{STORAGE_FOLDER}/logs.txt")
+            .WriteTo.File(path: $"{STORAGE_FOLDER}/logs.txt", rollingInterval: RollingInterval.Hour)
             .CreateLogger();
     }
 

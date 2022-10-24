@@ -12,7 +12,7 @@ public class MovieSessionRenderer : GenericSessionRenderer
         return new RichPresence
         {
             Details = session.MediaTitle,
-            State = playerState,
+            State = playerState.Length < 2 ? playerState + '\x2800' : playerState,
             Timestamps = new Timestamps
             {
                 End = endTimeStamp
