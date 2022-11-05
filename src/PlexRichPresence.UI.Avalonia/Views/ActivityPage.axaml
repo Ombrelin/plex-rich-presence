@@ -19,9 +19,14 @@
                 <Label>Server Port : </Label>
                 <Label Content="{CompiledBinding PlexServerPort}" />
             </StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Label>Display Idle Status : </Label>
+                <ToggleSwitch VerticalAlignment="Center" IsChecked="{CompiledBinding EnableIdleStatus, Mode=TwoWay}" />
+            </StackPanel>
         </StackPanel>
         <StackPanel Spacing="16" Grid.Row="1">
             <Label
+                Width="600"
                 IsVisible="{CompiledBinding !IsServerUnreachable}"
                 HorizontalContentAlignment="Center"
                 Content="{CompiledBinding CurrentActivity}" />

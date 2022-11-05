@@ -13,7 +13,14 @@ public class FakePlexActivityService : IPlexActivityService
     public string? CurrentServerIp { get; private set; }
     public int CurrentServerPort { get; private set; }
     public string? CurrentUserToken { get; private set; }
-    
+
+    private readonly bool isIdle;
+
+    public FakePlexActivityService(bool isIdle = false)
+    {
+        this.isIdle = isIdle;
+    }
+
     public void Disconnect()
     {
         IsConnected = false;
@@ -31,7 +38,7 @@ public class FakePlexActivityService : IPlexActivityService
 
         for (int index = 1; index <= 3; ++index)
         {
-            yield return new FakePlexSession { MediaTitle = $"Test Media Title {index}" };
+            yield return isIdle ? new PlexSession() : new FakePlexSession { MediaTitle = $"Test Media Title {index}" };
         }
     }
 }

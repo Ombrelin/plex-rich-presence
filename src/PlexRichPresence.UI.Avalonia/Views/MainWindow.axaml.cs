@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Controls;
 
@@ -11,6 +12,12 @@ namespace PlexRichPresence.UI.Avalonia.Views
 #if DEBUG
             this.AttachDevTools();
 #endif
+        }
+
+        private void Window_OnClosing(object? sender, CancelEventArgs e)
+        {
+            this.Hide();
+            e.Cancel = true;
         }
     }
 }

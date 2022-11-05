@@ -7,6 +7,7 @@
         Width="480" Height="720"
         x:Class="PlexRichPresence.UI.Avalonia.Views.MainWindow"
         Icon="/Assets/avalonia-logo.ico"
+        Closing="Window_OnClosing"
         Title="Plex Rich Presence">
     <ui:Frame Name="navigationFrame" CacheSize="0" />
 </Window>

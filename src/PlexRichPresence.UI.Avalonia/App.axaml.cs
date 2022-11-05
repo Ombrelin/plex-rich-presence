@@ -47,6 +47,9 @@ public class App : Application
         .AddSingleton<IStorageService>(
             new StorageService(STORAGE_FOLDER))
         .AddSingleton<LoginPageViewModel>()
+        .AddSingleton<ServersPageViewModel>()
+        .AddSingleton<PlexActivityPageViewModel>()
+        .AddSingleton<LoginPageViewModel>()
         .AddSingleton<IBrowserService, BrowserService>()
         .AddSingleton<IPlexActivityService, PlexActivityService>()
         .AddSingleton<IDiscordService, DiscordService>()
@@ -59,6 +62,7 @@ public class App : Application
         });
 
     private static readonly string STORAGE_FOLDER = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence";
+    private ServiceProvider? serviceProvider;
 
     public override void Initialize()
     {
@@ -97,7 +101,7 @@ public class App : Application
         navigationService.RegisterPage("servers", typeof(ServersPage));
         navigationService.RegisterPage("activity", typeof(ActivityPage));
         services.AddSingleton<INavigationService>(navigationService);
-        ServiceProvider serviceProvider = services.BuildServiceProvider();
+        serviceProvider = services.BuildServiceProvider();
         this.Resources[typeof(IServiceProvider)] = serviceProvider;
         IStorageService storageService = serviceProvider.GetService<IStorageService>() 
                       ?? throw new InvalidOperationException("Can't get storage service from DI");
@@ -149,9 +153,18 @@ public class App : Application
 
     private void Exit_Onclick(object? _, EventArgs e)
     {
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
+        if (serviceProvider is not null)
         {
-            desktop.Shutdown();
+            IStorageService storageService = serviceProvider.GetService<IStorageService>() 
+                                             ?? throw new InvalidOperationException("Can't get storage service from DI");
+            PlexActivityPageViewModel viewModel = serviceProvider.GetService<PlexActivityPageViewModel>() 
+                                                  ?? throw new InvalidOperationException("Can't get storage service from DI");
+            if (!viewModel.EnableIdleStatus)
+            {
+                storageService.PutAsync("enableIdleStatus", bool.FalseString);
+            }
         }
+        desktop.Shutdown();
     }
 }

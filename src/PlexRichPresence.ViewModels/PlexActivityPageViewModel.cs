@@ -23,7 +23,8 @@ public partial class PlexActivityPageViewModel
     [ObservableProperty] private int plexServerPort;
     [ObservableProperty] private bool isPlexServerOwned;
     [ObservableProperty] private bool isServerUnreachable;
-
+    [ObservableProperty] private bool enableIdleStatus = true;
+    
     public PlexActivityPageViewModel(
         IPlexActivityService plexActivityService,
         IStorageService storageService,
@@ -39,16 +40,18 @@ public partial class PlexActivityPageViewModel
         this.logger = logger;
     }
 
-
-
     [RelayCommand]
     private async Task InitStrategy()
     {
-        this.PlexServerIp = await this.storageService.GetAsync("serverIp");
-        this.PlexServerPort = int.Parse(await this.storageService.GetAsync("serverPort"));
-        this.userToken = await this.storageService.GetAsync("plex_token");
-        this.userName = await this.storageService.GetAsync("plexUserName");
-        this.IsPlexServerOwned = bool.Parse(await this.storageService.GetAsync("isServerOwned"));
+        PlexServerIp = await storageService.GetAsync("serverIp");
+        PlexServerPort = int.Parse(await storageService.GetAsync("serverPort"));
+        userToken = await storageService.GetAsync("plex_token");
+        userName = await storageService.GetAsync("plexUserName");
+        IsPlexServerOwned = bool.Parse(await storageService.GetAsync("isServerOwned"));
+        if (await storageService.ContainsKeyAsync("enableIdleStatus"))
+        {
+            EnableIdleStatus = bool.Parse(await storageService.GetAsync("enableIdleStatus"));
+        }
     }
 
     [RelayCommand]
@@ -56,22 +59,35 @@ public partial class PlexActivityPageViewModel
     {
         try
         {
-            await foreach (IPlexSession session in this.plexActivityService.GetSessions(
-                               this.IsPlexServerOwned,
+            await foreach (IPlexSession session in plexActivityService.GetSessions(
+                               IsPlexServerOwned,
                                userName,
-                               this.PlexServerIp,
-                               this.PlexServerPort,
-                               this.userToken)
+                               PlexServerIp,
+                               PlexServerPort,
+                               userToken)
                           )
             {
-                this.CurrentActivity = session.MediaTitle;
-                this.discordService.SetDiscordPresenceToPlexSession(session);
+                CurrentActivity = session.MediaTitle;
+
+                if (CurrentActivity is "Idle" && EnableIdleStatus)
+                {
+                    discordService.SetDiscordPresenceToPlexSession(session);
+                }
+                else if ((CurrentActivity is "Idle" && !EnableIdleStatus))
+                {
+                    discordService.StopRichPresence();
+                }
+                else
+                {
+                    discordService.SetDiscordPresenceToPlexSession(session);
+                }
+                
             }
         }
         catch (Exception e)
         {
-            this.logger.LogError(e, "Could not connect to server");
-            this.IsServerUnreachable = true;
+            logger.LogError(e, "Could not connect to server");
+            IsServerUnreachable = true;
         }
 
     }
@@ -79,7 +95,7 @@ public partial class PlexActivityPageViewModel
     [RelayCommand]
     private async Task ChangeServer()
     {
-        this.plexActivityService.Disconnect();
-        await this.navigationService.NavigateToAsync("servers");
+        plexActivityService.Disconnect();
+        await navigationService.NavigateToAsync("servers");
     }
 }
