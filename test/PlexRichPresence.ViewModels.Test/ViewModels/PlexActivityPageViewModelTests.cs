@@ -178,8 +178,10 @@ public class PlexActivityPageViewModelTests
         plexActivityService.CurrentUserToken.Should().Be(fakePlexToken);
     }
 
-    [Fact]
-    public async Task InitStrategy_IdleEnabledInStorage_LoadsIdleEnabled()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task InitStrategy_IdleEnabledRetrievedFromStorage(bool idleEnabled)
     {
         // Given
         const string fakePlexToken = "fake plex token";
@@ -193,7 +195,7 @@ public class PlexActivityPageViewModelTests
             ["isServerOwned"] = bool.TrueString,
             ["plex_token"] = fakePlexToken,
             ["plexUserName"] = fakePlexUserName,
-            ["enableIdleStatus"] = "false",
+            ["enableIdleStatus"] = idleEnabled.ToString(),
         });
         var viewModel = new PlexActivityPageViewModel(
             new FakePlexActivityService(),
@@ -207,7 +209,7 @@ public class PlexActivityPageViewModelTests
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
 
         // Then
-        viewModel.EnableIdleStatus.Should().BeFalse();
+        viewModel.EnableIdleStatus.Should().Be(idleEnabled);
 
     }
 

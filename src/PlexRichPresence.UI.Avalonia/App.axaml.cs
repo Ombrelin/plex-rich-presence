@@ -160,10 +160,7 @@ public class App : Application
                                              ?? throw new InvalidOperationException("Can't get storage service from DI");
             PlexActivityPageViewModel viewModel = serviceProvider.GetService<PlexActivityPageViewModel>() 
                                                   ?? throw new InvalidOperationException("Can't get storage service from DI");
-            if (!viewModel.EnableIdleStatus)
-            {
-                storageService.PutAsync("enableIdleStatus", bool.FalseString);
-            }
+            storageService.PutAsync("enableIdleStatus", viewModel.EnableIdleStatus.ToString());
         }
         desktop.Shutdown();
     }
