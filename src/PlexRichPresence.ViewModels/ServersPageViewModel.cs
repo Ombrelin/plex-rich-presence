@@ -18,24 +18,19 @@ public partial class ServersPageViewModel
     [ObservableProperty] private string username = string.Empty;
     [ObservableProperty] private string thumbnailUrl = string.Empty;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private AccountServer? selectedServer;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private string customServerIp = string.Empty;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private string customServerPort = string.Empty;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private bool useCustomServer;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private bool isCustomServerOwned;
 
     public bool CanValidate => SelectedServer is not null ||

@@ -1,9 +1,11 @@
-﻿using PlexRichPresence.ViewModels.Models;
+﻿using PlexRichPresence.Core;
 
-namespace PlexRichPresence.PlexActivity;
+namespace PlexRichPresence.ViewModels.Services;
 
 public interface IPlexActivityService
 {
-    IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken);
+    IAsyncEnumerable<PlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort,
+        string userToken);
+
     void Disconnect();
 }

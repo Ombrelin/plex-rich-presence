@@ -1,8 +1,7 @@
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
-using PlexRichPresence.PlexActivity;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 using PlexRichPresence.ViewModels.Test.Fakes;
 
@@ -160,7 +159,7 @@ public class PlexActivityPageViewModelTests
             new Mock<ILogger<PlexActivityPageViewModel>>().Object
         );
         viewModel.EnableIdleStatus = false;
-        
+
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
 
         // When
@@ -168,7 +167,7 @@ public class PlexActivityPageViewModelTests
 
         // Then
         viewModel.CurrentActivity.Should().Be("Idle");
-        discordServiceMock.Verify(mock => mock.SetDiscordPresenceToPlexSession(It.IsAny<IPlexSession>()), Times.Never);
+        discordServiceMock.Verify(mock => mock.SetDiscordPresenceToPlexSession(It.IsAny<PlexSession>()), Times.Never);
         discordServiceMock.Verify(mock => mock.StopRichPresence(), Times.Exactly(3));
 
         plexActivityService.IsOwner.Should().BeTrue();
@@ -210,7 +209,6 @@ public class PlexActivityPageViewModelTests
 
         // Then
         viewModel.EnableIdleStatus.Should().Be(idleEnabled);
-
     }
 
     [Fact]

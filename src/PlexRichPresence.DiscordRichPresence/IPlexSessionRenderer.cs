@@ -1,9 +1,9 @@
 using DiscordRPC;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 
 namespace PlexRichPresence.DiscordRichPresence;
 
 public interface IPlexSessionRenderer
 {
-    RichPresence RenderSession(IPlexSession session);
+    RichPresence RenderSession(PlexSession session);
 }

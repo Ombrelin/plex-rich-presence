@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Media;
+using PlexRichPresence.Core;
 using Websocket.Client;
 using Xunit;
 
@@ -27,13 +28,16 @@ public class PlexSessionWebSocketStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
 
-        Mock<IWebSocketClientFactory> mockWebSocketClientFactory = BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
-        Mock<IPlexServerClient> mockPlexServerClient = BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
+        Mock<IWebSocketClientFactory> mockWebSocketClientFactory =
+            BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
+        Mock<IPlexServerClient> mockPlexServerClient =
+            BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
 
         var strategy = new PlexSessionsWebSocketStrategy(
             new Mock<ILogger<PlexSessionsWebSocketStrategy>>().Object,
             mockPlexServerClient.Object,
-            mockWebSocketClientFactory.Object
+            mockWebSocketClientFactory.Object,
+            new PlexSessionMapper()
         );
         var result = new List<PlexSession>();
         const int elementsCountForTest = 3;
@@ -41,7 +45,7 @@ public class PlexSessionWebSocketStrategyTests
         await foreach (PlexSession plexSession in strategy.GetSessions("", fakeServerIp, fakeServerPort, fakeToken))
         {
             result.Add(plexSession);
-            
+
             if (result.Count == elementsCountForTest)
             {
                 strategy.Disconnect();

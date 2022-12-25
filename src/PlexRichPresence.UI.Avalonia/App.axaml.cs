@@ -9,7 +9,6 @@ using Avalonia.Threading;
 using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Plex.Api.Factories;
 using Plex.Library.Factories;
 using Plex.ServerApi;
@@ -56,12 +55,12 @@ public class App : Application
         .AddSingleton<IClock, Clock>()
         .AddSingleton<PlexSessionRenderingService>()
         .AddSingleton<PlexSessionRendererFactory>()
-        .AddLogging(loggingBuilder =>
-        {
-            loggingBuilder.AddSerilog();
-        });
+        .AddSingleton<PlexSessionMapper>()
+        .AddLogging(loggingBuilder => { loggingBuilder.AddSerilog(); });
 
-    private static readonly string STORAGE_FOLDER = $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence";
+    private static readonly string STORAGE_FOLDER =
+        $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence";
+
     private ServiceProvider? serviceProvider;
 
     public override void Initialize()
@@ -74,7 +73,7 @@ public class App : Application
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
             ConfigureSerilog();
-            
+
 
             ConfigureTheme();
             desktop.MainWindow = new MainWindow();
@@ -103,8 +102,8 @@ public class App : Application
         services.AddSingleton<INavigationService>(navigationService);
         serviceProvider = services.BuildServiceProvider();
         this.Resources[typeof(IServiceProvider)] = serviceProvider;
-        IStorageService storageService = serviceProvider.GetService<IStorageService>() 
-                      ?? throw new InvalidOperationException("Can't get storage service from DI");
+        IStorageService storageService = serviceProvider.GetService<IStorageService>()
+                                         ?? throw new InvalidOperationException("Can't get storage service from DI");
         Dispatcher.UIThread.Post(async () => await NavigateToFirstPage(storageService, navigationService));
     }
 
@@ -156,12 +155,15 @@ public class App : Application
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
         if (serviceProvider is not null)
         {
-            IStorageService storageService = serviceProvider.GetService<IStorageService>() 
-                                             ?? throw new InvalidOperationException("Can't get storage service from DI");
-            PlexActivityPageViewModel viewModel = serviceProvider.GetService<PlexActivityPageViewModel>() 
-                                                  ?? throw new InvalidOperationException("Can't get storage service from DI");
+            IStorageService storageService = serviceProvider.GetService<IStorageService>()
+                                             ?? throw new InvalidOperationException(
+                                                 "Can't get storage service from DI");
+            PlexActivityPageViewModel viewModel = serviceProvider.GetService<PlexActivityPageViewModel>()
+                                                  ?? throw new InvalidOperationException(
+                                                      "Can't get storage service from DI");
             storageService.PutAsync("enableIdleStatus", viewModel.EnableIdleStatus.ToString());
         }
+
         desktop.Shutdown();
     }
 }

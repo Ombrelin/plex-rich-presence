@@ -7,7 +7,7 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="PlexRichPresence.UI.Avalonia.Views.ServersPage"
              x:DataType="viewModels:ServersPageViewModel">
-    <Grid Margin="16" >
+    <Grid Margin="16">
         <Grid.RowDefinitions>.5*,*,*,3*,*</Grid.RowDefinitions>
 
         <ProgressBar IsVisible="{Binding GetDataCommand.IsRunning}" IsIndeterminate="True" />
@@ -54,12 +54,14 @@
                 </StackPanel>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top">
                     <Label>Is Custom Server Owned :</Label>
-                    <ToggleSwitch IsEnabled="{CompiledBinding UseCustomServer}" IsChecked="{CompiledBinding IsCustomServerOwned}" />
+                    <ToggleSwitch IsEnabled="{CompiledBinding UseCustomServer}"
+                                  IsChecked="{CompiledBinding IsCustomServerOwned}" />
                 </StackPanel>
             </Grid>
         </Expander>
 
-        <StackPanel Margin="0,16,0,0" Spacing="16" Grid.Row="4" HorizontalAlignment="Center" IsVisible="{Binding !GetDataCommand.IsRunning}">
+        <StackPanel Margin="0,16,0,0" Spacing="16" Grid.Row="4" HorizontalAlignment="Center"
+                    IsVisible="{Binding !GetDataCommand.IsRunning}">
             <Button Classes="accent" Command="{Binding ValidateServerSelectionCommand}" HorizontalAlignment="Center">Continue</Button>
             <Button Command="{Binding LogOutCommand}" HorizontalAlignment="Center">Log Out</Button>
         </StackPanel>

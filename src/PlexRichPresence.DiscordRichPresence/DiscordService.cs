@@ -1,8 +1,8 @@
+using System.Text.Json;
 using DiscordRPC;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
+using PlexRichPresence.Core;
 using PlexRichPresence.DiscordRichPresence.Rendering;
-using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence;
@@ -12,7 +12,7 @@ public class DiscordService : IDiscordService
     private readonly ILogger<DiscordService> logger;
     private DiscordRpcClient? discordRpcClient;
     private readonly PlexSessionRenderingService plexSessionRenderingService;
-    private IPlexSession? currentSession;
+    private PlexSession? currentSession;
 
     public DiscordService(ILogger<DiscordService> logger, PlexSessionRenderingService plexSessionRenderingService)
     {
@@ -30,12 +30,13 @@ public class DiscordService : IDiscordService
         return rpcClient;
     }
 
-    public void SetDiscordPresenceToPlexSession(IPlexSession session)
+    public void SetDiscordPresenceToPlexSession(PlexSession session)
     {
-        if (JsonSerializer.Serialize(session) == JsonSerializer.Serialize(currentSession))
+        if (session == currentSession)
         {
             return;
         }
+
         currentSession = session;
         RichPresence richPresence = plexSessionRenderingService.RenderSession(session);
         richPresence.Assets = new Assets

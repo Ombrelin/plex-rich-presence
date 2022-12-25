@@ -1,4 +1,5 @@
 using DiscordRPC;
+using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
 
@@ -13,7 +14,7 @@ public class GenericSessionRenderer : IPlexSessionRenderer
         this.clock = clock;
     }
 
-    public virtual RichPresence RenderSession(IPlexSession session)
+    public virtual RichPresence RenderSession(PlexSession session)
     {
         (_, DateTime endTimeStamps) = RenderPlayerState(session);
         return new RichPresence
@@ -27,17 +28,18 @@ public class GenericSessionRenderer : IPlexSessionRenderer
         };
     }
 
-    protected (string playerState, DateTime endTimeStamp) RenderPlayerState(IPlexSession session)
+    protected (string playerState, DateTime endTimeStamp) RenderPlayerState(PlexSession session)
     {
         return session.PlayerState switch
         {
             PlexPlayerState.Buffering => ("⟲", this.clock.Now.ToUniversalTime()),
             PlexPlayerState.Paused => ("⏸", this.clock.Now.ToUniversalTime()),
-            PlexPlayerState.Playing => ("▶", this.clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
+            PlexPlayerState.Playing => ("▶",
+                this.clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
             _ => throw new ArgumentOutOfRangeException()
         };
     }
 
-    private static long ComputeSessionRemainingTime(IPlexSession session) =>
+    private static long ComputeSessionRemainingTime(PlexSession session) =>
         (session.Duration - session.ViewOffset) / 1000;
 }

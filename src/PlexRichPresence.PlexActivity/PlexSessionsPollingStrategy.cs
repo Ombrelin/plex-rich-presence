@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Server.Sessions;
+using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.PlexActivity;
@@ -12,12 +13,15 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
     private readonly IClock clock;
     private readonly ILogger<PlexSessionsPollingStrategy> logger;
     private readonly IPlexServerClient plexServerClient;
+    private readonly PlexSessionMapper plexSessionMapper;
 
-    public PlexSessionsPollingStrategy(ILogger<PlexSessionsPollingStrategy> logger, IPlexServerClient plexServerClient, IClock clock)
+    public PlexSessionsPollingStrategy(ILogger<PlexSessionsPollingStrategy> logger, IPlexServerClient plexServerClient,
+        IClock clock, PlexSessionMapper plexSessionMapper)
     {
         this.logger = logger;
         this.plexServerClient = plexServerClient;
         this.clock = clock;
+        this.plexSessionMapper = plexSessionMapper;
     }
 
 
@@ -39,7 +43,7 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 yield return new PlexSession();
                 continue;
             }
-            
+
             SessionMetadata? currentUserSession = sessions
                 .Metadata
                 .FirstOrDefault(session => session.User.Title == username);
@@ -50,8 +54,8 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 yield return new PlexSession();
                 continue;
             }
-            
-            var plexSession = new PlexSession(currentUserSession);
+
+            var plexSession = plexSessionMapper.Map(currentUserSession);
             this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
             yield return plexSession;
         }

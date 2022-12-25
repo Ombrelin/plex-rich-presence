@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using PlexRichPresence.PlexActivity;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels;
@@ -24,14 +23,14 @@ public partial class PlexActivityPageViewModel
     [ObservableProperty] private bool isPlexServerOwned;
     [ObservableProperty] private bool isServerUnreachable;
     [ObservableProperty] private bool enableIdleStatus = true;
-    
+
     public PlexActivityPageViewModel(
         IPlexActivityService plexActivityService,
         IStorageService storageService,
         INavigationService navigationService,
         IDiscordService discordService,
         ILogger<PlexActivityPageViewModel> logger
-        )
+    )
     {
         this.plexActivityService = plexActivityService;
         this.storageService = storageService;
@@ -59,7 +58,7 @@ public partial class PlexActivityPageViewModel
     {
         try
         {
-            await foreach (IPlexSession session in plexActivityService.GetSessions(
+            await foreach (PlexSession session in plexActivityService.GetSessions(
                                IsPlexServerOwned,
                                userName,
                                PlexServerIp,
@@ -81,7 +80,6 @@ public partial class PlexActivityPageViewModel
                 {
                     discordService.SetDiscordPresenceToPlexSession(session);
                 }
-                
             }
         }
         catch (Exception e)
@@ -89,7 +87,6 @@ public partial class PlexActivityPageViewModel
             logger.LogError(e, "Could not connect to server");
             IsServerUnreachable = true;
         }
-
     }
 
     [RelayCommand]
