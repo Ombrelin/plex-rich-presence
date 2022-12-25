@@ -1,6 +1,6 @@
 using DiscordRPC;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
+using System.Text.Json;
 using PlexRichPresence.DiscordRichPresence.Rendering;
 using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
@@ -32,7 +32,7 @@ public class DiscordService : IDiscordService
 
     public void SetDiscordPresenceToPlexSession(IPlexSession session)
     {
-        if (JsonConvert.SerializeObject(session) == JsonConvert.SerializeObject(currentSession))
+        if (JsonSerializer.Serialize(session) == JsonSerializer.Serialize(currentSession))
         {
             return;
         }
