@@ -41,7 +41,7 @@ jobs:
         run: |
           cd src/PlexRichPresence.UI.Avalonia 
           export PATH="$PATH:/github/home/.dotnet/tools"
-          dotnet deb -c Release -f net6.0 -o dist/linux-x64
+          dotnet deb -c Release -f net7.0 -o dist/linux-x64
       - name: Save deb package as artifact
         uses: actions/upload-artifact@v2
         with:
