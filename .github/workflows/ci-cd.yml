@@ -12,7 +12,7 @@ jobs:
     name: Buid and test application
     runs-on: ubuntu-latest
     container:
-      image: mcr.microsoft.com/dotnet/sdk:7.0.3-jammy
+      image: mcr.microsoft.com/dotnet/sdk:7.0.103-jammy
     steps:
       - uses: actions/checkout@v2
       - name: Restore dependencies
