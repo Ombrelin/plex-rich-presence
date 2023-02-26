@@ -11,7 +11,7 @@ public class MusicSessionRenderer : GenericSessionRenderer
         (string playerState, DateTime endTimeStamp) = this.RenderPlayerState(session);
         return new RichPresence
         {
-            Details =  $"♫ {session.MediaTitle}",
+            Details = $"♫ {session.MediaTitle}",
             State = $"{playerState} {session.MediaGrandParentTitle}",
             Timestamps = new Timestamps
             {

@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
@@ -30,7 +31,8 @@ public class ServersPageViewModelTests
         var viewModel = new ServersPageViewModel(
             plexAccountClientMock.Object,
             fakeStorageService,
-            navigationService
+            navigationService,
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
 
         // When
@@ -48,9 +50,10 @@ public class ServersPageViewModelTests
     {
         // Given
         var viewModel = new ServersPageViewModel(
-            new Mock<IPlexAccountClient>().Object,
-            new Mock<IStorageService>().Object,
-            new Mock<INavigationService>().Object
+            Mock.Of<IPlexAccountClient>(),
+            Mock.Of<IStorageService>(),
+            Mock.Of<INavigationService>(),
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
 
         // Then
@@ -62,9 +65,10 @@ public class ServersPageViewModelTests
     {
         // Given
         var viewModel = new ServersPageViewModel(
-            new Mock<IPlexAccountClient>().Object,
-            new Mock<IStorageService>().Object,
-            new Mock<INavigationService>().Object
+            Mock.Of<IPlexAccountClient>(),
+            Mock.Of<IStorageService>(),
+            Mock.Of<INavigationService>(),
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
 
         // When
@@ -86,9 +90,10 @@ public class ServersPageViewModelTests
     {
         // Given
         var viewModel = new ServersPageViewModel(
-            new Mock<IPlexAccountClient>().Object,
-            new Mock<IStorageService>().Object,
-            new Mock<INavigationService>().Object
+            Mock.Of<IPlexAccountClient>(),
+            Mock.Of<IStorageService>(),
+            Mock.Of<INavigationService>(),
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
         viewModel.UseCustomServer = true;
 
@@ -121,7 +126,8 @@ public class ServersPageViewModelTests
         var viewModel = new ServersPageViewModel(
             plexAccountClientMock.Object,
             fakeStorageService,
-            navigationService
+            navigationService,
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
 
         await viewModel.GetDataCommand.ExecuteAsync(null);
@@ -159,7 +165,8 @@ public class ServersPageViewModelTests
         var viewModel = new ServersPageViewModel(
             plexAccountClientMock.Object,
             fakeStorageService,
-            navigationService
+            navigationService,
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
 
         await viewModel.GetDataCommand.ExecuteAsync(null);
@@ -176,6 +183,41 @@ public class ServersPageViewModelTests
         (await fakeStorageService.GetAsync("serverPort")).Should().Be(fakeServerPort);
         (await fakeStorageService.GetAsync("isServerOwned")).Should().Be(bool.TrueString);
         navigationService.CurrentPage.Should().Be("activity");
+    }
+
+
+    [Fact]
+    public async Task GetData_InvalidToken_NavigateToLogin()
+    {
+        // Given
+        const string fakePlexToken = "fake plex token";
+        const string fakeUsername = "username";
+        const string fakeThumbnail = "thumbnail";
+        const string fakeServerName = "Test Server";
+        const string fakeServerIp = "111.111.111.111";
+        const string fakeServerPort = "32400";
+
+        var fakeStorageService = new FakeStorageService();
+        await fakeStorageService.PutAsync("plex_token", fakePlexToken);
+        var plexAccountClientMock = new Mock<IPlexAccountClient>();
+        plexAccountClientMock.Setup(mock => mock.GetPlexAccountAsync(It.IsAny<string>()))
+            .ThrowsAsync(new ApplicationException("Unsuccessful response from 3rd Party API"));
+        plexAccountClientMock.Setup(mock => mock.GetAccountServersAsync(It.IsAny<string>()))
+            .ThrowsAsync(new ApplicationException("Unsuccessful response from 3rd Party API"));
+        var navigationService = new FakeNavigationService();
+
+        var viewModel = new ServersPageViewModel(
+            plexAccountClientMock.Object,
+            fakeStorageService,
+            navigationService,
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
+        );
+
+        // When
+        await viewModel.GetDataCommand.ExecuteAsync(null);
+
+        // Then
+        navigationService.CurrentPage.Should().Be("login");
     }
 
     private static Mock<IPlexAccountClient> BuildPlexAccountClientMock(

@@ -160,7 +160,7 @@ public class PlexActivityPageViewModelTests
             new Mock<ILogger<PlexActivityPageViewModel>>().Object
         );
         viewModel.EnableIdleStatus = false;
-        
+
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
 
         // When
@@ -210,7 +210,6 @@ public class PlexActivityPageViewModelTests
 
         // Then
         viewModel.EnableIdleStatus.Should().Be(idleEnabled);
-
     }
 
     [Fact]
@@ -250,5 +249,74 @@ public class PlexActivityPageViewModelTests
 
         // Then
         viewModel.IsServerUnreachable.Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task InitStrategy_NoToken_NavigatesToLogin()
+    {
+        // Given
+        const string fakePlexToken = "fake plex token";
+        const string fakeServerIp = "111.111.111.111";
+        const string fakeServerPort = "32400";
+
+        var storageService = new FakeStorageService(new Dictionary<string, string>
+        {
+            ["serverIp"] = fakeServerIp,
+            ["serverPort"] = fakeServerPort,
+            ["isServerOwned"] = bool.TrueString,
+        });
+        var navigationService = new FakeNavigationService();
+        var viewModel = new PlexActivityPageViewModel(
+            Mock.Of<IPlexActivityService>(),
+            storageService,
+            navigationService,
+            Mock.Of<IDiscordService>(),
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
+        );
+
+        // When
+        await viewModel.InitStrategyCommand.ExecuteAsync(null);
+
+        // Then
+        navigationService.CurrentPage.Should().Be("login");
+    }
+
+
+    [Fact]
+    public async Task InitStrategy_InvalidToken_NavigatesToLogin()
+    {
+        // Given
+        const string fakePlexToken = "fake plex token";
+        const string fakeServerIp = "111.111.111.111";
+        const string fakeServerPort = "32400";
+        const string fakePlexUserName = "fake plex user name";
+
+        var storageService = new FakeStorageService(new Dictionary<string, string>
+        {
+            ["serverIp"] = fakeServerIp,
+            ["serverPort"] = fakeServerPort,
+            ["isServerOwned"] = bool.TrueString,
+            ["plex_token"] = fakePlexToken,
+            ["plexUserName"] = fakePlexUserName
+        });
+        var navigationService = new FakeNavigationService();
+        var plexActivityServiceMock = new Mock<IPlexActivityService>();
+        plexActivityServiceMock
+            .Setup(mock => mock.GetSessions(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(),
+                It.IsAny<string>()))
+            .Throws(new ApplicationException("Unsuccessful response from 3rd Party API"));
+        var viewModel = new PlexActivityPageViewModel(
+            plexActivityServiceMock.Object,
+            storageService,
+            navigationService,
+            Mock.Of<IDiscordService>(),
+            Mock.Of<ILogger<PlexActivityPageViewModel>>()
+        );
+
+        // When
+        await viewModel.InitStrategyCommand.ExecuteAsync(null);
+
+        // Then
+        navigationService.CurrentPage.Should().Be("login");
     }
 }

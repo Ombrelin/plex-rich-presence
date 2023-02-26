@@ -30,7 +30,6 @@ public class DiscordService : IDiscordService
 
     public void SetDiscordPresenceToPlexSession(IPlexSession session)
     {
-        
         RichPresence richPresence = plexSessionRenderingService.RenderSession(session);
         richPresence.Assets = new Assets
         {

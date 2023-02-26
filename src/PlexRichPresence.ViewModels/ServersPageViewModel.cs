@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Account;
 using PlexRichPresence.ViewModels.Services;
@@ -14,28 +15,24 @@ public partial class ServersPageViewModel
     private readonly IPlexAccountClient plexAccountClient;
     private readonly IStorageService storageService;
     private readonly INavigationService navigationService;
+    private readonly ILogger<PlexActivityPageViewModel> logger;
 
     [ObservableProperty] private string username = string.Empty;
     [ObservableProperty] private string thumbnailUrl = string.Empty;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private AccountServer? selectedServer;
 
-    [ObservableProperty]
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private string customServerIp = string.Empty;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private string customServerPort = string.Empty;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private bool useCustomServer;
 
-    [ObservableProperty] 
-    [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
     private bool isCustomServerOwned;
 
     public bool CanValidate => SelectedServer is not null ||
@@ -48,20 +45,32 @@ public partial class ServersPageViewModel
     public ServersPageViewModel(
         IPlexAccountClient plexAccountClient,
         IStorageService storageService,
-        INavigationService navigationService)
+        INavigationService navigationService, ILogger<PlexActivityPageViewModel> logger)
     {
         this.plexAccountClient = plexAccountClient;
         this.storageService = storageService;
         this.navigationService = navigationService;
+        this.logger = logger;
     }
 
     [RelayCommand]
     private async Task GetData()
     {
-        await Task.WhenAll(
-            this.GetServers(),
-            this.GetUsernameAndThumbnail()
-        );
+        try
+        {
+            await Task.WhenAll(
+                GetServers(),
+                GetUsernameAndThumbnail()
+            );
+        }
+        catch (ApplicationException e)
+        {
+            if (e.Message is "Unsuccessful response from 3rd Party API")
+            {
+                logger.LogError("No PLEX token is settings going back to login screen");
+                await this.navigationService.NavigateToAsync("login");
+            }
+        }
     }
 
     private async Task GetUsernameAndThumbnail()

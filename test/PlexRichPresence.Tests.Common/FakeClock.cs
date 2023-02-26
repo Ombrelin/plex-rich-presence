@@ -8,7 +8,7 @@ public class FakeClock : IClock
     private TimeSpan accumulatedDelay = TimeSpan.Zero;
 
     public DateTime DateTimeAfterDelay => Now.Add(accumulatedDelay);
-    
+
     public FakeClock(DateTime now)
     {
         this.Now = now;
@@ -20,6 +20,4 @@ public class FakeClock : IClock
         accumulatedDelay = accumulatedDelay.Add(delay);
         return Task.CompletedTask;
     }
-
-
 }

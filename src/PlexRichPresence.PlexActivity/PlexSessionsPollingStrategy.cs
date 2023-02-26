@@ -13,7 +13,8 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
     private readonly ILogger<PlexSessionsPollingStrategy> logger;
     private readonly IPlexServerClient plexServerClient;
 
-    public PlexSessionsPollingStrategy(ILogger<PlexSessionsPollingStrategy> logger, IPlexServerClient plexServerClient, IClock clock)
+    public PlexSessionsPollingStrategy(ILogger<PlexSessionsPollingStrategy> logger, IPlexServerClient plexServerClient,
+        IClock clock)
     {
         this.logger = logger;
         this.plexServerClient = plexServerClient;
@@ -39,7 +40,7 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 yield return new PlexSession();
                 continue;
             }
-            
+
             SessionMetadata? currentUserSession = sessions
                 .Metadata
                 .FirstOrDefault(session => session.User.Title == username);
@@ -50,7 +51,7 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 yield return new PlexSession();
                 continue;
             }
-            
+
             var plexSession = new PlexSession(currentUserSession);
             this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
             yield return plexSession;

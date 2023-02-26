@@ -26,7 +26,8 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
         this.webSocketClientFactory = webSocketClientFactory;
     }
 
-    public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort, string userToken)
+    public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort,
+        string userToken)
     {
         client?.Dispose();
         client = webSocketClientFactory.GetWebSocketClient(serverIp, serverPort, userToken);
@@ -43,7 +44,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
         logger.LogInformation("Listening to sessions via websocket for user : {Username}", username);
         await foreach ((string key, string state, long viewOffset) in sessions)
         {
-            yield return await ExtractPlexSession(serverIp, serverPort, userToken, key,state, viewOffset);
+            yield return await ExtractPlexSession(serverIp, serverPort, userToken, key, state, viewOffset);
         }
     }
 
@@ -52,7 +53,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
     {
         MediaContainer mediaContainer = await this.GetMediaFromKey(mediaKey, userToken, serverIp, serverPort);
         Metadata media = mediaContainer.Media.First();
-        return new PlexSession(media,state,viewOffset);
+        return new PlexSession(media, state, viewOffset);
     }
 
     private Task<MediaContainer> GetMediaFromKey(string mediaKey, string userToken, string serverIp, int serverPort)
@@ -63,7 +64,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
             mediaKey
         );
     }
-    
+
     private (string key, string state, long viewOffset) ExtractSessionData(JsonNode message)
     {
         this.logger.LogInformation("Websocket session : {Session}", message.ToJsonString());

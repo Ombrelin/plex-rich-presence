@@ -27,8 +27,10 @@ public class PlexSessionWebSocketStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
 
-        Mock<IWebSocketClientFactory> mockWebSocketClientFactory = BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
-        Mock<IPlexServerClient> mockPlexServerClient = BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
+        Mock<IWebSocketClientFactory> mockWebSocketClientFactory =
+            BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
+        Mock<IPlexServerClient> mockPlexServerClient =
+            BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
 
         var strategy = new PlexSessionsWebSocketStrategy(
             new Mock<ILogger<PlexSessionsWebSocketStrategy>>().Object,
@@ -41,7 +43,7 @@ public class PlexSessionWebSocketStrategyTests
         await foreach (PlexSession plexSession in strategy.GetSessions("", fakeServerIp, fakeServerPort, fakeToken))
         {
             result.Add(plexSession);
-            
+
             if (result.Count == elementsCountForTest)
             {
                 strategy.Disconnect();

@@ -31,10 +31,10 @@
                 HorizontalContentAlignment="Center"
                 Content="{CompiledBinding CurrentActivity}" />
             <Label
-                    IsVisible="{CompiledBinding IsServerUnreachable}"
-                    HorizontalContentAlignment="Center"
-                    Content="Can't reach server !"
-                    Foreground="Red"/>
+                IsVisible="{CompiledBinding IsServerUnreachable}"
+                HorizontalContentAlignment="Center"
+                Content="Can't reach server !"
+                Foreground="Red" />
             <Button
                 HorizontalAlignment="Center"
                 Command="{Binding ChangeServerCommand}">

@@ -12,8 +12,9 @@ public class PlexActivityService : IPlexActivityService
     private readonly ILogger<PlexSessionsPollingStrategy> pollingLogger;
     private readonly IClock clock;
     private IPlexSessionStrategy? strategy;
-    
-    public PlexActivityService(IPlexServerClient plexServerClient, IClock clock, ILogger<PlexSessionsWebSocketStrategy> wsLogger, ILogger<PlexSessionsPollingStrategy> pollingLogger)
+
+    public PlexActivityService(IPlexServerClient plexServerClient, IClock clock,
+        ILogger<PlexSessionsWebSocketStrategy> wsLogger, ILogger<PlexSessionsPollingStrategy> pollingLogger)
     {
         this.plexServerClient = plexServerClient;
         this.plexServerClient = plexServerClient;
@@ -21,9 +22,10 @@ public class PlexActivityService : IPlexActivityService
         this.wsLogger = wsLogger;
         this.pollingLogger = pollingLogger;
     }
-    
 
-    public IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken)
+
+    public IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort,
+        string userToken)
     {
         this.strategy = isOwner
             ? new PlexSessionsPollingStrategy(pollingLogger, plexServerClient, this.clock)

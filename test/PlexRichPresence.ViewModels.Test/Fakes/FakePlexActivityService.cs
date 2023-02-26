@@ -26,7 +26,8 @@ public class FakePlexActivityService : IPlexActivityService
         IsConnected = false;
     }
 
-    public async IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken)
+    public async IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp,
+        int serverPort, string userToken)
     {
         IsOwner = isOwner;
         CurrentUsername = userId;

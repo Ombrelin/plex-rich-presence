@@ -6,7 +6,7 @@ namespace PlexRichPresence.ViewModels.Test.Fakes;
 public class FakeDiscordService : IDiscordService
 {
     public List<IPlexSession> Sessions { get; } = new();
-    
+
     public void SetDiscordPresenceToPlexSession(IPlexSession session)
     {
         Sessions.Add(session);
@@ -14,6 +14,5 @@ public class FakeDiscordService : IDiscordService
 
     public void StopRichPresence()
     {
-
     }
 }

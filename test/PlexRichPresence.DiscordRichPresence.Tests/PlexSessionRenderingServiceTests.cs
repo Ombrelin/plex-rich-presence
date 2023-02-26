@@ -26,7 +26,7 @@ public class PlexSessionRenderingServiceTests
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Paused
                 },
-                "⏸\x2800" , "Test Movie", true, TimeSpan.Zero
+                "⏸\x2800", "Test Movie", true, TimeSpan.Zero
             },
             {
                 new FakePlexSession
@@ -91,7 +91,8 @@ public class PlexSessionRenderingServiceTests
         DateTime dateTime = DateTime.Now.ToUniversalTime();
         Mock<IClock> mockClock = SharedSetup.BuildMockClock(dateTime);
         var plexSessionRenderingService =
-            new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object), new Mock<ILogger<PlexSessionRenderingService>>().Object);
+            new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object),
+                new Mock<ILogger<PlexSessionRenderingService>>().Object);
 
         // When
         RichPresence presence = plexSessionRenderingService.RenderSession(session);
