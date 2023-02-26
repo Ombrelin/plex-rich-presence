@@ -1,8 +1,7 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using PlexRichPresence.PlexActivity;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels;
@@ -73,7 +72,7 @@ public partial class PlexActivityPageViewModel
     {
         try
         {
-            await foreach (IPlexSession session in plexActivityService.GetSessions(
+            await foreach (PlexSession session in plexActivityService.GetSessions(
                                IsPlexServerOwned,
                                userName,
                                PlexServerIp,

@@ -1,7 +1,7 @@
 using DiscordRPC;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
@@ -17,7 +17,7 @@ public class PlexSessionRenderingService
         this.logger = logger;
     }
 
-    public RichPresence RenderSession(IPlexSession session)
+    public RichPresence RenderSession(PlexSession session)
     {
         RichPresence renderedSession = rendererFactory
             .BuildRendererForSession(session)

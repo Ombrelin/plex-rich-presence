@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Media;
+using PlexRichPresence.Core;
 using Websocket.Client;
 using Xunit;
 
@@ -35,7 +36,8 @@ public class PlexSessionWebSocketStrategyTests
         var strategy = new PlexSessionsWebSocketStrategy(
             new Mock<ILogger<PlexSessionsWebSocketStrategy>>().Object,
             mockPlexServerClient.Object,
-            mockWebSocketClientFactory.Object
+            mockWebSocketClientFactory.Object,
+            new PlexSessionMapper()
         );
         var result = new List<PlexSession>();
         const int elementsCountForTest = 3;

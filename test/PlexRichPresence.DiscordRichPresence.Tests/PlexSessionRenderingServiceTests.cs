@@ -2,6 +2,7 @@ using DiscordRPC;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
+using PlexRichPresence.Core;
 using PlexRichPresence.DiscordRichPresence.Rendering;
 using PlexRichPresence.ViewModels.Models;
 using PlexRichPresence.ViewModels.Services;
@@ -10,26 +11,26 @@ namespace PlexRichPresence.DiscordRichPresence.Tests;
 
 public class PlexSessionRenderingServiceTests
 {
-    public static TheoryData<FakePlexSession, string?, string?, bool, TimeSpan>
+    public static TheoryData<PlexSession, string?, string?, bool, TimeSpan>
         RenderingTheoryData =>
         new()
         {
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Buffering
                 },
                 "⟲\x2800", "Test Movie", true, TimeSpan.Zero
             },
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Paused
                 },
                 "⏸\x2800", "Test Movie", true, TimeSpan.Zero
             },
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Playing,
                     Duration = 20_000, ViewOffset = 10_000
@@ -37,7 +38,7 @@ public class PlexSessionRenderingServiceTests
                 "▶\x2800", "Test Movie", true, TimeSpan.FromSeconds(10)
             },
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Test Title", MediaParentTitle = "Test Parent Title",
                     MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Unknown,
@@ -46,7 +47,7 @@ public class PlexSessionRenderingServiceTests
                 "Test Title", "Test Grand Parent Title - Test Parent Title", true, TimeSpan.Zero
             },
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Test Title", MediaParentTitle = "Test Parent Title",
                     MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Track,
@@ -55,7 +56,7 @@ public class PlexSessionRenderingServiceTests
                 "⏸ Test Grand Parent Title", "♫ Test Title", true, TimeSpan.Zero
             },
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Test Title", MediaParentTitle = "Test Parent Title",
                     MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Episode,
@@ -64,7 +65,7 @@ public class PlexSessionRenderingServiceTests
                 "⏸ Test Grand Parent Title", "⏏ Test Title", true, TimeSpan.Zero
             },
             {
-                new FakePlexSession
+                new PlexSession
                 {
                     MediaTitle = "Idle",
                     MediaParentTitle = string.Empty,
@@ -80,7 +81,7 @@ public class PlexSessionRenderingServiceTests
     [Theory]
     [MemberData(nameof(RenderingTheoryData))]
     public void RenderPlayerState(
-        FakePlexSession session,
+        PlexSession session,
         string? expectedState,
         string? expectedDetail,
         bool setEndTimeStamp,

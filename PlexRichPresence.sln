@@ -23,6 +23,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.DiscordRic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.Tests.Common", "test\PlexRichPresence.Tests.Common\PlexRichPresence.Tests.Common.csproj", "{A72090A3-1393-4CDF-BDE3-ED6D4C7ECA15}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlexRichPresence.Core", "src\PlexRichPresence.Core\PlexRichPresence.Core.csproj", "{EBDFB0C1-6880-4D74-BCA6-4E4FF4B0A2D1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -65,6 +67,10 @@ Global
 		{A72090A3-1393-4CDF-BDE3-ED6D4C7ECA15}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A72090A3-1393-4CDF-BDE3-ED6D4C7ECA15}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A72090A3-1393-4CDF-BDE3-ED6D4C7ECA15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EBDFB0C1-6880-4D74-BCA6-4E4FF4B0A2D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EBDFB0C1-6880-4D74-BCA6-4E4FF4B0A2D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EBDFB0C1-6880-4D74-BCA6-4E4FF4B0A2D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EBDFB0C1-6880-4D74-BCA6-4E4FF4B0A2D1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

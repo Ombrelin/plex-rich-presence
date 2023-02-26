@@ -1,5 +1,5 @@
-using PlexRichPresence.PlexActivity;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
+using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels.Test.Fakes;
 
@@ -26,8 +26,8 @@ public class FakePlexActivityService : IPlexActivityService
         IsConnected = false;
     }
 
-    public async IAsyncEnumerable<IPlexSession> GetSessions(bool isOwner, string userId, string serverIp,
-        int serverPort, string userToken)
+    public async IAsyncEnumerable<PlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort,
+        string userToken)
     {
         IsOwner = isOwner;
         CurrentUsername = userId;
@@ -39,7 +39,7 @@ public class FakePlexActivityService : IPlexActivityService
 
         for (int index = 1; index <= 3; ++index)
         {
-            yield return isIdle ? new PlexSession() : new FakePlexSession { MediaTitle = $"Test Media Title {index}" };
+            yield return isIdle ? new PlexSession() : new PlexSession { MediaTitle = $"Test Media Title {index}" };
         }
     }
 }

@@ -1,3 +1,5 @@
+using PlexRichPresence.Core;
+
 namespace PlexRichPresence.PlexActivity;
 
 public interface IPlexSessionStrategy

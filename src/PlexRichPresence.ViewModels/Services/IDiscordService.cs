@@ -1,9 +1,9 @@
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 
 namespace PlexRichPresence.ViewModels.Services;
 
 public interface IDiscordService
 {
-    void SetDiscordPresenceToPlexSession(IPlexSession session);
+    void SetDiscordPresenceToPlexSession(PlexSession session);
     void StopRichPresence();
 }

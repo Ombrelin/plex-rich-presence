@@ -1,4 +1,4 @@
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
@@ -12,7 +12,7 @@ public class PlexSessionRendererFactory
         this.clock = clock;
     }
 
-    public IPlexSessionRenderer BuildRendererForSession(IPlexSession session) => session.MediaType switch
+    public IPlexSessionRenderer BuildRendererForSession(PlexSession session) => session.MediaType switch
     {
         PlexMediaType.Movie => new MovieSessionRenderer(this.clock),
         PlexMediaType.Episode => new SerieSessionRenderer(this.clock),

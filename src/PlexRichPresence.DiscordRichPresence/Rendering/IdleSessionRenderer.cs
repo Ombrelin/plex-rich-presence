@@ -1,11 +1,11 @@
 using DiscordRPC;
-using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.Core;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
 public class IdleSessionRenderer : IPlexSessionRenderer
 {
-    public RichPresence RenderSession(IPlexSession session)
+    public RichPresence RenderSession(PlexSession session)
     {
         return new RichPresence
         {

@@ -4,6 +4,7 @@ using System.Text.Json.Nodes;
 using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Media;
+using PlexRichPresence.Core;
 using Websocket.Client;
 
 namespace PlexRichPresence.PlexActivity;
@@ -14,16 +15,18 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
     private IWebsocketClient? client;
     private readonly IPlexServerClient plexServerClient;
     private readonly IWebSocketClientFactory webSocketClientFactory;
+    private readonly PlexSessionMapper plexSessionMapper;
 
     public PlexSessionsWebSocketStrategy(
         ILogger<PlexSessionsWebSocketStrategy> logger,
         IPlexServerClient plexServerClient,
-        IWebSocketClientFactory webSocketClientFactory
-    )
+        IWebSocketClientFactory webSocketClientFactory,
+        PlexSessionMapper plexSessionMapper)
     {
         this.logger = logger;
         this.plexServerClient = plexServerClient;
         this.webSocketClientFactory = webSocketClientFactory;
+        this.plexSessionMapper = plexSessionMapper;
     }
 
     public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort,
@@ -53,7 +56,7 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
     {
         MediaContainer mediaContainer = await this.GetMediaFromKey(mediaKey, userToken, serverIp, serverPort);
         Metadata media = mediaContainer.Media.First();
-        return new PlexSession(media, state, viewOffset);
+        return plexSessionMapper.Map(media, state, viewOffset);
     }
 
     private Task<MediaContainer> GetMediaFromKey(string mediaKey, string userToken, string serverIp, int serverPort)

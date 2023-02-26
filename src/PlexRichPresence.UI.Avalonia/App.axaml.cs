@@ -56,6 +56,7 @@ public class App : Application
         .AddSingleton<IClock, Clock>()
         .AddSingleton<PlexSessionRenderingService>()
         .AddSingleton<PlexSessionRendererFactory>()
+        .AddSingleton<PlexSessionMapper>()
         .AddLogging(loggingBuilder => { loggingBuilder.AddSerilog(); });
 
     private static readonly string STORAGE_FOLDER =

@@ -11,4 +11,8 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
         <PackageReference Include="Plex.Api" Version="4.1.2" />
     </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\PlexRichPresence.Core\PlexRichPresence.Core.csproj" />
+    </ItemGroup>
 </Project>

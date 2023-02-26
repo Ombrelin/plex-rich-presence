@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Server.Sessions;
+using PlexRichPresence.Core;
 using PlexRichPresence.Tests.Common;
 using Xunit;
 
@@ -35,7 +36,8 @@ public class PlexSessionsPollingStrategyTests
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
             serverClientMock.Object,
-            clock
+            clock,
+            new PlexSessionMapper()
         );
 
         var result = new List<PlexSession>();
@@ -95,7 +97,8 @@ public class PlexSessionsPollingStrategyTests
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
             serverClientMock.Object,
-            clock
+            clock,
+            new PlexSessionMapper()
         );
 
         var result = new List<PlexSession>();
@@ -154,7 +157,8 @@ public class PlexSessionsPollingStrategyTests
         var strategy = new PlexSessionsPollingStrategy(
             new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
             serverClientMock.Object,
-            clock
+            clock,
+            new PlexSessionMapper()
         );
 
         var result = new List<PlexSession>();
