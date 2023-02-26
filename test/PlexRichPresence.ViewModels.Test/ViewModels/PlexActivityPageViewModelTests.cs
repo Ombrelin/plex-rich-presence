@@ -282,7 +282,7 @@ public class PlexActivityPageViewModelTests
 
 
     [Fact]
-    public async Task InitStrategy_InvalidToken_NavigatesToLogin()
+    public async Task StartActivity_InvalidToken_NavigatesToLogin()
     {
         // Given
         const string fakePlexToken = "fake plex token";
@@ -311,9 +311,9 @@ public class PlexActivityPageViewModelTests
             Mock.Of<IDiscordService>(),
             Mock.Of<ILogger<PlexActivityPageViewModel>>()
         );
-
-        // When
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
+        // When
+        await viewModel.StartActivityCommand.ExecuteAsync(null);
 
         // Then
         navigationService.CurrentPage.Should().Be("login");
