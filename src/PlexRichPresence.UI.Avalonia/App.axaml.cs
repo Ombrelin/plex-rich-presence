@@ -10,6 +10,7 @@ using Avalonia.Threading;
 using FluentAvalonia.Styling;
 using FluentAvalonia.UI.Controls;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Plex.Api.Factories;
 using Plex.Library.Factories;
 using Plex.ServerApi;
@@ -178,7 +179,12 @@ public class App : Application
             PlexActivityPageViewModel viewModel = serviceProvider.GetService<PlexActivityPageViewModel>()
                                                   ?? throw new InvalidOperationException(
                                                       "Can't get storage service from DI");
-            storageService.PutAsync("enableIdleStatus", viewModel.EnableIdleStatus.ToString());
+            var logger = serviceProvider.GetService<ILogger<App>>()
+                         ?? throw new InvalidOperationException(
+                             "Can't get logger from DI");
+            var enabledIdleStatusStringValue = viewModel.EnableIdleStatus.ToString();
+            storageService.PutAsync("enableIdleStatus", enabledIdleStatusStringValue);
+            logger.Log(LogLevel.Information, "Saving setting enableIdleStatus to storage with value : {Value}", enabledIdleStatusStringValue);
         }
 
         desktop.Shutdown();
