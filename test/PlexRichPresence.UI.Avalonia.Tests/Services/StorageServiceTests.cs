@@ -1,5 +1,7 @@
 using System.IO;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Akavache;
 using FluentAssertions;
 using Newtonsoft.Json.Linq;
 using PlexRichPresence.UI.Avalonia.Services;
@@ -11,11 +13,31 @@ public class StorageServiceTests
 {
     public StorageServiceTests()
     {
-        File.Delete("storedData.json");
+        BlobCache.Secure.InvalidateAll();
+        BlobCache.Secure.Vacuum();
     }
 
     [Fact]
-    public async Task Put_CreatesFileWithDataAsJson()
+    public async Task Init_MigrateJsonFileDataToAkavache()
+    {
+        // Given
+        var service = new StorageService(Directory.GetCurrentDirectory());
+        
+        // When
+        await service.Init();
+        
+        // Then
+        Assert.Equal("test", await BlobCache.Secure.GetObject<string>("plexUserName"));
+        Assert.Equal("test", await BlobCache.Secure.GetObject<string>("plex_token"));
+        Assert.Equal("test", await BlobCache.Secure.GetObject<string>("serverIp"));
+        Assert.Equal("test", await BlobCache.Secure.GetObject<string>("serverPort"));
+        Assert.Equal("True", await BlobCache.Secure.GetObject<string>("isServerOwned"));
+        Assert.Equal("True", await BlobCache.Secure.GetObject<string>("enableIdleStatus"));
+        Assert.False(File.Exists("storedData.json"));
+    }
+    
+    [Fact]
+    public async Task Put_CreatesFileIniAkavache()
     {
         // Given
         var service = new StorageService(Directory.GetCurrentDirectory());
@@ -24,9 +46,22 @@ public class StorageServiceTests
         await service.PutAsync("test key", "test value");
 
         // Then
-        File.Exists("storedData.json").Should().BeTrue();
-        JObject data = JObject.Parse(await File.ReadAllTextAsync("storedData.json"));
-        data["test key"].Should().BeEmpty("test value");
+        Assert.Equal("test value", await BlobCache.Secure.GetObject<string>("test key"));
+    }
+
+    [Fact]
+    public async Task Remove_DeletesFromAkavache()
+    {
+        // Given
+        var service = new StorageService(Directory.GetCurrentDirectory());
+        var key = "test key";
+        await service.PutAsync(key, "test value");
+
+        // When
+        await service.RemoveAsync(key);
+
+        // Then
+        Assert.False(await service.ContainsKeyAsync(key));
     }
 
     [Fact]

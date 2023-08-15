@@ -11,7 +11,8 @@ public record PlexSession(
     PlexPlayerState PlayerState,
     PlexMediaType MediaType,
     long Duration,
-    long ViewOffset
+    long ViewOffset,
+    string Thumbnail
 )
 {
     public PlexSession() : this(
@@ -23,8 +24,10 @@ public record PlexSession(
         PlexPlayerState.Idle,
         PlexMediaType.Idle,
         default,
-        default
+        default,
+        string.Empty
     )
     {
     }
+
 }

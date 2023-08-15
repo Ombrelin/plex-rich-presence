@@ -15,6 +15,8 @@ public class FakeStorageService : IStorageService
         data = initialData;
     }
 
+    public Task Init() => Task.CompletedTask;
+
     public Task PutAsync(string key, string value)
     {
         data[key] = value;

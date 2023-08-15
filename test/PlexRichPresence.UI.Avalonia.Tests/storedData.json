@@ -1,0 +1,8 @@
+{
+  "plexUserName": "test",
+  "plex_token": "test",
+  "serverIp": "test",
+  "serverPort": "test",
+  "isServerOwned": "True",
+  "enableIdleStatus": "True"
+}

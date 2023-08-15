@@ -7,7 +7,7 @@ namespace PlexRichPresence.PlexActivity;
 
 public class PlexSessionMapper
 {
-    public PlexSession Map(SessionMetadata metadata) =>
+    public PlexSession Map(SessionMetadata metadata, string plexServerHost, string plexToken) =>
         new(
             metadata.Title,
             (uint)metadata.Index,
@@ -17,10 +17,11 @@ public class PlexSessionMapper
             GetPlayerState(metadata.Player?.State ?? "buffering"),
             GetMediaType(metadata.Type),
             metadata.Duration,
-            metadata.ViewOffset
+            metadata.ViewOffset,
+            $"{plexServerHost}{metadata.Thumb[1..]}?X-Plex-Token={plexToken}"
         );
 
-    public PlexSession Map(Metadata metadata, string state, long viewOffset) =>
+    public PlexSession Map(Metadata metadata, string state, long viewOffset, string plexServerHost, string plexToken) =>
         new(
             metadata.Title,
             Convert.ToUInt32(metadata.Index),
@@ -30,7 +31,8 @@ public class PlexSessionMapper
             GetPlayerState(state),
             GetMediaType(metadata.Type),
             metadata.Duration,
-            viewOffset
+            viewOffset,
+            $"{plexServerHost}{metadata.Thumb[1..]}?X-Plex-Token={plexToken}"
         );
 
 

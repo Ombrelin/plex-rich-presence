@@ -1,5 +1,9 @@
+using System;
+using System.IO;
+using System.Net.Http;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using Avalonia.Media.Imaging;
 using Avalonia.Threading;
 using PlexRichPresence.ViewModels;
 
@@ -17,6 +21,22 @@ public partial class ActivityPage : UserControl
             await plexActivityViewModel.InitStrategyCommand.ExecuteAsync(null);
             await plexActivityViewModel.StartActivityCommand.ExecuteAsync(null);
         });
+
+        plexActivityViewModel.PropertyChanged += (sender, args) =>
+        {
+            Dispatcher.UIThread.Post(async () =>
+            {
+                if (args.PropertyName is nameof(PlexActivityPageViewModel.ThumbnailUrl))
+                {
+                    using HttpClient client = new();
+                    var thumbnailUrl = plexActivityViewModel.ThumbnailUrl;
+                    HttpResponseMessage response = await client.GetAsync(new Uri(thumbnailUrl));
+                    Stream imageStream = await response.Content.ReadAsStreamAsync();
+                    var imageControl = this.FindControl<Image>("thumbnail");
+                    imageControl.Source = new Bitmap(imageStream);
+                }
+            });
+        };
     }
 
     private void InitializeComponent()

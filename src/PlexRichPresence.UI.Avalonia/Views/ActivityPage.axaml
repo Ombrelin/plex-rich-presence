@@ -30,6 +30,8 @@
                 IsVisible="{CompiledBinding !IsServerUnreachable}"
                 HorizontalContentAlignment="Center"
                 Content="{CompiledBinding CurrentActivity}" />
+            <Image VerticalAlignment="Top" x:Name="thumbnail" Width="100" Height="100"
+                   IsVisible="{CompiledBinding !IsServerUnreachable}"/>
             <Label
                 IsVisible="{CompiledBinding IsServerUnreachable}"
                 HorizontalContentAlignment="Center"

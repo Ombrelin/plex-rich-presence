@@ -31,9 +31,10 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
         logger.LogInformation("Listening to sessions via polling for user : {Username}", username);
         while (!isDisconnected)
         {
+            var plexServerHost = new Uri($"http://{serverIp}:{serverPort}").ToString();
             SessionContainer sessions = await plexServerClient.GetSessionsAsync(
                 userToken,
-                new Uri($"http://{serverIp}:{serverPort}").ToString()
+                plexServerHost
             );
             await this.clock.Delay(TimeSpan.FromSeconds(2));
 
@@ -55,7 +56,7 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 continue;
             }
 
-            var plexSession = plexSessionMapper.Map(currentUserSession);
+            var plexSession = plexSessionMapper.Map(currentUserSession, plexServerHost, userToken);
             this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
             yield return plexSession;
         }

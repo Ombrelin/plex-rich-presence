@@ -1,6 +1,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Akavache;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -109,7 +110,7 @@ public class App : Application
         this.Resources[typeof(IServiceProvider)] = serviceProvider;
         IStorageService storageService = serviceProvider.GetService<IStorageService>()
                                          ?? throw new InvalidOperationException("Can't get storage service from DI");
-
+        
         Dispatcher.UIThread.Post(async () => await NavigateToFirstPage(storageService, navigationService));
     }
 
@@ -135,6 +136,7 @@ public class App : Application
 
     private async Task NavigateToFirstPage(IStorageService storageService, INavigationService navigationService)
     {
+        await storageService.Init();
         MinimizeIfNeeded();
         if (await storageService.ContainsKeyAsync("serverIp")
             && await storageService.ContainsKeyAsync("serverPort")
@@ -187,6 +189,7 @@ public class App : Application
             logger.Log(LogLevel.Information, "Saving setting enableIdleStatus to storage with value : {Value}", enabledIdleStatusStringValue);
         }
 
+        BlobCache.Shutdown().Wait();
         desktop.Shutdown();
     }
 }

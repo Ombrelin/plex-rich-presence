@@ -71,7 +71,7 @@ public class PlexSessionsPollingStrategyTests
         titles.Should().Contain("Test Media 1");
         titles.Should().Contain("Test Media 2");
         titles.Should().Contain("Test Media 3");
-
+        
 
         clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }

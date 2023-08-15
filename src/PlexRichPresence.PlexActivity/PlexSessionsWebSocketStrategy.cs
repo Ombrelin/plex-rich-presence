@@ -56,7 +56,11 @@ public class PlexSessionsWebSocketStrategy : IPlexSessionStrategy
     {
         MediaContainer mediaContainer = await this.GetMediaFromKey(mediaKey, userToken, serverIp, serverPort);
         Metadata media = mediaContainer.Media.First();
-        return plexSessionMapper.Map(media, state, viewOffset);
+        var plexServerHost = new Uri($"http://{serverIp}:{serverPort}").ToString();
+        return plexSessionMapper.Map(
+            media,
+            state,
+            viewOffset, plexServerHost, userToken);
     }
 
     private Task<MediaContainer> GetMediaFromKey(string mediaKey, string userToken, string serverIp, int serverPort)

@@ -23,6 +23,7 @@ public partial class PlexActivityPageViewModel
     [ObservableProperty] private bool isPlexServerOwned;
     [ObservableProperty] private bool isServerUnreachable;
     [ObservableProperty] private bool enableIdleStatus = true;
+    [ObservableProperty] private string thumbnailUrl = string.Empty;
 
     public PlexActivityPageViewModel(
         IPlexActivityService plexActivityService,
@@ -81,6 +82,7 @@ public partial class PlexActivityPageViewModel
                           )
             {
                 CurrentActivity = session.MediaTitle;
+                ThumbnailUrl = session.Thumbnail;
 
                 if (CurrentActivity is "Idle" && !EnableIdleStatus)
                 {

@@ -1,7 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
+using Akavache;
 using Newtonsoft.Json;
 using PlexRichPresence.ViewModels.Services;
 
@@ -16,26 +20,32 @@ public class StorageService : IStorageService
 
     public StorageService(string storedDataFolder)
     {
+        Registrations.Start("PlexRichPresence");
         this.storedDataFolder = storedDataFolder;
         storedDataPath = this.storedDataFolder + $"/{STORED_DATA_JSON}";
     }
 
-    private void EnsureDirectoryExists()
+    public async Task Init()
     {
-        if (directoryCreated && Directory.Exists(storedDataFolder)) return;
+        if (!File.Exists(storedDataPath))
+        {
+            return;
+        }
 
-        Directory.CreateDirectory(storedDataFolder);
-        this.directoryCreated = true;
+        var storedData = await ReadStoredData();
+
+        await Task.WhenAll(
+            storedData
+                .Select(kvp => BlobCache.Secure.InsertObject(kvp.Key, kvp.Value).ToTask())
+                .ToArray()
+        );
+        
+        File.Delete(storedDataPath);
     }
 
     public async Task PutAsync(string key, string value)
     {
-        EnsureDirectoryExists();
-        Dictionary<string, string> storedData = await ReadStoredData();
-
-        storedData[key] = value;
-
-        await WriteDataToFile(storedData);
+        await BlobCache.Secure.InsertObject(key, value);
     }
 
     private async Task WriteDataToFile(Dictionary<string, string> storedData)
@@ -74,24 +84,27 @@ public class StorageService : IStorageService
 
     public async Task<string> GetAsync(string key)
     {
-        EnsureDirectoryExists();
-        Dictionary<string, string> storedData = await ReadStoredData();
-        return storedData[key];
+        return (await BlobCache.Secure.GetObject<string>(key))!;
     }
 
     public async Task<bool> ContainsKeyAsync(string key)
     {
-        EnsureDirectoryExists();
-        Dictionary<string, string> storedData = await ReadStoredData();
-        return storedData.ContainsKey(key);
+        try
+        {
+            await BlobCache.Secure.GetObject<string>(key);
+            return true;
+        }
+        catch (KeyNotFoundException)
+        {
+            return false;
+        }
     }
 
-    public async Task RemoveAsync(string key)
+    public Task RemoveAsync(string key)
     {
-        EnsureDirectoryExists();
-        Dictionary<string, string> storedData = await ReadStoredData();
-        storedData.Remove(key);
+        BlobCache.Secure.Invalidate(key);
+        BlobCache.Secure.Vacuum();
 
-        await WriteDataToFile(storedData);
+        return Task.CompletedTask;
     }
 }
