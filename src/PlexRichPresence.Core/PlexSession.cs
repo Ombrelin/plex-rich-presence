@@ -12,7 +12,7 @@ public record PlexSession(
     PlexMediaType MediaType,
     long Duration,
     long ViewOffset,
-    string Thumbnail
+    string? Thumbnail
 )
 {
     public PlexSession() : this(
