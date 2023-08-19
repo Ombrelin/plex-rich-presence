@@ -30,10 +30,18 @@ public partial class ActivityPage : UserControl
                 {
                     using HttpClient client = new();
                     var thumbnailUrl = plexActivityViewModel.ThumbnailUrl;
-                    HttpResponseMessage response = await client.GetAsync(new Uri(thumbnailUrl));
-                    Stream imageStream = await response.Content.ReadAsStreamAsync();
                     var imageControl = this.FindControl<Image>("thumbnail");
-                    imageControl.Source = new Bitmap(imageStream);
+                    if (thumbnailUrl != string.Empty)
+                    {
+                        HttpResponseMessage response = await client.GetAsync(new Uri(thumbnailUrl));
+                        Stream imageStream = await response.Content.ReadAsStreamAsync();
+                        
+                        imageControl.Source = new Bitmap(imageStream);
+                    }
+                    else
+                    {
+                        imageControl.Source = null;
+                    }
                 }
             });
         };
