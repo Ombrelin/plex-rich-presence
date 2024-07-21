@@ -24,49 +24,26 @@ public class PlexSessionsPollingStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
         const string fakeUserName = "fake user name";
-        Mock<IPlexServerClient> serverClientMock = SetupPlexClientServerClientMock(
-            fakeToken,
-            fakeServerIp,
-            fakeServerPort,
-            fakeUserName);
-
+        
+        var serverClientMock = SetupPlexClientServerClientMock(fakeToken, fakeServerIp, fakeServerPort, fakeUserName);
         var clock = new FakeClock(DateTime.Now);
-        DateTime now = DateTime.Now;
+        var now = DateTime.Now;
 
-        var strategy = new PlexSessionsPollingStrategy(
-            new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
-            serverClientMock.Object,
-            clock,
-            new PlexSessionMapper()
-        );
-
+        var strategy = new PlexSessionsPollingStrategy(new Mock<ILogger<PlexSessionsPollingStrategy>>().Object, serverClientMock.Object, clock, new PlexSessionMapper());
         var result = new List<PlexSession>();
 
         // When
-        var sessionsStream = strategy.GetSessions(
-            fakeUserName,
-            fakeServerIp,
-            fakeServerPort,
-            fakeToken
-        );
-
-        await foreach (PlexSession plexSession in sessionsStream)
+        var sessionsStream = strategy.GetSessions(fakeUserName, fakeServerIp, fakeServerPort, fakeToken);
+        await foreach (var plexSession in sessionsStream)
         {
             result.Add(plexSession);
             if (result.Count == elementsCountForTest)
-            {
                 strategy.Disconnect();
-            }
         }
 
         // Then
-        result
-            .Should()
-            .HaveCount(elementsCountForTest);
-
-        List<string> titles = result
-            .Select(session => session.MediaTitle)
-            .ToList();
+        result.Should().HaveCount(elementsCountForTest);
+        var titles = result.Select(session => session.MediaTitle).ToList();
 
         titles.Should().Contain("Test Media 1");
         titles.Should().Contain("Test Media 2");
@@ -85,48 +62,26 @@ public class PlexSessionsPollingStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
         const string fakeUserName = "fake user name";
-        Mock<IPlexServerClient> serverClientMock = SetupPlexClientServerClientMockNoAlwaysSession(
-            fakeToken,
-            fakeServerIp,
-            fakeServerPort,
-            fakeUserName
-        );
-
+        
+        var serverClientMock = SetupPlexClientServerClientMockNoAlwaysSession(fakeToken, fakeServerIp, fakeServerPort, fakeUserName);
         var clock = new FakeClock(DateTime.Now);
-        DateTime now = DateTime.Now;
-        var strategy = new PlexSessionsPollingStrategy(
-            new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
-            serverClientMock.Object,
-            clock,
-            new PlexSessionMapper()
-        );
-
+        var now = DateTime.Now;
+        
+        var strategy = new PlexSessionsPollingStrategy(new Mock<ILogger<PlexSessionsPollingStrategy>>().Object, serverClientMock.Object, clock, new PlexSessionMapper());
         var result = new List<PlexSession>();
 
         // When
-        IAsyncEnumerable<PlexSession> sessionsStream = strategy.GetSessions(
-            fakeUserName,
-            fakeServerIp,
-            fakeServerPort,
-            fakeToken
-        );
-        await foreach (PlexSession plexSession in sessionsStream)
+        var sessionsStream = strategy.GetSessions(fakeUserName, fakeServerIp, fakeServerPort, fakeToken);
+        await foreach (var plexSession in sessionsStream)
         {
             result.Add(plexSession);
             if (result.Count == elementsCountForTest)
-            {
                 strategy.Disconnect();
-            }
         }
 
         // Then
-        result
-            .Should()
-            .HaveCount(elementsCountForTest);
-
-        List<string> titles = result
-            .Select(session => session.MediaTitle)
-            .ToList();
+        result.Should().HaveCount(elementsCountForTest);
+        var titles = result.Select(session => session.MediaTitle).ToList();
 
         titles[0].Should().Contain("Idle");
         titles[1].Should().Contain("Test Media 2");
@@ -134,7 +89,6 @@ public class PlexSessionsPollingStrategyTests
 
         clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }
-
 
     [Fact]
     public async Task GetSessions_NoSessionForUser_YieldIdleSessions()
@@ -145,67 +99,38 @@ public class PlexSessionsPollingStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
         const string fakeUserName = "fake user name";
-        var serverClientMock = SetupPlexClientServerClientNoAlwaysSessionForUserMock(
-            fakeToken,
-            fakeServerIp,
-            fakeServerPort,
-            fakeUserName
-        );
+        var serverClientMock = SetupPlexClientServerClientNoAlwaysSessionForUserMock(fakeToken, fakeServerIp, fakeServerPort, fakeUserName);
 
         var clock = new FakeClock(DateTime.Now);
-        DateTime now = DateTime.Now;
-        var strategy = new PlexSessionsPollingStrategy(
-            new Mock<ILogger<PlexSessionsPollingStrategy>>().Object,
-            serverClientMock.Object,
-            clock,
-            new PlexSessionMapper()
-        );
+        var now = DateTime.Now;
+        var strategy = new PlexSessionsPollingStrategy(new Mock<ILogger<PlexSessionsPollingStrategy>>().Object, serverClientMock.Object, clock, new PlexSessionMapper());
 
         var result = new List<PlexSession>();
-
-
+        
         // When
-        IAsyncEnumerable<PlexSession> sessionsStream = strategy.GetSessions(
-            fakeUserName,
-            fakeServerIp,
-            fakeServerPort,
-            fakeToken
-        );
-        await foreach (PlexSession plexSession in sessionsStream)
+        var sessionsStream = strategy.GetSessions(fakeUserName, fakeServerIp, fakeServerPort, fakeToken);
+        await foreach (var plexSession in sessionsStream)
         {
             result.Add(plexSession);
             if (result.Count == elementsCountForTest)
-            {
                 strategy.Disconnect();
-            }
         }
 
         // Then
-        result
-            .Should()
-            .HaveCount(elementsCountForTest);
-
-        List<string> titles = result
-            .Select(session => session.MediaTitle)
-            .ToList();
+        result.Should().HaveCount(elementsCountForTest);
+        var titles = result.Select(session => session.MediaTitle).ToList();
 
         titles[0].Should().Contain("Idle");
         titles[1].Should().Contain("Test Media 2");
         titles[2].Should().Contain("Test Media 3");
 
-
         clock.DateTimeAfterDelay.Should().BeCloseTo(now.AddSeconds(6), TimeSpan.FromMilliseconds(10));
     }
 
 
-    private static Mock<IPlexServerClient> SetupPlexClientServerClientMock(
-        string fakeToken,
-        string fakeServerIp,
-        int fakeServerPort,
-        string fakeUserName
-    )
+    private static Mock<IPlexServerClient> SetupPlexClientServerClientMock(string fakeToken, string fakeServerIp, int fakeServerPort, string fakeUserName)
     {
-        int mediaCount = 0;
+        var mediaCount = 0;
 
         var serverClientMock = new Mock<IPlexServerClient>();
         serverClientMock
@@ -230,14 +155,9 @@ public class PlexSessionsPollingStrategyTests
         return serverClientMock;
     }
 
-    private static Mock<IPlexServerClient> SetupPlexClientServerClientNoAlwaysSessionForUserMock(
-        string fakeToken,
-        string fakeServerIp,
-        int fakeServerPort,
-        string fakeUserName
-    )
+    private static Mock<IPlexServerClient> SetupPlexClientServerClientNoAlwaysSessionForUserMock(string fakeToken, string fakeServerIp, int fakeServerPort, string fakeUserName)
     {
-        int mediaCount = 0;
+        var mediaCount = 0;
 
         var serverClientMock = new Mock<IPlexServerClient>();
         serverClientMock
@@ -284,14 +204,9 @@ public class PlexSessionsPollingStrategyTests
         return serverClientMock;
     }
 
-    private static Mock<IPlexServerClient> SetupPlexClientServerClientMockNoAlwaysSession(
-        string fakeToken,
-        string fakeServerIp,
-        int fakeServerPort,
-        string fakeUserName
-    )
+    private static Mock<IPlexServerClient> SetupPlexClientServerClientMockNoAlwaysSession(string fakeToken, string fakeServerIp, int fakeServerPort, string fakeUserName)
     {
-        int mediaCount = 0;
+        var mediaCount = 0;
 
         var serverClientMock = new Mock<IPlexServerClient>();
         serverClientMock

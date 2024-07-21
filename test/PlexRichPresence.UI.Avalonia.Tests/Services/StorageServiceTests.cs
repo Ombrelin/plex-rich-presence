@@ -3,7 +3,6 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Akavache;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using PlexRichPresence.UI.Avalonia.Services;
 using Xunit;
 
@@ -99,7 +98,7 @@ public class StorageServiceTests
         await service.PutAsync("test key", "test value");
 
         // When
-        bool result = await service.ContainsKeyAsync("test key");
+        var result = await service.ContainsKeyAsync("test key");
 
         // THen
         result.Should().BeTrue();
@@ -112,7 +111,7 @@ public class StorageServiceTests
         var service = new StorageService(Directory.GetCurrentDirectory());
 
         // When
-        bool result = await service.ContainsKeyAsync("test key");
+        var result = await service.ContainsKeyAsync("test key");
 
         // THen
         result.Should().BeFalse();

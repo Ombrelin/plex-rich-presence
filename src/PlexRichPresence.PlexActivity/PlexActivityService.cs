@@ -7,43 +7,37 @@ namespace PlexRichPresence.PlexActivity;
 
 public class PlexActivityService : IPlexActivityService
 {
-    private readonly IPlexServerClient plexServerClient;
-    private readonly ILogger<PlexSessionsWebSocketStrategy> wsLogger;
-    private readonly ILogger<PlexSessionsPollingStrategy> pollingLogger;
-    private readonly IClock clock;
-    private readonly PlexSessionMapper plexSessionMapper;
-    private IPlexSessionStrategy? strategy;
+    private readonly IPlexServerClient _plexServerClient;
+    private readonly ILogger<PlexSessionsWebSocketStrategy> _wsLogger;
+    private readonly ILogger<PlexSessionsPollingStrategy> _pollingLogger;
+    private readonly IClock _clock;
+    private readonly PlexSessionMapper _plexSessionMapper;
+    private IPlexSessionStrategy? _strategy;
 
     public PlexActivityService(IPlexServerClient plexServerClient, IClock clock,
         ILogger<PlexSessionsWebSocketStrategy> wsLogger, ILogger<PlexSessionsPollingStrategy> pollingLogger,
         PlexSessionMapper plexSessionMapper)
     {
-        this.plexServerClient = plexServerClient;
-        this.plexServerClient = plexServerClient;
-        this.clock = clock;
-        this.wsLogger = wsLogger;
-        this.pollingLogger = pollingLogger;
-        this.plexSessionMapper = plexSessionMapper;
+        _plexServerClient = plexServerClient;
+        _plexServerClient = plexServerClient;
+        _clock = clock;
+        _wsLogger = wsLogger;
+        _pollingLogger = pollingLogger;
+        _plexSessionMapper = plexSessionMapper;
     }
 
 
-    public IAsyncEnumerable<PlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort,
-        string userToken)
+    public IAsyncEnumerable<PlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken)
     {
-        this.strategy = isOwner
-            ? new PlexSessionsPollingStrategy(pollingLogger, plexServerClient, this.clock, plexSessionMapper)
-            : new PlexSessionsWebSocketStrategy(wsLogger, plexServerClient, new WebSocketClientFactory(),
-                plexSessionMapper);
+        _strategy = isOwner
+            ? new PlexSessionsPollingStrategy(_pollingLogger, _plexServerClient, _clock, _plexSessionMapper)
+            : new PlexSessionsWebSocketStrategy(_wsLogger, _plexServerClient, new WebSocketClientFactory(), _plexSessionMapper);
 
-        return strategy.GetSessions(
-            userId,
-            serverIp,
-            serverPort,
-            userToken);
+        return _strategy.GetSessions(userId, serverIp, serverPort, userToken);
     }
 
     public void Disconnect()
     {
-        this.strategy?.Disconnect();
+        _strategy?.Disconnect();
     }
 }

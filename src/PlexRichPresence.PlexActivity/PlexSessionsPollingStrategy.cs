@@ -1,6 +1,5 @@
 using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
-using Plex.ServerApi.PlexModels.Server.Sessions;
 using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 
@@ -8,63 +7,56 @@ namespace PlexRichPresence.PlexActivity;
 
 public class PlexSessionsPollingStrategy : IPlexSessionStrategy
 {
-    private bool isDisconnected = false;
+    private bool _isDisconnected;
 
-    private readonly IClock clock;
-    private readonly ILogger<PlexSessionsPollingStrategy> logger;
-    private readonly IPlexServerClient plexServerClient;
-    private readonly PlexSessionMapper plexSessionMapper;
+    private readonly IClock _clock;
+    private readonly ILogger<PlexSessionsPollingStrategy> _logger;
+    private readonly IPlexServerClient _plexServerClient;
+    private readonly PlexSessionMapper _plexSessionMapper;
 
     public PlexSessionsPollingStrategy(ILogger<PlexSessionsPollingStrategy> logger, IPlexServerClient plexServerClient,
         IClock clock, PlexSessionMapper plexSessionMapper)
     {
-        this.logger = logger;
-        this.plexServerClient = plexServerClient;
-        this.clock = clock;
-        this.plexSessionMapper = plexSessionMapper;
+        _logger = logger;
+        _plexServerClient = plexServerClient;
+        _clock = clock;
+        _plexSessionMapper = plexSessionMapper;
     }
-
-
-    public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort,
-        string userToken)
+    
+    public async IAsyncEnumerable<PlexSession> GetSessions(string username, string serverIp, int serverPort, string userToken)
     {
-        logger.LogInformation("Listening to sessions via polling for user : {Username}", username);
-        while (!isDisconnected)
+        _logger.LogInformation("Listening to sessions via polling for user: {Username}", username);
+        while (!_isDisconnected)
         {
             var plexServerHost = new Uri($"http://{serverIp}:{serverPort}").ToString();
-            SessionContainer sessions = await plexServerClient.GetSessionsAsync(
-                userToken,
-                plexServerHost
-            );
-            await this.clock.Delay(TimeSpan.FromSeconds(2));
+            var sessions = await _plexServerClient.GetSessionsAsync(userToken, plexServerHost);
+            
+            await _clock.Delay(TimeSpan.FromSeconds(2));
 
             if (sessions.Metadata is null)
             {
-                this.logger.LogInformation("No session : Idling");
+                _logger.LogInformation("No session: Idling");
                 yield return new PlexSession();
                 continue;
             }
 
-            SessionMetadata? currentUserSession = sessions
-                .Metadata
-                .FirstOrDefault(session => session.User.Title == username);
-
+            var currentUserSession = sessions.Metadata.FirstOrDefault(session => session.User.Title == username);
             if (currentUserSession is null)
             {
-                this.logger.LogInformation("No session : Idling");
+                _logger.LogInformation("No session: Idling");
                 yield return new PlexSession();
                 continue;
             }
 
-            var plexSession = plexSessionMapper.Map(currentUserSession, plexServerHost, userToken);
-            this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
+            var plexSession = _plexSessionMapper.Map(currentUserSession, plexServerHost, userToken);
+            _logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
             yield return plexSession;
         }
     }
 
     public void Disconnect()
     {
-        this.logger.LogInformation("Disconnected");
-        this.isDisconnected = true;
+        _logger.LogInformation("Disconnected");
+        _isDisconnected = true;
     }
 }

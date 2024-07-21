@@ -226,13 +226,13 @@ public class ServersPageViewModelTests
         string fakeThumbnail,
         string fakeServerName, string fakeServerIp, string fakeServerPort)
     {
-        Mock<IPlexAccountClient> plexAccountClientMock = new Mock<IPlexAccountClient>();
+        Mock<IPlexAccountClient> plexAccountClientMock = new();
         plexAccountClientMock.Setup(mock => mock.GetAccountServersAsync(fakePlexToken))
             .Returns(() => Task.FromResult(new AccountServerContainer
             {
                 Servers = new List<AccountServer>
                 {
-                    new AccountServer
+                    new()
                     {
                         Name = fakeServerName,
                         Address = fakeServerIp,

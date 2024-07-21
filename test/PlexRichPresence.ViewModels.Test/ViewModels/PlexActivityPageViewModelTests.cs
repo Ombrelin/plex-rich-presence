@@ -113,10 +113,7 @@ public class PlexActivityPageViewModelTests
 
         // Then
         viewModel.CurrentActivity.Should().Be("Test Media Title 3");
-        List<string> sessions = discordService
-            .Sessions
-            .Select(session => session.MediaTitle)
-            .ToList();
+        var sessions = discordService.Sessions.Select(session => session.MediaTitle).ToList();
         sessions.Should().HaveCount(3);
 
         plexActivityService.IsOwner.Should().BeTrue();
@@ -151,13 +148,7 @@ public class PlexActivityPageViewModelTests
             ["plexUserName"] = fakePlexUserName
         });
         var navigationService = new FakeNavigationService();
-        var viewModel = new PlexActivityPageViewModel(
-            plexActivityService,
-            storageService,
-            navigationService,
-            discordServiceMock.Object,
-            new Mock<ILogger<PlexActivityPageViewModel>>().Object
-        );
+        var viewModel = new PlexActivityPageViewModel(plexActivityService, storageService, navigationService, discordServiceMock.Object, new Mock<ILogger<PlexActivityPageViewModel>>().Object);
         viewModel.EnableIdleStatus = false;
 
         await viewModel.InitStrategyCommand.ExecuteAsync(null);
@@ -220,7 +211,7 @@ public class PlexActivityPageViewModelTests
         const string fakeServerPort = "32400";
         const string fakePlexUserName = "fake plex user name";
 
-        Mock<IPlexActivityService> plexActivityServiceMock = new Mock<IPlexActivityService>();
+        Mock<IPlexActivityService> plexActivityServiceMock = new();
         plexActivityServiceMock.Setup(mock => mock.GetSessions(It.IsAny<bool>(), It.IsAny<string>(), It.IsAny<string>(),
                 It.IsAny<int>(), It.IsAny<string>()))
             .Throws(() => new Exception());

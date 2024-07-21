@@ -22,43 +22,39 @@ public class FakeWebSocketsServer
 
         app.Use(async (context, next) =>
         {
-            if (context.Request.Path == "/ws")
-            {
-                if (context.WebSockets.IsWebSocketRequest)
-                {
-                    using WebSocket webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                    for (var i = 0; i < 3; ++i)
-                    {
-                        await webSocket.SendAsync(
-                            Encoding.UTF8.GetBytes(
-                                JsonSerializer.Serialize(
-                                    new
-                                    {
-                                        NotificationContainer = new
-                                        {
-                                            type = "playing",
-                                            PlaySessionStateNotification = new List<dynamic>
-                                            {
-                                                new { key = $"test-media-key-{i}", state = "paused", viewOffset = 1000 }
-                                            }
-                                        }
-                                    }
-                                )
-                            ),
-                            WebSocketMessageType.Text,
-                            true,
-                            CancellationToken.None
-                        );
-                    }
-                }
-                else
-                {
-                    context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                }
-            }
-            else
+            if (context.Request.Path != "/ws")
             {
                 await next(context);
+                return;
+            }
+
+            if (!context.WebSockets.IsWebSocketRequest)
+            {
+                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                return;
+            }
+
+            using var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+            for (var i = 0; i < 3; ++i)
+            {
+                await webSocket.SendAsync(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(
+                            new
+                            {
+                                NotificationContainer = new
+                                {
+                                    type = "playing",
+                                    PlaySessionStateNotification = new List<dynamic>
+                                    {
+                                        new { key = $"test-media-key-{i}", state = "paused", viewOffset = 1000 }
+                                    }
+                                }
+                            }
+                        )
+                    ),
+                    WebSocketMessageType.Text,
+                    true,
+                    CancellationToken.None
+                );
             }
         });
     }

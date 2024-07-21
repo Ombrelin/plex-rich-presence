@@ -13,21 +13,21 @@ namespace PlexRichPresence.UI.Avalonia.Services;
 
 public class StorageService : IStorageService
 {
-    private const string STORED_DATA_JSON = "storedData.json";
-    private readonly string storedDataFolder;
-    private readonly string storedDataPath;
-    private bool directoryCreated = false;
+    private const string StoredDataJson = "storedData.json";
+    private readonly string _storedDataFolder;
+    private readonly string _storedDataPath;
+    private bool _directoryCreated = false;
 
     public StorageService(string storedDataFolder)
     {
         Registrations.Start("PlexRichPresence");
-        this.storedDataFolder = storedDataFolder;
-        storedDataPath = this.storedDataFolder + $"/{STORED_DATA_JSON}";
+        _storedDataFolder = storedDataFolder;
+        _storedDataPath = _storedDataFolder + $"/{StoredDataJson}";
     }
 
     public async Task Init()
     {
-        if (!File.Exists(storedDataPath))
+        if (!File.Exists(_storedDataPath))
         {
             return;
         }
@@ -40,7 +40,7 @@ public class StorageService : IStorageService
                 .ToArray()
         );
         
-        File.Delete(storedDataPath);
+        File.Delete(_storedDataPath);
     }
 
     public async Task PutAsync(string key, string value)
@@ -51,7 +51,7 @@ public class StorageService : IStorageService
     private async Task WriteDataToFile(Dictionary<string, string> storedData)
     {
         await File.WriteAllTextAsync(
-            path: storedDataPath,
+            path: _storedDataPath,
             contents: JsonConvert.SerializeObject(storedData)
         );
     }
@@ -74,7 +74,7 @@ public class StorageService : IStorageService
     {
         try
         {
-            return await File.ReadAllTextAsync(storedDataPath);
+            return await File.ReadAllTextAsync(_storedDataPath);
         }
         catch (FileNotFoundException)
         {

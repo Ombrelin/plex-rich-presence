@@ -1,7 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
-using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels;
@@ -9,62 +8,56 @@ namespace PlexRichPresence.ViewModels;
 [INotifyPropertyChanged]
 public partial class PlexActivityPageViewModel
 {
-    private readonly IPlexActivityService plexActivityService;
-    private readonly IStorageService storageService;
-    private readonly IDiscordService discordService;
-    private readonly INavigationService navigationService;
-    private string userToken = string.Empty;
-    private string userName = string.Empty;
-    private readonly ILogger<PlexActivityPageViewModel> logger;
+    private readonly IPlexActivityService _plexActivityService;
+    private readonly IStorageService _storageService;
+    private readonly IDiscordService _discordService;
+    private readonly INavigationService _navigationService;
+    private string _userToken = string.Empty;
+    private string _userName = string.Empty;
+    private readonly ILogger<PlexActivityPageViewModel> _logger;
 
-    [ObservableProperty] private string currentActivity = "Idle";
-    [ObservableProperty] private string plexServerIp = string.Empty;
-    [ObservableProperty] private int plexServerPort;
-    [ObservableProperty] private bool isPlexServerOwned;
-    [ObservableProperty] private bool isServerUnreachable;
-    [ObservableProperty] private bool enableIdleStatus = true;
-    [ObservableProperty] private string thumbnailUrl = string.Empty;
+    [ObservableProperty] private string _currentActivity = "Idle";
+    [ObservableProperty] private string _plexServerIp = string.Empty;
+    [ObservableProperty] private int _plexServerPort;
+    [ObservableProperty] private bool _isPlexServerOwned;
+    [ObservableProperty] private bool _isServerUnreachable;
+    [ObservableProperty] private bool _enableIdleStatus = true;
+    [ObservableProperty] private string _thumbnailUrl = string.Empty;
 
-    public PlexActivityPageViewModel(
-        IPlexActivityService plexActivityService,
-        IStorageService storageService,
-        INavigationService navigationService,
-        IDiscordService discordService,
-        ILogger<PlexActivityPageViewModel> logger
-    )
+    public PlexActivityPageViewModel(IPlexActivityService plexActivityService, IStorageService storageService, INavigationService navigationService, IDiscordService discordService, ILogger<PlexActivityPageViewModel> logger)
     {
-        this.plexActivityService = plexActivityService;
-        this.storageService = storageService;
-        this.navigationService = navigationService;
-        this.discordService = discordService;
-        this.logger = logger;
+        _plexActivityService = plexActivityService;
+        _storageService = storageService;
+        _navigationService = navigationService;
+        _discordService = discordService;
+        _logger = logger;
     }
 
     [RelayCommand]
     private async Task InitStrategy()
     {
-        PlexServerIp = await storageService.GetAsync("serverIp");
-        PlexServerPort = int.Parse(await storageService.GetAsync("serverPort"));
+        PlexServerIp = await _storageService.GetAsync("serverIp");
+        PlexServerPort = int.Parse(await _storageService.GetAsync("serverPort"));
 
-        if (await storageService.ContainsKeyAsync("plex_token"))
+        if (await _storageService.ContainsKeyAsync("plex_token"))
         {
             await InitStrategyWithToken();
         }
         else
         {
-            logger.LogError("No PLEX token is settings going back to login screen");
-            await this.navigationService.NavigateToAsync("login");
+            _logger.LogError("No PLEX token is settings going back to login screen");
+            await _navigationService.NavigateToAsync("login");
         }
     }
 
     private async Task InitStrategyWithToken()
     {
-        userToken = await storageService.GetAsync("plex_token");
-        userName = await storageService.GetAsync("plexUserName");
-        IsPlexServerOwned = bool.Parse(await storageService.GetAsync("isServerOwned"));
-        if (await storageService.ContainsKeyAsync("enableIdleStatus"))
+        _userToken = await _storageService.GetAsync("plex_token");
+        _userName = await _storageService.GetAsync("plexUserName");
+        IsPlexServerOwned = bool.Parse(await _storageService.GetAsync("isServerOwned"));
+        if (await _storageService.ContainsKeyAsync("enableIdleStatus"))
         {
-            EnableIdleStatus = bool.Parse(await storageService.GetAsync("enableIdleStatus"));
+            EnableIdleStatus = bool.Parse(await _storageService.GetAsync("enableIdleStatus"));
         }
     }
 
@@ -73,43 +66,33 @@ public partial class PlexActivityPageViewModel
     {
         try
         {
-            await foreach (PlexSession session in plexActivityService.GetSessions(
-                               IsPlexServerOwned,
-                               userName,
-                               PlexServerIp,
-                               PlexServerPort,
-                               userToken)
-                          )
+            await foreach (var session in _plexActivityService.GetSessions(IsPlexServerOwned, _userName, PlexServerIp, PlexServerPort, _userToken))
             {
                 CurrentActivity = session.MediaTitle;
                 ThumbnailUrl = session.Thumbnail;
 
                 if (CurrentActivity is "Idle" && !EnableIdleStatus)
-                {
-                    discordService.StopRichPresence();
-                }
+                    _discordService.StopRichPresence();
                 else
-                {
-                    discordService.SetDiscordPresenceToPlexSession(session);
-                }
+                    _discordService.SetDiscordPresenceToPlexSession(session);
             }
         }
         catch (ApplicationException e)
         {
             if (e.Message is "Unsuccessful response from 3rd Party API")
             {
-                logger.LogError("No PLEX token is settings going back to login screen");
-                await this.navigationService.NavigateToAsync("login");
+                _logger.LogError("No PLEX token in settings going back to login screen");
+                await _navigationService.NavigateToAsync("login");
             }
             else
             {
-                logger.LogError(e, "Could not connect to server");
+                _logger.LogError(e, "Could not connect to server");
                 IsServerUnreachable = true;
             }
         }
         catch (Exception e)
         {
-            logger.LogError(e, "Could not connect to server");
+            _logger.LogError(e, "Could not connect to server");
             IsServerUnreachable = true;
         }
     }
@@ -117,7 +100,7 @@ public partial class PlexActivityPageViewModel
     [RelayCommand]
     private async Task ChangeServer()
     {
-        plexActivityService.Disconnect();
-        await navigationService.NavigateToAsync("servers");
+        _plexActivityService.Disconnect();
+        await _navigationService.NavigateToAsync("servers");
     }
 }

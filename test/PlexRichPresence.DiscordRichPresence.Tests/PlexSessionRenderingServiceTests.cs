@@ -1,11 +1,8 @@
-using DiscordRPC;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 using PlexRichPresence.Core;
 using PlexRichPresence.DiscordRichPresence.Rendering;
-using PlexRichPresence.ViewModels.Models;
-using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Tests;
 
@@ -80,30 +77,23 @@ public class PlexSessionRenderingServiceTests
 
     [Theory]
     [MemberData(nameof(RenderingTheoryData))]
-    public void RenderPlayerState(
-        PlexSession session,
-        string? expectedState,
-        string? expectedDetail,
-        bool setEndTimeStamp,
-        TimeSpan expectedEndTimestampAfterNow
-    )
+    public void RenderPlayerState(PlexSession session, string? expectedState, string? expectedDetail, bool setEndTimeStamp, TimeSpan expectedEndTimestampAfterNow)
     {
         // Given
-        DateTime dateTime = DateTime.Now.ToUniversalTime();
-        Mock<IClock> mockClock = SharedSetup.BuildMockClock(dateTime);
+        var dateTime = DateTime.Now.ToUniversalTime();
+        var mockClock = SharedSetup.BuildMockClock(dateTime);
         var plexSessionRenderingService =
             new PlexSessionRenderingService(new PlexSessionRendererFactory(mockClock.Object),
                 new Mock<ILogger<PlexSessionRenderingService>>().Object);
 
         // When
-        RichPresence presence = plexSessionRenderingService.RenderSession(session);
+        var presence = plexSessionRenderingService.RenderSession(session);
 
         // Then
         presence.State.Should().Be(expectedState);
         presence.Details.Should().Be(expectedDetail);
+        
         if (setEndTimeStamp)
-        {
             presence.Timestamps.End.Should().Be(dateTime.Add(expectedEndTimestampAfterNow));
-        }
     }
 }

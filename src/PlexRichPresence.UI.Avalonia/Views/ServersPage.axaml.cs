@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -14,14 +13,14 @@ public partial class ServersPage : UserControl
     public ServersPage()
     {
         InitializeComponent();
-        ServersPageViewModel serversPageViewModel = this.CreateInstance<ServersPageViewModel>();
+        var serversPageViewModel = this.CreateInstance<ServersPageViewModel>();
         DataContext = serversPageViewModel;
         Dispatcher.UIThread.Post(async () =>
         {
             await serversPageViewModel.GetDataCommand.ExecuteAsync(null);
             using HttpClient client = new();
-            HttpResponseMessage response = await client.GetAsync(new Uri(serversPageViewModel.ThumbnailUrl));
-            Stream imageStream = await response.Content.ReadAsStreamAsync();
+            var response = await client.GetAsync(new Uri(serversPageViewModel.ThumbnailUrl));
+            var imageStream = await response.Content.ReadAsStreamAsync();
             var imageControl = this.FindControl<Image>("profilePicture");
             imageControl.Source = new Bitmap(imageStream);
         });

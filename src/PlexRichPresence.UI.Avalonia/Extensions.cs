@@ -1,4 +1,5 @@
 using System;
+using Avalonia;
 using Avalonia.Controls;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,7 +9,7 @@ public static class Extensions
 {
     public static IServiceProvider GetServiceProvider(this IResourceHost control)
     {
-        return (IServiceProvider)App.Current.FindResource(typeof(IServiceProvider));
+        return (IServiceProvider)Application.Current.FindResource(typeof(IServiceProvider));
     }
 
     public static T CreateInstance<T>(this IResourceHost control)

@@ -12,45 +12,37 @@ namespace PlexRichPresence.ViewModels;
 public partial class ServersPageViewModel
 {
     public ObservableCollection<AccountServer> Servers { get; set; } = new();
-    private readonly IPlexAccountClient plexAccountClient;
-    private readonly IStorageService storageService;
-    private readonly INavigationService navigationService;
-    private readonly ILogger<PlexActivityPageViewModel> logger;
+    private readonly IPlexAccountClient _plexAccountClient;
+    private readonly IStorageService _storageService;
+    private readonly INavigationService _navigationService;
+    private readonly ILogger<PlexActivityPageViewModel> _logger;
 
-    [ObservableProperty] private string username = string.Empty;
-    [ObservableProperty] private string thumbnailUrl = string.Empty;
-
-    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
-    private AccountServer? selectedServer;
+    [ObservableProperty] private string _username = string.Empty;
+    [ObservableProperty] private string _thumbnailUrl = string.Empty;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
-    private string customServerIp = string.Empty;
+    private AccountServer? _selectedServer;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
-    private string customServerPort = string.Empty;
+    private string _customServerIp = string.Empty;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
-    private bool useCustomServer;
+    private string _customServerPort = string.Empty;
 
     [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
-    private bool isCustomServerOwned;
+    private bool _useCustomServer;
 
-    public bool CanValidate => SelectedServer is not null ||
-                               (
-                                   UseCustomServer
-                                   && !string.IsNullOrEmpty(CustomServerIp)
-                                   && !string.IsNullOrEmpty(CustomServerPort)
-                               );
+    [ObservableProperty] [NotifyCanExecuteChangedFor(nameof(ValidateServerSelectionCommand))]
+    private bool _isCustomServerOwned;
 
-    public ServersPageViewModel(
-        IPlexAccountClient plexAccountClient,
-        IStorageService storageService,
-        INavigationService navigationService, ILogger<PlexActivityPageViewModel> logger)
+    public bool CanValidate => SelectedServer is not null || (UseCustomServer && !string.IsNullOrEmpty(CustomServerIp) && !string.IsNullOrEmpty(CustomServerPort));
+
+    public ServersPageViewModel(IPlexAccountClient plexAccountClient, IStorageService storageService, INavigationService navigationService, ILogger<PlexActivityPageViewModel> logger)
     {
-        this.plexAccountClient = plexAccountClient;
-        this.storageService = storageService;
-        this.navigationService = navigationService;
-        this.logger = logger;
+        _plexAccountClient = plexAccountClient;
+        _storageService = storageService;
+        _navigationService = navigationService;
+        _logger = logger;
     }
 
     [RelayCommand]
@@ -58,35 +50,32 @@ public partial class ServersPageViewModel
     {
         try
         {
-            await Task.WhenAll(
-                GetServers(),
-                GetUsernameAndThumbnail()
-            );
+            await Task.WhenAll(GetServers(), GetUsernameAndThumbnail());
         }
         catch (ApplicationException e)
         {
             if (e.Message is "Unsuccessful response from 3rd Party API")
             {
-                logger.LogError("No PLEX token is settings going back to login screen");
-                await this.navigationService.NavigateToAsync("login");
+                _logger.LogError("No PLEX token is settings going back to login screen");
+                await _navigationService.NavigateToAsync("login");
             }
         }
     }
 
     private async Task GetUsernameAndThumbnail()
     {
-        string plexToken = await this.storageService.GetAsync("plex_token");
-        PlexAccount account = await this.plexAccountClient.GetPlexAccountAsync(plexToken);
-        this.Username = account.Username;
-        this.ThumbnailUrl = account.Thumb;
+        var plexToken = await _storageService.GetAsync("plex_token");
+        var account = await _plexAccountClient.GetPlexAccountAsync(plexToken);
+        Username = account.Username;
+        ThumbnailUrl = account.Thumb;
     }
 
     private async Task GetServers()
     {
-        string plexToken = await this.storageService.GetAsync("plex_token");
-        AccountServerContainer serverContainer = await this.plexAccountClient.GetAccountServersAsync(plexToken);
+        var plexToken = await _storageService.GetAsync("plex_token");
+        var serverContainer = await _plexAccountClient.GetAccountServersAsync(plexToken);
 
-        foreach (AccountServer server in serverContainer.Servers)
+        foreach (var server in serverContainer.Servers)
         {
             Servers.Add(server);
         }
@@ -95,24 +84,25 @@ public partial class ServersPageViewModel
     [RelayCommand(AllowConcurrentExecutions = false, CanExecute = "CanValidate")]
     private async Task ValidateServerSelection()
     {
-        (string selectedServerIp, int selectedServerPort, bool isSelectedServerOwned) = GetSelectedServerInfo();
+        var (selectedServerIp, selectedServerPort, isSelectedServerOwned) = GetSelectedServerInfo();
 
-        await this.storageService.PutAsync("serverIp", selectedServerIp);
-        await this.storageService.PutAsync("serverPort", selectedServerPort.ToString());
-        await this.storageService.PutAsync("isServerOwned", isSelectedServerOwned.ToString());
+        await _storageService.PutAsync("serverIp", selectedServerIp);
+        await _storageService.PutAsync("serverPort", selectedServerPort.ToString());
+        await _storageService.PutAsync("isServerOwned", isSelectedServerOwned.ToString());
 
-        await this.navigationService.NavigateToAsync("activity");
+        await _navigationService.NavigateToAsync("activity");
     }
 
     private (string, int, bool) GetSelectedServerInfo()
     {
-        if (this.UseCustomServer)
+        if (UseCustomServer)
         {
-            return (this.CustomServerIp, int.Parse(this.CustomServerPort), this.IsCustomServerOwned);
+            return (CustomServerIp, int.Parse(CustomServerPort), IsCustomServerOwned);
         }
-        else if (this.SelectedServer is not null)
+
+        if (SelectedServer is not null)
         {
-            return (this.SelectedServer.Address, this.SelectedServer.Port, this.SelectedServer.Owned == 1);
+            return (SelectedServer.Address, SelectedServer.Port, SelectedServer.Owned == 1);
         }
 
         throw new ArgumentException("No server selected");
@@ -121,7 +111,7 @@ public partial class ServersPageViewModel
     [RelayCommand]
     private async Task LogOut()
     {
-        await this.storageService.RemoveAsync("plex_token");
-        await this.navigationService.NavigateToAsync("login");
+        await _storageService.RemoveAsync("plex_token");
+        await _navigationService.NavigateToAsync("login");
     }
 }

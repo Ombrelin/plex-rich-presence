@@ -14,20 +14,13 @@ public class FakePlexActivityService : IPlexActivityService
     public int CurrentServerPort { get; private set; }
     public string? CurrentUserToken { get; private set; }
 
-    private readonly bool isIdle;
+    private readonly bool _isIdle;
 
-    public FakePlexActivityService(bool isIdle = false)
-    {
-        this.isIdle = isIdle;
-    }
+    public FakePlexActivityService(bool isIdle = false) => _isIdle = isIdle;
 
-    public void Disconnect()
-    {
-        IsConnected = false;
-    }
+    public void Disconnect() => IsConnected = false;
 
-    public async IAsyncEnumerable<PlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort,
-        string userToken)
+    public async IAsyncEnumerable<PlexSession> GetSessions(bool isOwner, string userId, string serverIp, int serverPort, string userToken)
     {
         IsOwner = isOwner;
         CurrentUsername = userId;
@@ -37,9 +30,7 @@ public class FakePlexActivityService : IPlexActivityService
         IsConnected = true;
 
 
-        for (int index = 1; index <= 3; ++index)
-        {
-            yield return isIdle ? new PlexSession() : new PlexSession { MediaTitle = $"Test Media Title {index}" };
-        }
+        for (var index = 1; index <= 3; ++index)
+            yield return _isIdle ? new PlexSession() : new PlexSession { MediaTitle = $"Test Media Title {index}" };
     }
 }

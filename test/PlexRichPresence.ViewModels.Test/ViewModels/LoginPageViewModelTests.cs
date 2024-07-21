@@ -20,21 +20,13 @@ public class LoginPageViewModelTests
         const string fakeUserToken = "token";
         const string fakePlexUserName = "plex user name";
 
-        Mock<IPlexAccountClient> plexAccountClientMock = new Mock<IPlexAccountClient>();
-        plexAccountClientMock
-            .Setup(mock => mock.GetPlexAccountAsync(fakeLogin, fakePassword))
-            .Returns(() => Task.FromResult(new PlexAccount { AuthToken = fakeUserToken, Username = fakePlexUserName }));
+        Mock<IPlexAccountClient> plexAccountClientMock = new();
+        plexAccountClientMock.Setup(mock => mock.GetPlexAccountAsync(fakeLogin, fakePassword)).Returns(() => Task.FromResult(new PlexAccount { AuthToken = fakeUserToken, Username = fakePlexUserName }));
         var navigationService = new FakeNavigationService();
         var storageService = new FakeStorageService();
         var browserService = new FakeBrowserService();
 
-        var viewModel = new LoginPageViewModel(
-            plexAccountClientMock.Object,
-            navigationService,
-            storageService,
-            browserService,
-            new Mock<IClock>().Object
-        );
+        var viewModel = new LoginPageViewModel(plexAccountClientMock.Object, navigationService, storageService, browserService, new Mock<IClock>().Object);
 
         // When
         viewModel.Login = fakeLogin;
@@ -56,7 +48,7 @@ public class LoginPageViewModelTests
         const string fakeOauthUrl = "plex oauth url";
         const int fakeOauthPinId = 999;
         const string fakePlexUserName = "plex user name";
-        int index = 0;
+        var index = 0;
         var plexAccountClientMock = new Mock<IPlexAccountClient>();
         plexAccountClientMock
             .Setup(mock => mock.CreateOAuthPinAsync(It.IsAny<string>()))
@@ -80,7 +72,7 @@ public class LoginPageViewModelTests
         var navigationService = new FakeNavigationService();
         var storageService = new FakeStorageService();
         var browserService = new FakeBrowserService();
-        DateTime now = DateTime.Now;
+        var now = DateTime.Now;
         var clock = new FakeClock(now);
 
         var viewModel = new LoginPageViewModel(
@@ -115,13 +107,7 @@ public class LoginPageViewModelTests
     public void CanLoginWithCredentials(string login, string password, bool expected)
     {
         // Given
-        var viewModel = new LoginPageViewModel(
-            new Mock<IPlexAccountClient>().Object,
-            new Mock<INavigationService>().Object,
-            new Mock<IStorageService>().Object,
-            new Mock<IBrowserService>().Object,
-            new Mock<IClock>().Object
-        );
+        var viewModel = new LoginPageViewModel(new Mock<IPlexAccountClient>().Object, new Mock<INavigationService>().Object, new Mock<IStorageService>().Object, new Mock<IBrowserService>().Object, new Mock<IClock>().Object);
 
         // When
         viewModel.Login = login;

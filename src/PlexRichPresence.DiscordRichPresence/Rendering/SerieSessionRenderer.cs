@@ -8,7 +8,7 @@ public class SerieSessionRenderer : GenericSessionRenderer
 {
     public override RichPresence RenderSession(PlexSession session)
     {
-        (string playerState, DateTime endTimeStamp) = this.RenderPlayerState(session);
+        (var playerState, var endTimeStamp) = RenderPlayerState(session);
         return new RichPresence
         {
             Details = $"⏏ {session.MediaTitle}",

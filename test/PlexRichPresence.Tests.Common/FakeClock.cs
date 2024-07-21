@@ -5,19 +5,18 @@ namespace PlexRichPresence.Tests.Common;
 public class FakeClock : IClock
 {
     public DateTime Now { get; }
-    private TimeSpan accumulatedDelay = TimeSpan.Zero;
+    private TimeSpan _accumulatedDelay = TimeSpan.Zero;
 
-    public DateTime DateTimeAfterDelay => Now.Add(accumulatedDelay);
+    public DateTime DateTimeAfterDelay => Now.Add(_accumulatedDelay);
 
     public FakeClock(DateTime now)
     {
-        this.Now = now;
+        Now = now;
     }
-
-
+    
     public Task Delay(TimeSpan delay)
     {
-        accumulatedDelay = accumulatedDelay.Add(delay);
+        _accumulatedDelay = _accumulatedDelay.Add(delay);
         return Task.CompletedTask;
     }
 }

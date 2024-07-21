@@ -7,23 +7,23 @@ namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
 public class PlexSessionRenderingService
 {
-    private readonly PlexSessionRendererFactory rendererFactory;
-    private readonly ILogger<PlexSessionRenderingService> logger;
+    private readonly PlexSessionRendererFactory _rendererFactory;
+    private readonly ILogger<PlexSessionRenderingService> _logger;
 
     public PlexSessionRenderingService(PlexSessionRendererFactory rendererFactory,
         ILogger<PlexSessionRenderingService> logger)
     {
-        this.rendererFactory = rendererFactory;
-        this.logger = logger;
+        _rendererFactory = rendererFactory;
+        _logger = logger;
     }
 
     public RichPresence RenderSession(PlexSession session)
     {
-        RichPresence renderedSession = rendererFactory
+        var renderedSession = _rendererFactory
             .BuildRendererForSession(session)
             .RenderSession(session);
 
-        this.logger.LogInformation("Rendered Plex Session : {Session}", JsonConvert.SerializeObject(renderedSession));
+        _logger.LogInformation("Rendered Plex Session : {Session}", JsonConvert.SerializeObject(renderedSession));
 
         return renderedSession;
     }

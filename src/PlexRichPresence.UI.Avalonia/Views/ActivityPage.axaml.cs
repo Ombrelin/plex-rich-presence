@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Net.Http;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -15,7 +14,7 @@ public partial class ActivityPage : UserControl
     {
         InitializeComponent();
         var plexActivityViewModel = this.CreateInstance<PlexActivityPageViewModel>();
-        this.DataContext = plexActivityViewModel;
+        DataContext = plexActivityViewModel;
         Dispatcher.UIThread.Post(async () =>
         {
             await plexActivityViewModel.InitStrategyCommand.ExecuteAsync(null);
@@ -33,8 +32,8 @@ public partial class ActivityPage : UserControl
                     var imageControl = this.FindControl<Image>("thumbnail");
                     if (thumbnailUrl != string.Empty)
                     {
-                        HttpResponseMessage response = await client.GetAsync(new Uri(thumbnailUrl));
-                        Stream imageStream = await response.Content.ReadAsStreamAsync();
+                        var response = await client.GetAsync(new Uri(thumbnailUrl));
+                        var imageStream = await response.Content.ReadAsStreamAsync();
                         
                         imageControl.Source = new Bitmap(imageStream);
                     }

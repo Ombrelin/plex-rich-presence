@@ -28,60 +28,45 @@ public class PlexSessionWebSocketStrategyTests
         const string fakeServerIp = "111.111.111.111";
         const int fakeServerPort = 32400;
 
-        Mock<IWebSocketClientFactory> mockWebSocketClientFactory =
-            BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
-        Mock<IPlexServerClient> mockPlexServerClient =
-            BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
+        var mockWebSocketClientFactory = BuildMockWebSocketClientFactory(fakeServerIp, fakeServerPort, fakeToken);
+        var mockPlexServerClient = BuildMockPlexServerClient(fakeServerIp, fakeServerPort, fakeToken);
 
-        var strategy = new PlexSessionsWebSocketStrategy(
-            new Mock<ILogger<PlexSessionsWebSocketStrategy>>().Object,
-            mockPlexServerClient.Object,
-            mockWebSocketClientFactory.Object,
-            new PlexSessionMapper()
-        );
+        var strategy = new PlexSessionsWebSocketStrategy(new Mock<ILogger<PlexSessionsWebSocketStrategy>>().Object, mockPlexServerClient.Object, mockWebSocketClientFactory.Object, new PlexSessionMapper());
         var result = new List<PlexSession>();
+        
         const int elementsCountForTest = 3;
+        
         // When
-        await foreach (PlexSession plexSession in strategy.GetSessions("", fakeServerIp, fakeServerPort, fakeToken))
+        await foreach (var plexSession in strategy.GetSessions("", fakeServerIp, fakeServerPort, fakeToken))
         {
             result.Add(plexSession);
-
-            if (result.Count == elementsCountForTest)
-            {
-                strategy.Disconnect();
-                break;
-            }
+            if (result.Count != elementsCountForTest) 
+                continue;
+            
+            strategy.Disconnect();
+            break;
         }
 
         // Then
-        result
-            .Should()
-            .HaveCount(elementsCountForTest);
-
-        var titles = result
-            .Select(session => session.MediaTitle)
-            .ToList();
+        result.Should().HaveCount(elementsCountForTest);
+        var titles = result.Select(session => session.MediaTitle).ToList();
 
         titles.Should().Contain("Test Media 0");
         titles.Should().Contain("Test Media 1");
         titles.Should().Contain("Test Media 2");
     }
 
-    private static Mock<IPlexServerClient> BuildMockPlexServerClient(string fakeServerIp, int fakeServerPort,
-        string fakeToken)
+    private static Mock<IPlexServerClient> BuildMockPlexServerClient(string fakeServerIp, int fakeServerPort, string fakeToken)
     {
         var mockPlexServerClient = new Mock<IPlexServerClient>();
         var plexServerHost = new Uri($"http://{fakeServerIp}:{fakeServerPort}").ToString();
-        mockPlexServerClient.Setup(mock => mock.GetMediaMetadataAsync(
-            fakeToken,
-            plexServerHost,
-            It.IsAny<string>()
+        mockPlexServerClient.Setup(mock => mock.GetMediaMetadataAsync(fakeToken, plexServerHost, It.IsAny<string>()
         )).Returns<string, string, string>((_, _, mediaKey) => Task.FromResult(
             new MediaContainer
             {
                 Media = new List<Metadata>
                 {
-                    new Metadata
+                    new()
                     {
                         Title = $"Test Media {mediaKey.Split("-").Last()}"
                     }
@@ -91,28 +76,21 @@ public class PlexSessionWebSocketStrategyTests
         return mockPlexServerClient;
     }
 
-    private static Mock<IWebSocketClientFactory> BuildMockWebSocketClientFactory(string fakeServerIp,
-        int fakeServerPort, string fakeToken)
+    private static Mock<IWebSocketClientFactory> BuildMockWebSocketClientFactory(string fakeServerIp, int fakeServerPort, string fakeToken)
     {
-        IWebHostBuilder builder = WebHost.CreateDefaultBuilder()
+        var builder = WebHost.CreateDefaultBuilder()
             .UseStartup<FakeWebSocketsServer>()
             .UseEnvironment("Development");
 
         var server = new TestServer(builder);
-        WebSocketClient wsClient = server.CreateWebSocketClient();
+        var wsClient = server.CreateWebSocketClient();
 
-        Uri serverUrl = new UriBuilder(server.BaseAddress)
-        {
-            Scheme = "ws",
-            Path = "ws"
-        }.Uri;
+        var serverUrl = new UriBuilder(server.BaseAddress) { Scheme = "ws", Path = "ws" }.Uri;
 
-        Func<Uri, CancellationToken, Task<WebSocket>> clientFactory = async Task<WebSocket>(url, cancellationToken) =>
-            await wsClient.ConnectAsync(url, cancellationToken);
-
+        async Task<WebSocket> ClientFactory(Uri url, CancellationToken cancellationToken) => await wsClient.ConnectAsync(url, cancellationToken);
         var client = new WebsocketClient(
             serverUrl,
-            clientFactory
+            (Func<Uri, CancellationToken, Task<WebSocket>>) ClientFactory
         );
 
         var mockWebSocketClientFactory = new Mock<IWebSocketClientFactory>();

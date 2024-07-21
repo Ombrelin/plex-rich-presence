@@ -1,5 +1,3 @@
-using PlexRichPresence.ViewModels.Models;
-
 namespace PlexRichPresence.Core;
 
 public record PlexSession(

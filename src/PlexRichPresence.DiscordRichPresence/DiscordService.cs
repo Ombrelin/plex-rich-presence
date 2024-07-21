@@ -1,4 +1,3 @@
-using System.Text.Json;
 using DiscordRPC;
 using Microsoft.Extensions.Logging;
 using PlexRichPresence.Core;
@@ -9,22 +8,22 @@ namespace PlexRichPresence.DiscordRichPresence;
 
 public class DiscordService : IDiscordService
 {
-    private readonly ILogger<DiscordService> logger;
-    private DiscordRpcClient? discordRpcClient;
-    private readonly PlexSessionRenderingService plexSessionRenderingService;
-    private PlexSession? currentSession;
+    private readonly ILogger<DiscordService> _logger;
+    private DiscordRpcClient? _discordRpcClient;
+    private readonly PlexSessionRenderingService _plexSessionRenderingService;
+    private PlexSession? _currentSession;
 
     public DiscordService(ILogger<DiscordService> logger, PlexSessionRenderingService plexSessionRenderingService)
     {
-        this.logger = logger;
-        this.plexSessionRenderingService = plexSessionRenderingService;
-        this.discordRpcClient = CreateRpcClient();
+        _logger = logger;
+        _plexSessionRenderingService = plexSessionRenderingService;
+        _discordRpcClient = CreateRpcClient();
     }
 
     private DiscordRpcClient CreateRpcClient()
     {
         var rpcClient = new DiscordRpcClient(applicationID: "698954724019273770");
-        rpcClient.OnError += (sender, args) => this.logger.LogError(args.Message);
+        rpcClient.OnError += (_, args) => _logger.LogError(args.Message);
         rpcClient.Initialize();
 
         return rpcClient;
@@ -32,25 +31,25 @@ public class DiscordService : IDiscordService
 
     public void SetDiscordPresenceToPlexSession(PlexSession session)
     {
-        if (session == currentSession)
+        if (session == _currentSession)
         {
             return;
         }
 
-        currentSession = session;
-        RichPresence richPresence = plexSessionRenderingService.RenderSession(session);
+        _currentSession = session;
+        var richPresence = _plexSessionRenderingService.RenderSession(session);
         richPresence.Assets = new Assets
         {
             LargeImageKey = "icon"
         };
-        discordRpcClient ??= CreateRpcClient();
-        discordRpcClient.SetPresence(richPresence);
+        _discordRpcClient ??= CreateRpcClient();
+        _discordRpcClient.SetPresence(richPresence);
     }
 
     public void StopRichPresence()
     {
-        discordRpcClient?.Deinitialize();
-        discordRpcClient = null;
-        currentSession = null;
+        _discordRpcClient?.Deinitialize();
+        _discordRpcClient = null;
+        _currentSession = null;
     }
 }

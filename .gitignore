@@ -36,3 +36,6 @@ windows/jre
 .vs
 **/bin
 **/obj
+
+# Icons
+[Dd]esktop.ini

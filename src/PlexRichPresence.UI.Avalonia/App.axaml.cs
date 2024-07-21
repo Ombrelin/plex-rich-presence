@@ -31,7 +31,7 @@ namespace PlexRichPresence.UI.Avalonia;
 
 public class App : Application
 {
-    private readonly IServiceCollection services = new ServiceCollection()
+    private readonly IServiceCollection _services = new ServiceCollection()
         .AddSingleton(new ClientOptions
         {
             Product = "Discord_Plex_Rich_Presence",
@@ -47,7 +47,7 @@ public class App : Application
         .AddTransient<IPlexFactory, PlexFactory>()
         .AddTransient<IPlexRequestsHttpClient, PlexRequestsHttpClient>()
         .AddSingleton<IStorageService>(
-            new StorageService(STORAGE_FOLDER))
+            new StorageService(StorageFolder))
         .AddSingleton<LoginPageViewModel>()
         .AddSingleton<ServersPageViewModel>()
         .AddSingleton<PlexActivityPageViewModel>()
@@ -61,10 +61,10 @@ public class App : Application
         .AddSingleton<PlexSessionMapper>()
         .AddLogging(loggingBuilder => { loggingBuilder.AddSerilog(); });
 
-    private static readonly string STORAGE_FOLDER =
+    private static readonly string StorageFolder =
         $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.plexrichpresence";
 
-    private ServiceProvider? serviceProvider;
+    private ServiceProvider? _serviceProvider;
 
     public override void Initialize()
     {
@@ -96,7 +96,7 @@ public class App : Application
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
             .WriteTo.Console()
-            .WriteTo.File(path: $"{STORAGE_FOLDER}/logs.txt", rollingInterval: RollingInterval.Hour)
+            .WriteTo.File(path: $"{StorageFolder}/logs.txt", rollingInterval: RollingInterval.Hour)
             .CreateLogger();
     }
 
@@ -105,21 +105,21 @@ public class App : Application
         navigationService.RegisterPage("login", typeof(LoginPage));
         navigationService.RegisterPage("servers", typeof(ServersPage));
         navigationService.RegisterPage("activity", typeof(ActivityPage));
-        services.AddSingleton<INavigationService>(navigationService);
-        serviceProvider = services.BuildServiceProvider();
-        this.Resources[typeof(IServiceProvider)] = serviceProvider;
-        IStorageService storageService = serviceProvider.GetService<IStorageService>()
-                                         ?? throw new InvalidOperationException("Can't get storage service from DI");
+        _services.AddSingleton<INavigationService>(navigationService);
+        _serviceProvider = _services.BuildServiceProvider();
+        Resources[typeof(IServiceProvider)] = _serviceProvider;
+        var storageService = _serviceProvider.GetService<IStorageService>()
+                             ?? throw new InvalidOperationException("Can't get storage service from DI");
         
         Dispatcher.UIThread.Post(async () => await NavigateToFirstPage(storageService, navigationService));
     }
 
     private static void ConfigureTheme()
     {
-        FluentAvaloniaTheme faTheme = AvaloniaLocator
-                                          .Current
-                                          .GetService<FluentAvaloniaTheme>()
-                                      ?? throw new InvalidOperationException("Can't get theme from Avalonia Locator");
+        var faTheme = AvaloniaLocator
+                          .Current
+                          .GetService<FluentAvaloniaTheme>()
+                      ?? throw new InvalidOperationException("Can't get theme from Avalonia Locator");
         faTheme.PreferSystemTheme = true;
         faTheme.CustomAccentColor = Color.FromRgb(0, 102, 204);
     }
@@ -173,15 +173,15 @@ public class App : Application
     private void Exit_Onclick(object? _, EventArgs e)
     {
         if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop) return;
-        if (serviceProvider is not null)
+        if (_serviceProvider is not null)
         {
-            IStorageService storageService = serviceProvider.GetService<IStorageService>()
-                                             ?? throw new InvalidOperationException(
-                                                 "Can't get storage service from DI");
-            PlexActivityPageViewModel viewModel = serviceProvider.GetService<PlexActivityPageViewModel>()
-                                                  ?? throw new InvalidOperationException(
-                                                      "Can't get storage service from DI");
-            var logger = serviceProvider.GetService<ILogger<App>>()
+            var storageService = _serviceProvider.GetService<IStorageService>()
+                                 ?? throw new InvalidOperationException(
+                                     "Can't get storage service from DI");
+            var viewModel = _serviceProvider.GetService<PlexActivityPageViewModel>()
+                            ?? throw new InvalidOperationException(
+                                "Can't get storage service from DI");
+            var logger = _serviceProvider.GetService<ILogger<App>>()
                          ?? throw new InvalidOperationException(
                              "Can't get logger from DI");
             var enabledIdleStatusStringValue = viewModel.EnableIdleStatus.ToString();

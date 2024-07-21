@@ -8,22 +8,22 @@ namespace PlexRichPresence.UI.Avalonia.Services;
 
 public class NavigationService : INavigationService
 {
-    private readonly IDictionary<string, Type> registeredPage = new Dictionary<string, Type>();
-    private readonly Frame navigationFrame;
+    private readonly IDictionary<string, Type> _registeredPage = new Dictionary<string, Type>();
+    private readonly Frame _navigationFrame;
 
     public NavigationService(Frame navigationFrame)
     {
-        this.navigationFrame = navigationFrame;
+        _navigationFrame = navigationFrame;
     }
 
     public void RegisterPage(string pageName, Type pageType)
     {
-        this.registeredPage[pageName] = pageType;
+        _registeredPage[pageName] = pageType;
     }
 
     public Task NavigateToAsync(string page)
     {
-        this.navigationFrame.Navigate(this.registeredPage[page]);
+        _navigationFrame.Navigate(_registeredPage[page]);
         return Task.CompletedTask;
     }
 }

@@ -1,4 +1,4 @@
-namespace PlexRichPresence.ViewModels.Models;
+namespace PlexRichPresence.Core;
 
 public enum PlexPlayerState
 {

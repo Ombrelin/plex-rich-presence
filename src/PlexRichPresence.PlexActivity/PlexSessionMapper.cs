@@ -1,7 +1,6 @@
 using Plex.ServerApi.PlexModels.Media;
 using Plex.ServerApi.PlexModels.Server.Sessions;
 using PlexRichPresence.Core;
-using PlexRichPresence.ViewModels.Models;
 
 namespace PlexRichPresence.PlexActivity;
 
