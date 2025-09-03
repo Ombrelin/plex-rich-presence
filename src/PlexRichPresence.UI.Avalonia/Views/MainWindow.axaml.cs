@@ -14,7 +14,7 @@ namespace PlexRichPresence.UI.Avalonia.Views
 #endif
         }
 
-        private void Window_OnClosing(object? sender, CancelEventArgs e)
+        private void Window_OnClosing(object? sender, WindowClosingEventArgs e)
         {
             this.Hide();
             e.Cancel = true;

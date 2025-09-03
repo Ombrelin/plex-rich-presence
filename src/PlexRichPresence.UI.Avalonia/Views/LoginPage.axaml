@@ -8,7 +8,7 @@
              x:DataType="viewModels:LoginPageViewModel">
     <Grid Margin="16">
         <Grid.RowDefinitions>*,.5*,*,*,*,*</Grid.RowDefinitions>
-        <Label FontSize="24" HorizontalContentAlignment="Center" HorizontalAlignment="Center">Login to PLEX</Label>
+        <Label Height="64" FontSize="24" HorizontalContentAlignment="Center" HorizontalAlignment="Center">Login to PLEX</Label>
         <StackPanel Grid.Row="1">
             <Image Width="150" Height="150" VerticalAlignment="Center" Source="/Assets/plex-rich-presence.png" />
         </StackPanel>

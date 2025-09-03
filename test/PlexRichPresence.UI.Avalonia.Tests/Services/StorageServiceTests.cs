@@ -21,6 +21,19 @@ public class StorageServiceTests
     public async Task Init_MigrateJsonFileDataToAkavache()
     {
         // Given
+        await File.WriteAllTextAsync(
+            "storedData.json",
+            """
+            {
+              "plexUserName": "test",
+              "plex_token": "test",
+              "serverIp": "test",
+              "serverPort": "test",
+              "isServerOwned": "True",
+              "enableIdleStatus": "True"
+            }
+            """
+        );
         var service = new StorageService(Directory.GetCurrentDirectory());
         
         // When
