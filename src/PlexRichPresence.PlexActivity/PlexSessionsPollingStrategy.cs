@@ -45,18 +45,23 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 continue;
             }
 
-            SessionMetadata? currentUserSession = sessions
+            var currentUserSessions = sessions
                 .Metadata
-                .FirstOrDefault(session => session.User.Title == username);
+                .Where(s => s.User.Title == username).Select(s => plexSessionMapper.Map(s, plexServerHost, userToken));
 
-            if (currentUserSession is null)
+            if (!currentUserSessions.Any())
             {
                 this.logger.LogInformation("No session : Idling");
                 yield return new PlexSession();
                 continue;
             }
 
-            var plexSession = plexSessionMapper.Map(currentUserSession, plexServerHost, userToken);
+            var plexSession = currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Playing) ??
+                              currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Buffering) ??
+                              currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Paused) ??
+                              currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Idle) ??
+                              new PlexSession(); // This shouldn't *really* happen since we check before, but I don't like the nullable warning so its here
+
             this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
             yield return plexSession;
         }

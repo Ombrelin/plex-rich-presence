@@ -39,10 +39,6 @@ public class DiscordService : IDiscordService
 
         currentSession = session;
         RichPresence richPresence = plexSessionRenderingService.RenderSession(session);
-        richPresence.Assets = new Assets
-        {
-            LargeImageKey = "icon"
-        };
         discordRpcClient ??= CreateRpcClient();
         discordRpcClient.SetPresence(richPresence);
     }

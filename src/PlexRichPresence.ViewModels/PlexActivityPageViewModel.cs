@@ -6,8 +6,7 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.ViewModels;
 
-[INotifyPropertyChanged]
-public partial class PlexActivityPageViewModel
+public partial class PlexActivityPageViewModel : ObservableObject
 {
     private readonly IPlexActivityService plexActivityService;
     private readonly IStorageService storageService;
