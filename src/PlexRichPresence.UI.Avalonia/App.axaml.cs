@@ -113,17 +113,7 @@ public class App : Application
         
         Dispatcher.UIThread.Post(async () => await NavigateToFirstPage(storageService, navigationService));
     }
-
-    //private static void ConfigureTheme()
-    //{
-    //    FluentAvaloniaTheme faTheme = AvaloniaLocator
-    //                                      .Current
-    //                                      .GetService<FluentAvaloniaTheme>()
-    //                                  ?? throw new InvalidOperationException("Can't get theme from Avalonia Locator");
-    //    faTheme.PreferSystemTheme = true;
-    //    faTheme.CustomAccentColor = Color.FromRgb(0, 102, 204);
-    //}
-
+    
     private void MinimizeIfNeeded()
     {
         string[] commandLineArgs = Environment.GetCommandLineArgs();
