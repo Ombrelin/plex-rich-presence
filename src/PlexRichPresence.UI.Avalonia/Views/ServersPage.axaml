@@ -25,7 +25,7 @@
             <ComboBox
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                Items="{CompiledBinding Servers}"
+                ItemsSource="{CompiledBinding Servers}"
                 SelectedItem="{CompiledBinding SelectedServer}">
                 <ComboBox.ItemTemplate>
                     <DataTemplate x:DataType="plex-account:AccountServer">

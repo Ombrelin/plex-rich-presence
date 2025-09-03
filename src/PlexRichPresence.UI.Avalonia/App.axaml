@@ -7,7 +7,6 @@
             <Setter Property="Width" Value="200" />
             <Setter Property="Height" Value="32" />
         </Style>
-        <FluentTheme Mode="Dark" />
         <sty:FluentAvaloniaTheme />
     </Application.Styles>
 
