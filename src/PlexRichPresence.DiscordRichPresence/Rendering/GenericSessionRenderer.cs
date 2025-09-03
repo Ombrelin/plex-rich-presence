@@ -7,11 +7,11 @@ namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
 public class GenericSessionRenderer : IPlexSessionRenderer
 {
-    private readonly IClock Clock;
+    private readonly IClock clock;
 
     public GenericSessionRenderer(IClock clock)
     {
-        Clock = clock;
+        this.clock = clock;
     }
 
     public virtual RichPresence RenderSession(PlexSession session)
@@ -35,10 +35,10 @@ public class GenericSessionRenderer : IPlexSessionRenderer
     {
         return session.PlayerState switch
         {
-            PlexPlayerState.Buffering => ("⟲", Clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), Clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
-            PlexPlayerState.Paused => ("⏸", Clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), Clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
+            PlexPlayerState.Buffering => ("⟲", clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
+            PlexPlayerState.Paused => ("⏸", clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
             PlexPlayerState.Playing => ("▶",
-                Clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), Clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
+                clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
             _ => throw new ArgumentOutOfRangeException()
         };
     }

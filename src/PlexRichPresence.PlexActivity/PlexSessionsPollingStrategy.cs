@@ -3,6 +3,7 @@ using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Server.Sessions;
 using PlexRichPresence.Core;
 using PlexRichPresence.ViewModels.Services;
+using PlexRichPresence.ViewModels.Models;
 
 namespace PlexRichPresence.PlexActivity;
 
@@ -49,22 +50,26 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
                 .Metadata
                 .Where(s => s.User.Title == username).Select(s => plexSessionMapper.Map(s, plexServerHost, userToken));
 
-            if (!currentUserSessions.Any())
+            PlexSession? plexSession = SelectActiveSessionFromUserSessions(currentUserSessions);
+
+            if (plexSession == null)
             {
                 this.logger.LogInformation("No session : Idling");
                 yield return new PlexSession();
                 continue;
             }
 
-            var plexSession = currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Playing) ??
-                              currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Buffering) ??
-                              currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Paused) ??
-                              currentUserSessions.FirstOrDefault(s => s.PlayerState == ViewModels.Models.PlexPlayerState.Idle) ??
-                              new PlexSession(); // This shouldn't *really* happen since we check before, but I don't like the nullable warning so its here
-
             this.logger.LogInformation("Found session {Session}", plexSession.MediaParentTitle);
             yield return plexSession;
         }
+    }
+
+    private static PlexSession? SelectActiveSessionFromUserSessions(IEnumerable<PlexSession> currentUserSessions)
+    {
+        return currentUserSessions.FirstOrDefault(s => s.PlayerState == PlexPlayerState.Playing) ??
+               currentUserSessions.FirstOrDefault(s => s.PlayerState == PlexPlayerState.Buffering) ??
+               currentUserSessions.FirstOrDefault(s => s.PlayerState == PlexPlayerState.Paused) ??
+               currentUserSessions.FirstOrDefault(s => s.PlayerState == PlexPlayerState.Idle);
     }
 
     public void Disconnect()
