@@ -5,42 +5,49 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
-public class GenericSessionRenderer : IPlexSessionRenderer
+public class GenericSessionRenderer(IClock clock) : IPlexSessionRenderer
 {
-    private readonly IClock clock;
-
-    public GenericSessionRenderer(IClock clock)
-    {
-        this.clock = clock;
-    }
-
     public virtual RichPresence RenderSession(PlexSession session)
     {
-        (_, DateTime startTimeStamp, DateTime endTimeStamps) = RenderPlayerState(session);
-        return new RichPresence
+        var presence = new RichPresence
         {
             Type = ActivityType.Watching,
             StatusDisplay = StatusDisplayType.Name,
             Details = session.MediaGrandParentTitle + " - " + session.MediaParentTitle,
-            State = session.MediaTitle,
-            Timestamps = new Timestamps
-            {
-                Start = startTimeStamp,
-                End = endTimeStamps
-            }
+            State = session.MediaTitle
         };
+
+        RenderPlayerState(session, presence);
+
+        return presence;
     }
 
-    protected (string playerState, DateTime startTimeStamp, DateTime endTimeStamp) RenderPlayerState(PlexSession session)
+    protected void RenderPlayerState(PlexSession session, RichPresence presence)
     {
-        return session.PlayerState switch
+        switch (session.PlayerState)
         {
-            PlexPlayerState.Buffering => ("⟲", clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
-            PlexPlayerState.Paused => ("⏸", clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
-            PlexPlayerState.Playing => ("▶",
-                clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(), clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
-            _ => throw new ArgumentOutOfRangeException()
-        };
+            case PlexPlayerState.Buffering:
+                presence.Assets.SmallImageKey = "https://drop.arimodu.dev:8443/uploads/sand-clock.png";
+                break;
+            case PlexPlayerState.Paused:
+                presence.Assets.SmallImageKey = "https://drop.arimodu.dev:8443/uploads/pause-circle.png";
+                break;
+
+            case PlexPlayerState.Playing:
+                presence.Timestamps = new Timestamps
+                {
+                    Start = clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(),
+                    End = clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()
+                };
+                break;
+
+            case PlexPlayerState.Idle:
+                presence.Assets.SmallImageKey = "https://drop.arimodu.dev:8443/uploads/sleep-mode.png";
+                break;
+
+            default:
+                break;
+        }
     }
 
     private static long ComputeSessionRemainingTime(PlexSession session) =>

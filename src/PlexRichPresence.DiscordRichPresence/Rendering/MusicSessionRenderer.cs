@@ -4,11 +4,10 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
-public class MusicSessionRenderer : GenericSessionRenderer
+public class MusicSessionRenderer(IClock clock) : GenericSessionRenderer(clock)
 {
     public override RichPresence RenderSession(PlexSession session)
     {
-        (string playerState, DateTime startTimeStamp, DateTime endTimeStamp) = RenderPlayerState(session);
         var presence = new RichPresence
         {
             Type = ActivityType.Listening,
@@ -21,32 +20,8 @@ public class MusicSessionRenderer : GenericSessionRenderer
             }
         };
 
-        switch (session.PlayerState)
-        {
-            case ViewModels.Models.PlexPlayerState.Buffering:
-            case ViewModels.Models.PlexPlayerState.Paused:
-                // Add small image icons here for paused / loading
-                break;
-
-            case ViewModels.Models.PlexPlayerState.Playing:
-                presence.Timestamps = new Timestamps
-                {
-                    Start = startTimeStamp,
-                    End = endTimeStamp
-                };
-                break;
-
-            case ViewModels.Models.PlexPlayerState.Idle:
-                break;
-
-            default:
-                break;
-        }
+        RenderPlayerState(session, presence);
 
         return presence;
-    }
-
-    public MusicSessionRenderer(IClock clock) : base(clock)
-    {
     }
 }
