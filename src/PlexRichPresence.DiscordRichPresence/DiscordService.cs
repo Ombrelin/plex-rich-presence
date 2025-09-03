@@ -13,6 +13,8 @@ public class DiscordService : IDiscordService
     private DiscordRpcClient? discordRpcClient;
     private readonly PlexSessionRenderingService plexSessionRenderingService;
     private PlexSession? currentSession;
+    private CancellationTokenSource stopTokenSource = new();
+    private bool stopFlag = false;
 
     public DiscordService(ILogger<DiscordService> logger, PlexSessionRenderingService plexSessionRenderingService)
     {
@@ -37,6 +39,8 @@ public class DiscordService : IDiscordService
             return;
         }
 
+        if (stopFlag) stopTokenSource.Cancel();
+
         currentSession = session;
         RichPresence richPresence = plexSessionRenderingService.RenderSession(session);
         discordRpcClient ??= CreateRpcClient();
@@ -45,8 +49,21 @@ public class DiscordService : IDiscordService
 
     public void StopRichPresence()
     {
-        discordRpcClient?.Deinitialize();
-        discordRpcClient = null;
-        currentSession = null;
+        if (stopFlag) return; // If we are already stopping, dont try again (race conditions, yay!)
+        stopFlag = true;
+
+        // Tbh this is kinda ugly... But I dont think there is a better way since the actual session in plex closes for like 500ms between tracks
+        Task.Delay(10_000, stopTokenSource.Token).ContinueWith(t =>
+        {
+            if (t.IsCompletedSuccessfully)
+            {
+                discordRpcClient?.Deinitialize();
+                discordRpcClient = null;
+                currentSession = null;
+            }
+            stopTokenSource.Dispose();
+            stopTokenSource = new();
+            stopFlag = false;
+        });
     }
 }
