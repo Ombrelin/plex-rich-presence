@@ -10,6 +10,10 @@ public class IdleSessionRenderer : IPlexSessionRenderer
         return new RichPresence
         {
             State = "Idle",
+            Assets = new Assets
+            {
+                SmallImageKey = "https://drop.arimodu.dev:8443/uploads/sleep-mode.png"
+            }
         };
     }
 }

@@ -14,7 +14,8 @@ public class GenericSessionRenderer(IClock clock) : IPlexSessionRenderer
             Type = ActivityType.Watching,
             StatusDisplay = StatusDisplayType.Name,
             Details = session.MediaGrandParentTitle + " - " + session.MediaParentTitle,
-            State = session.MediaTitle
+            State = session.MediaTitle,
+            Assets = new Assets()
         };
 
         RenderPlayerState(session, presence);
