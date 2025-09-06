@@ -1,0 +1,39 @@
+<Project>
+    <PropertyGroup>
+        <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    <ItemGroup>
+        <PackageVersion Include="DiscordRichPresence" Version="1.6.1.70"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.3"/>
+        <PackageVersion Include="System.Linq.Async" Version="6.0.3"/>
+        <PackageVersion Include="Websocket.Client" Version="4.6.1"/>
+        <PackageVersion Include="Avalonia" Version="11.3.5"/>
+        <PackageVersion Include="Avalonia.Desktop" Version="11.3.5"/>
+        <PackageVersion Include="Avalonia.Diagnostics" Version="11.3.5"/>
+        <PackageVersion Include="FluentAvaloniaUI" Version="2.4.0"/>
+        <PackageVersion Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Console" Version="8.0.1"/>
+        <PackageVersion Include="Projektanker.Icons.Avalonia" Version="9.6.2"/>
+        <PackageVersion Include="Projektanker.Icons.Avalonia.FontAwesome" Version="9.6.2"/>
+        <PackageVersion Include="Serilog.Extensions.Logging" Version="8.0.0"/>
+        <PackageVersion Include="Serilog.Sinks.Console" Version="6.0.0"/>
+        <PackageVersion Include="Serilog.Sinks.File" Version="6.0.0"/>
+        <PackageVersion Include="Microsoft.Extensions.Http" Version="8.0.1"/>
+        <PackageVersion Include="Microsoft.Extensions.Logging.Debug" Version="8.0.1"/>
+        <PackageVersion Include="akavache" Version="8.1.1"/>
+        <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageVersion Include="Plex.Api" Version="4.1.2"/>
+
+        <!-- Test dependencies -->
+        <PackageVersion Include="FluentAssertions" Version="8.6.0"/>
+        <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
+        <PackageVersion Include="Moq" Version="4.20.72"/>
+        <PackageVersion Include="xunit" Version="2.9.3"/>
+        <PackageVersion Include="xunit.runner.visualstudio" Version="2.9.3"/>
+        <PackageVersion Include="coverlet.collector" Version="6.0.4"/>
+        <PackageVersion Include="Microsoft.AspNetCore.TestHost" Version="8.0.19 "/>
+    </ItemGroup>
+</Project>
