@@ -85,7 +85,7 @@ public partial class PlexActivityPageViewModel : ObservableObject
 
                 if (CurrentActivity is "Idle" && !EnableIdleStatus)
                 {
-                    await discordService.StopRichPresence();
+                    discordService.StopRichPresence();
                 }
                 else
                 {
