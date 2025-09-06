@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using FluentAvalonia.UI.Controls;
 using PlexRichPresence.ViewModels.Services;
 

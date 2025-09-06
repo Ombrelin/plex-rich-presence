@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.UI.Avalonia.Services;

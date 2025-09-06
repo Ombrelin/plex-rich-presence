@@ -1,4 +1,3 @@
-using System;
 using FluentAssertions;
 using Plex.ServerApi.PlexModels.Media;
 using Plex.ServerApi.PlexModels.Server.Sessions;

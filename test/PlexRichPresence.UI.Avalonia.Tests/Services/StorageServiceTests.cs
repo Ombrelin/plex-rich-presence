@@ -1,9 +1,6 @@
-using System.IO;
 using System.Reactive.Linq;
-using System.Threading.Tasks;
 using Akavache;
 using FluentAssertions;
-using Newtonsoft.Json.Linq;
 using PlexRichPresence.UI.Avalonia.Services;
 using Xunit;
 

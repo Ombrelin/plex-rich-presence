@@ -1,4 +1,3 @@
-using System.Text.Json;
 using DiscordRPC;
 using Microsoft.Extensions.Logging;
 using PlexRichPresence.Core;

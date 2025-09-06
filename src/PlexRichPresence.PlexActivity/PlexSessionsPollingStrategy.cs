@@ -2,8 +2,8 @@ using Microsoft.Extensions.Logging;
 using Plex.ServerApi.Clients.Interfaces;
 using Plex.ServerApi.PlexModels.Server.Sessions;
 using PlexRichPresence.Core;
-using PlexRichPresence.ViewModels.Services;
 using PlexRichPresence.ViewModels.Models;
+using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.PlexActivity;
 

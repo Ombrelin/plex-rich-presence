@@ -1,6 +1,5 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.UI.Avalonia.Services;
