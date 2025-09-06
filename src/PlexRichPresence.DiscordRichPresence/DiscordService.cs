@@ -47,7 +47,7 @@ public class DiscordService : IDiscordService
         discordRpcClient.SetPresence(richPresence);
     }
 
-    public async Task StopRichPresence()
+    public async void StopRichPresence()
     {
         if (stopFlag) return; // If we are already stopping, dont try again (race conditions, yay!)
         stopFlag = true;
@@ -61,6 +61,7 @@ public class DiscordService : IDiscordService
             discordRpcClient = null;
             currentSession = null;
         }
+        catch (TaskCanceledException) { } // Throws and crashes if this is not here
         finally
         {
             stopTokenSource.Dispose();

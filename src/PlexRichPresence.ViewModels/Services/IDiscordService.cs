@@ -5,5 +5,5 @@ namespace PlexRichPresence.ViewModels.Services;
 public interface IDiscordService
 {
     void SetDiscordPresenceToPlexSession(PlexSession session);
-    Task StopRichPresence();
+    void StopRichPresence();
 }
