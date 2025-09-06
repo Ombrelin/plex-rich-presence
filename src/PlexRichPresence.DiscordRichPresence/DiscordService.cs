@@ -47,23 +47,25 @@ public class DiscordService : IDiscordService
         discordRpcClient.SetPresence(richPresence);
     }
 
-    public void StopRichPresence()
+    public async Task StopRichPresence()
     {
         if (stopFlag) return; // If we are already stopping, dont try again (race conditions, yay!)
         stopFlag = true;
 
         // Tbh this is kinda ugly... But I dont think there is a better way since the actual session in plex closes for like 500ms between tracks
-        Task.Delay(10_000, stopTokenSource.Token).ContinueWith(t =>
+        try
         {
-            if (t.IsCompletedSuccessfully)
-            {
-                discordRpcClient?.Deinitialize();
-                discordRpcClient = null;
-                currentSession = null;
-            }
+            await Task.Delay(10_000, stopTokenSource.Token);
+
+            discordRpcClient?.Deinitialize();
+            discordRpcClient = null;
+            currentSession = null;
+        }
+        finally
+        {
             stopTokenSource.Dispose();
             stopTokenSource = new();
             stopFlag = false;
-        });
+        }
     }
 }
