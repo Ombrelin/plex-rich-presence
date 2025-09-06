@@ -44,7 +44,7 @@ jobs:
           export PATH="$PATH:/github/home/.dotnet/tools"
           dotnet deb -c Release -f net6.0 -o dist/linux-x64
       - name: Save deb package as artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: plex-rich-presence-deb
           path: src/PlexRichPresence.UI.Avalonia/dist/linux-x64/
@@ -61,7 +61,7 @@ jobs:
       - name: Compile Installer
         run: iscc installers/windows/installer.iss /dBuildNumber=${{github.run_number}} /dMyAppURL=https://github.com/${{github.repository}}
       - name: Save Installer as Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: plex-rich-presence-setup
           path: C:\temp\plex-rich-presence\plex-rich-presence-setup.exe
