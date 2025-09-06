@@ -11,69 +11,281 @@ namespace PlexRichPresence.DiscordRichPresence.Tests;
 
 public class PlexSessionRenderingServiceTests
 {
-    public static TheoryData<PlexSession, string?, string?, bool, TimeSpan>
+    public static TheoryData<PlexSession, ActivityType, StatusDisplayType, string?, string?, bool, string?>
         RenderingTheoryData =>
         new()
         {
+            // Movie
             {
                 new PlexSession
                 {
-                    MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Buffering
+                    MediaTitle = "Test Movie",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Movie, 
+                    PlayerState = PlexPlayerState.Buffering,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
                 },
-                "⟲\x2800", "Test Movie", true, TimeSpan.Zero
+                ActivityType.Watching,
+                StatusDisplayType.Details,
+                null, // Status
+                "Test Movie", // Details
+                false, // Expect Timestamp
+                "sand-clock"
             },
             {
                 new PlexSession
                 {
-                    MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Paused
+                    MediaTitle = "Test Movie",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Movie,
+                    PlayerState = PlexPlayerState.Paused,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
                 },
-                "⏸\x2800", "Test Movie", true, TimeSpan.Zero
+                ActivityType.Watching,
+                StatusDisplayType.Details,
+                null, // Status
+                "Test Movie", // Details
+                false, // Expect Timestamp
+                "pause-circle"
             },
             {
                 new PlexSession
                 {
-                    MediaTitle = "Test Movie", MediaType = PlexMediaType.Movie, PlayerState = PlexPlayerState.Playing,
-                    Duration = 20_000, ViewOffset = 10_000
+                    MediaTitle = "Test Movie",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Movie,
+                    PlayerState = PlexPlayerState.Playing,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
                 },
-                "▶\x2800", "Test Movie", true, TimeSpan.FromSeconds(10)
+                ActivityType.Watching,
+                StatusDisplayType.Details,
+                null, // Status
+                "Test Movie", // Details
+                true, // Expect Timestamp
+                null
+            },
+
+            // Unknown
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Unknown",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = null,
+                    MediaType = PlexMediaType.Unknown,
+                    PlayerState = PlexPlayerState.Buffering,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Watching,
+                StatusDisplayType.Name,
+                "Test Unknown", // Status
+                "Test Grand Parent Title - Test Parent Title", // Details
+                false, // Expect Timestamp
+                "sand-clock"
             },
             {
                 new PlexSession
                 {
-                    MediaTitle = "Test Title", MediaParentTitle = "Test Parent Title",
-                    MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Unknown,
-                    PlayerState = PlexPlayerState.Paused
+                    MediaTitle = "Test Unknown",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = null,
+                    MediaType = PlexMediaType.Unknown,
+                    PlayerState = PlexPlayerState.Paused,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
                 },
-                "Test Title", "Test Grand Parent Title - Test Parent Title", true, TimeSpan.Zero
+                ActivityType.Watching,
+                StatusDisplayType.Name,
+                "Test Unknown", // Status
+                "Test Grand Parent Title - Test Parent Title", // Details
+                false, // Expect Timestamp
+                "pause-circle"
             },
             {
                 new PlexSession
                 {
-                    MediaTitle = "Test Title", MediaParentTitle = "Test Parent Title",
-                    MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Track,
-                    PlayerState = PlexPlayerState.Paused
+                    MediaTitle = "Test Unknown",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = null,
+                    MediaType = PlexMediaType.Unknown,
+                    PlayerState = PlexPlayerState.Playing,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
                 },
-                "⏸ Test Grand Parent Title", "♫ Test Title", true, TimeSpan.Zero
+                ActivityType.Watching,
+                StatusDisplayType.Name,
+                "Test Unknown", // Status
+                "Test Grand Parent Title - Test Parent Title", // Details
+                true, // Expect Timestamp
+                null
+            },
+            
+            // Track
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Track",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Track,
+                    PlayerState = PlexPlayerState.Buffering,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Listening,
+                StatusDisplayType.State,
+                "Test Grand Parent Title", // Status
+                "Test Track", // Details
+                false, // Expect Timestamp
+                "sand-clock"
             },
             {
                 new PlexSession
                 {
-                    MediaTitle = "Test Title", MediaParentTitle = "Test Parent Title",
-                    MediaGrandParentTitle = "Test Grand Parent Title", MediaType = PlexMediaType.Episode,
-                    PlayerState = PlexPlayerState.Paused
+                    MediaTitle = "Test Track",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Track,
+                    PlayerState = PlexPlayerState.Paused,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
                 },
-                "⏸ Test Grand Parent Title", "⏏ Test Title", true, TimeSpan.Zero
+                ActivityType.Listening,
+                StatusDisplayType.State,
+                "Test Grand Parent Title", // Status
+                "Test Track", // Details
+                false, // Expect Timestamp
+                "pause-circle"
             },
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Track",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Track,
+                    PlayerState = PlexPlayerState.Playing,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Listening,
+                StatusDisplayType.State,
+                "Test Grand Parent Title", // Status
+                "Test Track", // Details
+                true, // Expect Timestamp
+                null
+            },
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Track",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Track,
+                    PlayerState = PlexPlayerState.Playing,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Listening,
+                StatusDisplayType.State,
+                "Test Grand Parent Title", // Status
+                "Test Track", // Details
+                true, // Expect Timestamp
+                null
+            },
+            // Episode
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Episode",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Episode,
+                    PlayerState = PlexPlayerState.Buffering,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Watching,
+                StatusDisplayType.Details,
+                "Test Grand Parent Title", // Status
+                "Test Episode", // Details
+                false, // Expect Timestamp
+                "sand-clock"
+            },
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Episode",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Episode,
+                    PlayerState = PlexPlayerState.Paused,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Watching,
+                StatusDisplayType.Details,
+                "Test Grand Parent Title", // Status
+                "Test Episode", // Details
+                false, // Expect Timestamp
+                "pause-circle"
+            },
+            {
+                new PlexSession
+                {
+                    MediaTitle = "Test Episode",
+                    MediaParentTitle = "Test Parent Title",
+                    MediaGrandParentTitle = "Test Grand Parent Title",
+                    Thumbnail = "Thumbnail URL",
+                    MediaType = PlexMediaType.Episode,
+                    PlayerState = PlexPlayerState.Playing,
+                    Duration = 20_000,
+                    ViewOffset = 10_000,
+                },
+                ActivityType.Watching,
+                StatusDisplayType.Details,
+                "Test Grand Parent Title", // Status
+                "Test Episode", // Details
+                true, // Expect Timestamp
+                null
+            },
+
+            // Idle
             {
                 new PlexSession
                 {
                     MediaTitle = "Idle",
                     MediaParentTitle = string.Empty,
                     MediaGrandParentTitle = string.Empty,
+                    Thumbnail = null,
                     MediaType = PlexMediaType.Idle,
                     PlayerState = PlexPlayerState.Idle
                 },
-                "Idle", null, false, TimeSpan.Zero
+                ActivityType.Playing,
+                StatusDisplayType.Name,
+                "Idle", // Status
+                null, // Details
+                false, // Expect Timestamp
+                "sleep-mode"
             }
         };
 
@@ -82,10 +294,12 @@ public class PlexSessionRenderingServiceTests
     [MemberData(nameof(RenderingTheoryData))]
     public void RenderPlayerState(
         PlexSession session,
+        ActivityType expectedActivityType,
+        StatusDisplayType expectedStatusType,
         string? expectedState,
         string? expectedDetail,
-        bool setEndTimeStamp,
-        TimeSpan expectedEndTimestampAfterNow
+        bool expectTimestampPresent,
+        string? playerStatusAsset
     )
     {
         // Given
@@ -99,11 +313,17 @@ public class PlexSessionRenderingServiceTests
         RichPresence presence = plexSessionRenderingService.RenderSession(session);
 
         // Then
+        presence.Type.Should().Be(expectedActivityType);
+        presence.StatusDisplay.Should().Be(expectedStatusType);
         presence.State.Should().Be(expectedState);
         presence.Details.Should().Be(expectedDetail);
-        if (setEndTimeStamp)
+        if (expectTimestampPresent)
         {
-            presence.Timestamps.End.Should().Be(dateTime.Add(expectedEndTimestampAfterNow));
+            presence.Timestamps.Start.Should().Be(dateTime.AddSeconds(session.ViewOffset / 1000 * -1));
+            presence.Timestamps.End.Should().Be(dateTime.AddSeconds((session.Duration - session.ViewOffset) / 1000));
         }
+
+        presence.Assets.SmallImageKey.Should().Be(playerStatusAsset);
+        presence.Assets.LargeImageKey.Should().Be(session.Thumbnail);
     }
 }

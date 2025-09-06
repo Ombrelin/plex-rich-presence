@@ -5,41 +5,45 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
-public class GenericSessionRenderer : IPlexSessionRenderer
+public class GenericSessionRenderer(IClock clock) : IPlexSessionRenderer
 {
-    private readonly IClock clock;
-
-    public GenericSessionRenderer(IClock clock)
-    {
-        this.clock = clock;
-    }
-
     public virtual RichPresence RenderSession(PlexSession session)
     {
-        (_, DateTime endTimeStamps) = RenderPlayerState(session);
+        DiscordPlayerState playerState = RenderPlayerState(session);
+        
         return new RichPresence
         {
+            Type = ActivityType.Watching,
+            StatusDisplay = StatusDisplayType.Name,
             Details = session.MediaGrandParentTitle + " - " + session.MediaParentTitle,
             State = session.MediaTitle,
-            Timestamps = new Timestamps
+            Assets = new Assets
             {
-                End = endTimeStamps
-            }
+                SmallImageKey = playerState.SmallAssetImageKey
+            },
+            Timestamps = playerState.Timestamps
         };
     }
 
-    protected (string playerState, DateTime endTimeStamp) RenderPlayerState(PlexSession session)
+    protected DiscordPlayerState RenderPlayerState(PlexSession session)
     {
         return session.PlayerState switch
         {
-            PlexPlayerState.Buffering => ("⟲", this.clock.Now.ToUniversalTime()),
-            PlexPlayerState.Paused => ("⏸", this.clock.Now.ToUniversalTime()),
-            PlexPlayerState.Playing => ("▶",
-                this.clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()),
-            _ => throw new ArgumentOutOfRangeException()
+            PlexPlayerState.Buffering => new DiscordPlayerState("sand-clock"),
+            PlexPlayerState.Paused => new DiscordPlayerState("pause-circle"),
+            PlexPlayerState.Playing => new DiscordPlayerState(null, new Timestamps
+                {
+                    Start = clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(),
+                    End = clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()
+                }),
+            PlexPlayerState.Idle => new DiscordPlayerState("sleep-mode"),
+            _ => new DiscordPlayerState()
         };
     }
 
     private static long ComputeSessionRemainingTime(PlexSession session) =>
         (session.Duration - session.ViewOffset) / 1000;
+
+    private static long ComputeSessionStartTime(PlexSession session) =>
+        session.ViewOffset / 1000;
 }

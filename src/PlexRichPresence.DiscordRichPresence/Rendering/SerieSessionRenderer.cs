@@ -4,23 +4,23 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
-public class SerieSessionRenderer : GenericSessionRenderer
+public class SerieSessionRenderer(IClock clock) : GenericSessionRenderer(clock)
 {
     public override RichPresence RenderSession(PlexSession session)
     {
-        (string playerState, DateTime endTimeStamp) = this.RenderPlayerState(session);
+        DiscordPlayerState playerState = RenderPlayerState(session);
         return new RichPresence
         {
-            Details = $"⏏ {session.MediaTitle}",
-            State = $"{playerState} {session.MediaGrandParentTitle}",
-            Timestamps = new Timestamps
+            Type = ActivityType.Watching,
+            StatusDisplay = StatusDisplayType.Details,
+            Details = $"{session.MediaTitle}",
+            State = $"{session.MediaGrandParentTitle}",
+            Assets = new Assets
             {
-                End = endTimeStamp
-            }
+                SmallImageKey = playerState.SmallAssetImageKey,
+                LargeImageKey = session.Thumbnail
+            },
+            Timestamps = playerState.Timestamps
         };
-    }
-
-    public SerieSessionRenderer(IClock clock) : base(clock)
-    {
     }
 }

@@ -4,27 +4,23 @@ using PlexRichPresence.ViewModels.Services;
 
 namespace PlexRichPresence.DiscordRichPresence.Rendering;
 
-public class MusicSessionRenderer : GenericSessionRenderer
+public class MusicSessionRenderer(IClock clock) : GenericSessionRenderer(clock)
 {
     public override RichPresence RenderSession(PlexSession session)
     {
-        (string playerState, DateTime endTimeStamp) = this.RenderPlayerState(session);
+        DiscordPlayerState playerState = RenderPlayerState(session);
         return new RichPresence
         {
-            Details = $"♫ {session.MediaTitle}",
-            State = $"{playerState} {session.MediaGrandParentTitle}",
-            Timestamps = new Timestamps
+            Type = ActivityType.Listening,
+            StatusDisplay = StatusDisplayType.State,
+            Details = $"{session.MediaTitle}",
+            State = $"{session.MediaGrandParentTitle}",
+            Assets = new Assets
             {
-                End = endTimeStamp
-            },
-            Assets = new Assets()
-            {
+                SmallImageKey = playerState.SmallAssetImageKey,
                 LargeImageKey = session.Thumbnail
-            }
+            },
+            Timestamps = playerState.Timestamps
         };
-    }
-
-    public MusicSessionRenderer(IClock clock) : base(clock)
-    {
     }
 }
