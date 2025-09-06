@@ -61,7 +61,7 @@ jobs:
       - name: Compile Installer
         run: iscc installers/windows/installer.iss /dBuildNumber=${{github.run_number}} /dMyAppURL=https://github.com/${{github.repository}}
       - name: Save Installer as Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: plex-rich-presence-setup
           path: C:\temp\plex-rich-presence\plex-rich-presence-setup.exe
