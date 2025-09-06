@@ -28,10 +28,10 @@ public class GenericSessionRenderer(IClock clock) : IPlexSessionRenderer
         switch (session.PlayerState)
         {
             case PlexPlayerState.Buffering:
-                presence.Assets.SmallImageKey = "https://drop.arimodu.dev:8443/uploads/sand-clock.png";
+                presence.Assets.SmallImageKey = "sand-clock";
                 break;
             case PlexPlayerState.Paused:
-                presence.Assets.SmallImageKey = "https://drop.arimodu.dev:8443/uploads/pause-circle.png";
+                presence.Assets.SmallImageKey = "pause-circle";
                 break;
 
             case PlexPlayerState.Playing:
@@ -43,7 +43,7 @@ public class GenericSessionRenderer(IClock clock) : IPlexSessionRenderer
                 break;
 
             case PlexPlayerState.Idle:
-                presence.Assets.SmallImageKey = "https://drop.arimodu.dev:8443/uploads/sleep-mode.png";
+                presence.Assets.SmallImageKey = "sleep-mode";
                 break;
 
             default:
