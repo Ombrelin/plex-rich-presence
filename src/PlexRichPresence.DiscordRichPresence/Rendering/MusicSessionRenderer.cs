@@ -8,20 +8,19 @@ public class MusicSessionRenderer(IClock clock) : GenericSessionRenderer(clock)
 {
     public override RichPresence RenderSession(PlexSession session)
     {
-        var presence = new RichPresence
+        DiscordPlayerState playerState = RenderPlayerState(session);
+        return new RichPresence
         {
             Type = ActivityType.Listening,
             StatusDisplay = StatusDisplayType.State,
             Details = $"{session.MediaTitle}",
             State = $"{session.MediaGrandParentTitle}",
-            Assets = new Assets()
+            Assets = new Assets
             {
+                SmallImageKey = playerState.SmallAssetImageKey,
                 LargeImageKey = session.Thumbnail
-            }
+            },
+            Timestamps = playerState.Timestamps
         };
-
-        RenderPlayerState(session, presence);
-
-        return presence;
     }
 }

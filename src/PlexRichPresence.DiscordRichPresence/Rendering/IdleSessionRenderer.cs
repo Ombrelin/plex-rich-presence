@@ -12,7 +12,7 @@ public class IdleSessionRenderer : IPlexSessionRenderer
             State = "Idle",
             Assets = new Assets
             {
-                SmallImageKey = "https://drop.arimodu.dev:8443/uploads/sleep-mode.png"
+                SmallImageKey = "sleep-mode"
             }
         };
     }

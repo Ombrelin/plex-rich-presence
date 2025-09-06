@@ -9,46 +9,36 @@ public class GenericSessionRenderer(IClock clock) : IPlexSessionRenderer
 {
     public virtual RichPresence RenderSession(PlexSession session)
     {
-        var presence = new RichPresence
+        DiscordPlayerState playerState = RenderPlayerState(session);
+        
+        return new RichPresence
         {
             Type = ActivityType.Watching,
             StatusDisplay = StatusDisplayType.Name,
             Details = session.MediaGrandParentTitle + " - " + session.MediaParentTitle,
             State = session.MediaTitle,
-            Assets = new Assets()
+            Assets = new Assets
+            {
+                SmallImageKey = playerState.SmallAssetImageKey
+            },
+            Timestamps = playerState.Timestamps
         };
-
-        RenderPlayerState(session, presence);
-
-        return presence;
     }
 
-    protected void RenderPlayerState(PlexSession session, RichPresence presence)
+    protected DiscordPlayerState RenderPlayerState(PlexSession session)
     {
-        switch (session.PlayerState)
+        return session.PlayerState switch
         {
-            case PlexPlayerState.Buffering:
-                presence.Assets.SmallImageKey = "sand-clock";
-                break;
-            case PlexPlayerState.Paused:
-                presence.Assets.SmallImageKey = "pause-circle";
-                break;
-
-            case PlexPlayerState.Playing:
-                presence.Timestamps = new Timestamps
+            PlexPlayerState.Buffering => new DiscordPlayerState("sand-clock"),
+            PlexPlayerState.Paused => new DiscordPlayerState("pause-circle"),
+            PlexPlayerState.Playing => new DiscordPlayerState(null, new Timestamps
                 {
                     Start = clock.Now.AddSeconds(ComputeSessionStartTime(session) * -1).ToUniversalTime(),
                     End = clock.Now.AddSeconds(ComputeSessionRemainingTime(session)).ToUniversalTime()
-                };
-                break;
-
-            case PlexPlayerState.Idle:
-                presence.Assets.SmallImageKey = "sleep-mode";
-                break;
-
-            default:
-                break;
-        }
+                }),
+            PlexPlayerState.Idle => new DiscordPlayerState("sleep-mode"),
+            _ => new DiscordPlayerState()
+        };
     }
 
     private static long ComputeSessionRemainingTime(PlexSession session) =>

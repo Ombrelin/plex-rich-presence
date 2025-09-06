@@ -48,7 +48,8 @@ public class PlexSessionsPollingStrategy : IPlexSessionStrategy
 
             var currentUserSessions = sessions
                 .Metadata
-                .Where(s => s.User.Title == username).Select(s => plexSessionMapper.Map(s, plexServerHost, userToken));
+                .Where(s => s.User.Title == username)
+                .Select(s => plexSessionMapper.Map(s, plexServerHost, userToken));
 
             PlexSession? plexSession = SelectActiveSessionFromUserSessions(currentUserSessions);
 
