@@ -9,6 +9,10 @@ Plex Rich Presence is a multiplatform .NET 6 GUI App that allows you to display 
 
 <img src="https://github.com/Ombrelin/plex-rich-presence/blob/master/src/PlexRichPresence.UI.Avalonia/Assets/plex-rich-presence.png?raw=true" width="250" height="250">
 
+New features from version 2.1 :
+
+- Display media thumbnails dynamically on rich presence
+
 New features from version 2.0 : 
 
 - Supports non-admin users
@@ -30,7 +34,7 @@ Releases for windows and linux can be found [here](https://github.com/Ombrelin/p
 
 ## Build & Run form sources
 
-Requires .NET 6+ SDK
+Requires .NET 8+ SDK
 
 ```
 cd src/PlexRichPresence.UI.Avalonia
