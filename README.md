@@ -1,3 +1,35 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="center">
+        <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=en">English</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=zh-CN">简体中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=zh-TW">繁體中文</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=ja">日本語</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=ko">한국어</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=hi">हिन्दी</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=th">ไทย</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=fr">Français</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=de">Deutsch</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=es">Español</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=it">Italiano</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=ru">Русский</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=pt">Português</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=nl">Nederlands</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=pl">Polski</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=ar">العربية</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=fa">فارسی</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=tr">Türkçe</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=vi">Tiếng Việt</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=id">Bahasa Indonesia</a>
+        | <a href="https://openaitx.github.io/view.html?user=Ombrelin&project=plex-rich-presence&lang=as">অসমীয়া</
+      </div>
+    </div>
+  </details>
+</div>
+
 > [!WARNING]  
 >  **Status of the project**
 > This project in in maintenance only-mode. As I'm not a PLEX user anymore, I won't be working on new features for this project.
